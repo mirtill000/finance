@@ -1,0 +1,608 @@
+datetime,category,value,type
+2025-07-01 22:53,Healthcare,52.47,outcome
+2025-07-02 13:31,Groceries,81.18,outcome
+2025-07-02 13:49,Dining Out,6.80,outcome
+2025-07-03 12:09,Entertainment,6.21,outcome
+2025-07-03 13:28,Shopping,3.00,outcome
+2025-07-04 09:36,Groceries,149.75,outcome
+2025-07-04 10:54,Coffee & Drinks,5.05,outcome
+2025-07-04 16:35,Groceries,140.98,outcome
+2025-07-05 10:47,Coffee & Drinks,10.06,outcome
+2025-07-06 10:21,Shopping,32.03,outcome
+2025-07-08 08:35,Groceries,5.56,outcome
+2025-07-08 08:36,Groceries,17.58,outcome
+2025-07-08 12:44,Utilities,116.94,outcome
+2025-07-09 11:52,Entertainment,12.42,outcome
+2025-07-10 11:47,Dining Out,53.59,outcome
+2025-07-10 21:18,Dining Out,12.96,outcome
+2025-07-11 11:59,Transportation,27.00,outcome
+2025-07-11 15:30,Coffee & Drinks,3.00,outcome
+2025-07-13 08:12,Shopping,151.28,outcome
+2025-07-13 14:09,Entertainment,31.38,outcome
+2025-07-14 11:34,Groceries,15.51,outcome
+2025-07-14 12:48,Transportation,18.76,outcome
+2025-07-14 15:45,Entertainment,17.57,outcome
+2025-07-14 18:43,Entertainment,7.08,outcome
+2025-07-15 18:10,Dining Out,35.15,outcome
+2025-07-15 18:19,Utilities,174.72,outcome
+2025-07-16 16:05,Coffee & Drinks,3.00,outcome
+2025-07-16 20:02,Transportation,70.17,outcome
+2025-07-16 21:30,Coffee & Drinks,4.81,outcome
+2025-07-18 17:21,Transportation,16.69,outcome
+2025-07-18 18:39,Subscriptions,10.38,outcome
+2025-07-19 13:23,Groceries,34.59,outcome
+2025-07-19 17:08,Subscriptions,9.71,outcome
+2025-07-19 19:03,Groceries,9.61,outcome
+2025-07-20 08:06,Shopping,199.01,outcome
+2025-07-20 10:31,Dining Out,85.14,outcome
+2025-07-20 18:30,Coffee & Drinks,4.13,outcome
+2025-07-21 15:22,Coffee & Drinks,3.00,outcome
+2025-07-22 09:48,Transportation,23.15,outcome
+2025-07-22 18:01,Dining Out,4.95,outcome
+2025-07-23 08:29,Subscriptions,51.15,outcome
+2025-07-23 18:00,Freelance,271.73,income
+2025-07-23 18:38,Transportation,3.15,outcome
+2025-07-23 19:56,Dining Out,3.00,outcome
+2025-07-25 14:05,Utilities,83.60,outcome
+2025-07-27 09:30,Salary,3329.53,income
+2025-07-27 12:06,Groceries,4.28,outcome
+2025-07-28 11:18,Groceries,9.78,outcome
+2025-08-01 10:33,Dining Out,8.57,outcome
+2025-08-01 11:11,Subscriptions,10.73,outcome
+2025-08-02 18:57,Healthcare,96.21,outcome
+2025-08-03 18:00,Freelance,342.35,income
+2025-08-04 11:45,Coffee & Drinks,9.53,outcome
+2025-08-04 19:28,Coffee & Drinks,3.00,outcome
+2025-08-05 07:55,Subscriptions,18.52,outcome
+2025-08-06 20:50,Transportation,114.65,outcome
+2025-08-07 16:50,Coffee & Drinks,3.00,outcome
+2025-08-07 17:13,Utilities,66.07,outcome
+2025-08-08 13:51,Groceries,108.17,outcome
+2025-08-08 15:59,Coffee & Drinks,12.37,outcome
+2025-08-08 17:40,Groceries,47.54,outcome
+2025-08-08 19:47,Groceries,30.09,outcome
+2025-08-08 20:04,Coffee & Drinks,3.00,outcome
+2025-08-09 13:18,Entertainment,37.59,outcome
+2025-08-09 13:44,Groceries,32.81,outcome
+2025-08-09 21:32,Coffee & Drinks,10.59,outcome
+2025-08-11 09:42,Coffee & Drinks,14.74,outcome
+2025-08-12 11:35,Dining Out,57.69,outcome
+2025-08-13 09:46,Transportation,17.96,outcome
+2025-08-15 11:26,Coffee & Drinks,3.91,outcome
+2025-08-15 12:38,Subscriptions,3.00,outcome
+2025-08-16 07:30,Utilities,225.20,outcome
+2025-08-17 11:34,Subscriptions,32.08,outcome
+2025-08-17 14:48,Entertainment,109.56,outcome
+2025-08-17 22:22,Groceries,65.04,outcome
+2025-08-18 08:20,Shopping,110.96,outcome
+2025-08-18 11:01,Dining Out,16.53,outcome
+2025-08-18 13:53,Coffee & Drinks,4.79,outcome
+2025-08-18 22:32,Coffee & Drinks,3.00,outcome
+2025-08-19 17:16,Entertainment,30.96,outcome
+2025-08-20 13:44,Coffee & Drinks,7.89,outcome
+2025-08-20 18:28,Groceries,3.08,outcome
+2025-08-20 22:42,Dining Out,3.63,outcome
+2025-08-21 17:05,Transportation,27.69,outcome
+2025-08-21 18:09,Coffee & Drinks,6.51,outcome
+2025-08-24 07:01,Groceries,60.19,outcome
+2025-08-24 11:27,Dining Out,45.35,outcome
+2025-08-26 13:30,Transportation,16.88,outcome
+2025-08-26 14:12,Groceries,84.99,outcome
+2025-08-26 15:30,Groceries,45.60,outcome
+2025-08-26 18:23,Groceries,44.85,outcome
+2025-08-26 19:29,Transportation,21.93,outcome
+2025-08-27 09:30,Salary,3531.54,income
+2025-09-01 15:23,Shopping,74.41,outcome
+2025-09-01 16:19,Coffee & Drinks,6.02,outcome
+2025-09-01 17:35,Transportation,23.45,outcome
+2025-09-02 11:00,Subscriptions,31.88,outcome
+2025-09-02 12:27,Utilities,26.92,outcome
+2025-09-02 21:11,Shopping,144.99,outcome
+2025-09-03 10:58,Groceries,8.99,outcome
+2025-09-03 15:01,Utilities,144.78,outcome
+2025-09-03 15:27,Subscriptions,5.24,outcome
+2025-09-04 09:16,Groceries,18.26,outcome
+2025-09-05 08:33,Transportation,141.78,outcome
+2025-09-06 08:05,Subscriptions,21.22,outcome
+2025-09-06 15:28,Shopping,22.74,outcome
+2025-09-09 08:57,Groceries,8.42,outcome
+2025-09-09 09:09,Coffee & Drinks,18.50,outcome
+2025-09-09 09:38,Utilities,90.15,outcome
+2025-09-10 11:02,Coffee & Drinks,42.83,outcome
+2025-09-10 13:14,Healthcare,31.94,outcome
+2025-09-10 16:33,Dining Out,43.82,outcome
+2025-09-11 11:00,Dividends,143.72,income
+2025-09-11 13:53,Healthcare,14.95,outcome
+2025-09-11 16:32,Groceries,118.54,outcome
+2025-09-11 22:09,Coffee & Drinks,3.00,outcome
+2025-09-12 07:16,Dining Out,7.45,outcome
+2025-09-13 08:25,Coffee & Drinks,4.02,outcome
+2025-09-14 15:25,Groceries,3.00,outcome
+2025-09-14 15:39,Transportation,27.52,outcome
+2025-09-15 12:17,Dining Out,171.11,outcome
+2025-09-16 14:59,Entertainment,12.06,outcome
+2025-09-16 19:32,Healthcare,35.69,outcome
+2025-09-17 07:05,Coffee & Drinks,3.00,outcome
+2025-09-17 18:00,Freelance,348.81,income
+2025-09-18 13:32,Entertainment,33.12,outcome
+2025-09-19 11:42,Coffee & Drinks,3.00,outcome
+2025-09-21 09:51,Utilities,39.07,outcome
+2025-09-21 14:05,Coffee & Drinks,4.35,outcome
+2025-09-22 19:55,Subscriptions,33.39,outcome
+2025-09-22 20:15,Cashback,30.48,income
+2025-09-23 07:24,Groceries,44.46,outcome
+2025-09-23 19:48,Coffee & Drinks,8.61,outcome
+2025-09-25 11:52,Groceries,258.22,outcome
+2025-09-25 12:17,Groceries,18.04,outcome
+2025-09-25 13:18,Dining Out,19.53,outcome
+2025-09-26 14:56,Groceries,4.50,outcome
+2025-09-27 09:30,Salary,3301.24,income
+2025-09-27 20:46,Coffee & Drinks,3.18,outcome
+2025-10-01 22:03,Transportation,41.13,outcome
+2025-10-02 07:40,Groceries,212.68,outcome
+2025-10-02 13:04,Utilities,77.25,outcome
+2025-10-03 22:01,Dining Out,60.21,outcome
+2025-10-04 13:43,Transportation,42.65,outcome
+2025-10-04 18:14,Entertainment,156.82,outcome
+2025-10-05 14:17,Coffee & Drinks,3.00,outcome
+2025-10-05 15:56,Entertainment,3.00,outcome
+2025-10-05 18:06,Groceries,18.71,outcome
+2025-10-06 07:31,Healthcare,35.35,outcome
+2025-10-07 07:57,Shopping,21.23,outcome
+2025-10-09 07:29,Groceries,6.26,outcome
+2025-10-10 21:04,Dining Out,45.86,outcome
+2025-10-12 09:25,Shopping,28.45,outcome
+2025-10-13 09:30,Utilities,132.96,outcome
+2025-10-13 13:58,Dining Out,3.00,outcome
+2025-10-13 17:07,Subscriptions,21.28,outcome
+2025-10-13 21:35,Groceries,119.38,outcome
+2025-10-14 07:51,Coffee & Drinks,3.73,outcome
+2025-10-14 17:12,Coffee & Drinks,9.60,outcome
+2025-10-15 22:54,Utilities,73.18,outcome
+2025-10-16 15:43,Transportation,8.18,outcome
+2025-10-16 16:45,Transportation,28.42,outcome
+2025-10-17 09:42,Groceries,13.05,outcome
+2025-10-17 09:47,Groceries,5.12,outcome
+2025-10-17 16:29,Transportation,41.59,outcome
+2025-10-18 14:31,Groceries,59.36,outcome
+2025-10-22 16:49,Utilities,33.78,outcome
+2025-10-22 21:25,Healthcare,54.35,outcome
+2025-10-24 15:23,Entertainment,12.86,outcome
+2025-10-24 16:16,Shopping,127.16,outcome
+2025-10-24 22:16,Groceries,34.77,outcome
+2025-10-25 18:50,Coffee & Drinks,4.74,outcome
+2025-10-25 19:58,Coffee & Drinks,31.66,outcome
+2025-10-26 09:47,Groceries,66.87,outcome
+2025-10-26 09:54,Groceries,64.36,outcome
+2025-10-27 09:30,Salary,3480.42,income
+2025-10-27 16:40,Coffee & Drinks,3.00,outcome
+2025-10-27 17:00,Subscriptions,29.85,outcome
+2025-10-27 21:17,Dining Out,85.81,outcome
+2025-11-01 16:47,Coffee & Drinks,3.00,outcome
+2025-11-01 20:24,Utilities,130.00,outcome
+2025-11-03 20:15,Cashback,9.34,income
+2025-11-05 13:15,Groceries,52.55,outcome
+2025-11-06 12:04,Groceries,38.49,outcome
+2025-11-07 22:35,Groceries,38.65,outcome
+2025-11-08 07:00,Shopping,33.11,outcome
+2025-11-08 10:14,Dining Out,68.72,outcome
+2025-11-08 21:58,Groceries,151.84,outcome
+2025-11-09 14:24,Transportation,5.40,outcome
+2025-11-09 14:42,Coffee & Drinks,10.25,outcome
+2025-11-09 18:08,Transportation,8.67,outcome
+2025-11-10 16:16,Groceries,82.65,outcome
+2025-11-11 20:23,Coffee & Drinks,8.08,outcome
+2025-11-11 21:27,Groceries,25.31,outcome
+2025-11-12 15:51,Utilities,93.46,outcome
+2025-11-13 21:27,Transportation,87.03,outcome
+2025-11-13 21:28,Dining Out,98.43,outcome
+2025-11-14 18:14,Coffee & Drinks,3.00,outcome
+2025-11-16 07:04,Dining Out,86.64,outcome
+2025-11-16 08:44,Coffee & Drinks,3.00,outcome
+2025-11-16 13:19,Coffee & Drinks,3.70,outcome
+2025-11-16 19:07,Groceries,42.18,outcome
+2025-11-16 20:05,Coffee & Drinks,3.00,outcome
+2025-11-17 20:44,Subscriptions,50.15,outcome
+2025-11-18 08:00,Entertainment,3.60,outcome
+2025-11-18 16:29,Shopping,52.21,outcome
+2025-11-19 08:41,Healthcare,129.52,outcome
+2025-11-19 13:56,Utilities,69.25,outcome
+2025-11-21 14:19,Groceries,145.60,outcome
+2025-11-22 13:05,Transportation,38.57,outcome
+2025-11-22 19:12,Coffee & Drinks,8.14,outcome
+2025-11-24 15:25,Groceries,19.20,outcome
+2025-11-24 21:05,Entertainment,58.01,outcome
+2025-11-25 10:06,Subscriptions,29.90,outcome
+2025-11-25 13:14,Coffee & Drinks,3.00,outcome
+2025-11-26 22:37,Dining Out,37.00,outcome
+2025-11-27 09:30,Salary,3550.29,income
+2025-11-28 09:13,Coffee & Drinks,8.62,outcome
+2025-12-01 09:17,Utilities,25.05,outcome
+2025-12-03 08:16,Dining Out,3.10,outcome
+2025-12-03 08:30,Shopping,32.41,outcome
+2025-12-03 18:26,Utilities,77.62,outcome
+2025-12-04 09:59,Groceries,16.03,outcome
+2025-12-05 20:03,Groceries,92.53,outcome
+2025-12-06 17:12,Groceries,16.36,outcome
+2025-12-07 09:57,Dining Out,7.36,outcome
+2025-12-08 11:26,Coffee & Drinks,3.00,outcome
+2025-12-08 20:15,Cashback,21.10,income
+2025-12-09 15:23,Coffee & Drinks,3.00,outcome
+2025-12-09 17:39,Dining Out,28.86,outcome
+2025-12-11 17:29,Subscriptions,47.64,outcome
+2025-12-12 09:32,Subscriptions,30.81,outcome
+2025-12-12 18:00,Freelance,299.05,income
+2025-12-13 08:29,Dining Out,13.52,outcome
+2025-12-13 15:58,Entertainment,3.49,outcome
+2025-12-13 18:21,Utilities,9.76,outcome
+2025-12-13 18:49,Transportation,114.84,outcome
+2025-12-13 21:57,Groceries,114.10,outcome
+2025-12-15 12:06,Utilities,193.54,outcome
+2025-12-15 14:47,Coffee & Drinks,15.79,outcome
+2025-12-16 12:00,Healthcare,10.64,outcome
+2025-12-16 21:49,Entertainment,9.34,outcome
+2025-12-18 10:49,Coffee & Drinks,21.89,outcome
+2025-12-18 17:10,Shopping,98.63,outcome
+2025-12-19 11:00,Dividends,159.32,income
+2025-12-20 09:01,Entertainment,13.71,outcome
+2025-12-20 17:23,Dining Out,21.51,outcome
+2025-12-21 20:15,Dining Out,21.50,outcome
+2025-12-23 08:11,Groceries,42.07,outcome
+2025-12-23 17:46,Groceries,350.99,outcome
+2025-12-23 21:11,Coffee & Drinks,7.88,outcome
+2025-12-26 16:52,Healthcare,69.55,outcome
+2025-12-26 19:02,Dining Out,14.02,outcome
+2025-12-26 20:05,Transportation,49.36,outcome
+2025-12-27 09:30,Salary,3386.05,income
+2025-12-27 14:06,Entertainment,19.55,outcome
+2025-12-27 16:18,Coffee & Drinks,45.86,outcome
+2025-12-27 16:52,Transportation,40.46,outcome
+2026-01-02 13:38,Groceries,116.20,outcome
+2026-01-02 18:21,Utilities,121.15,outcome
+2026-01-03 10:24,Shopping,69.95,outcome
+2026-01-03 12:40,Coffee & Drinks,3.00,outcome
+2026-01-04 07:30,Groceries,59.97,outcome
+2026-01-05 08:13,Utilities,38.89,outcome
+2026-01-05 20:15,Cashback,15.60,income
+2026-01-06 19:44,Dining Out,3.00,outcome
+2026-01-07 07:52,Transportation,125.87,outcome
+2026-01-07 08:25,Coffee & Drinks,3.00,outcome
+2026-01-07 19:46,Entertainment,27.95,outcome
+2026-01-08 13:02,Coffee & Drinks,5.40,outcome
+2026-01-09 20:18,Dining Out,81.93,outcome
+2026-01-10 14:07,Groceries,190.16,outcome
+2026-01-11 20:43,Transportation,10.97,outcome
+2026-01-12 10:09,Coffee & Drinks,4.67,outcome
+2026-01-12 12:39,Transportation,73.15,outcome
+2026-01-12 16:10,Shopping,45.71,outcome
+2026-01-13 13:00,Entertainment,51.62,outcome
+2026-01-13 13:53,Coffee & Drinks,3.00,outcome
+2026-01-13 18:29,Healthcare,35.90,outcome
+2026-01-14 07:55,Entertainment,41.70,outcome
+2026-01-14 12:27,Entertainment,6.25,outcome
+2026-01-15 18:02,Groceries,70.26,outcome
+2026-01-16 12:36,Coffee & Drinks,18.14,outcome
+2026-01-17 12:24,Coffee & Drinks,12.43,outcome
+2026-01-17 12:59,Shopping,150.57,outcome
+2026-01-17 18:00,Freelance,361.34,income
+2026-01-18 09:41,Dining Out,12.24,outcome
+2026-01-18 11:40,Dining Out,61.19,outcome
+2026-01-18 11:41,Subscriptions,3.00,outcome
+2026-01-21 18:13,Utilities,54.96,outcome
+2026-01-21 21:02,Groceries,146.12,outcome
+2026-01-25 07:06,Utilities,75.52,outcome
+2026-01-25 18:41,Entertainment,5.98,outcome
+2026-01-26 14:39,Coffee & Drinks,15.97,outcome
+2026-01-26 19:05,Subscriptions,82.87,outcome
+2026-01-26 19:42,Dining Out,5.11,outcome
+2026-01-27 09:30,Salary,3301.62,income
+2026-01-27 13:59,Groceries,4.77,outcome
+2026-01-27 14:53,Groceries,44.04,outcome
+2026-02-01 08:14,Healthcare,13.39,outcome
+2026-02-01 08:41,Coffee & Drinks,3.00,outcome
+2026-02-02 07:25,Coffee & Drinks,3.00,outcome
+2026-02-02 07:36,Subscriptions,8.41,outcome
+2026-02-02 10:00,Coffee & Drinks,7.30,outcome
+2026-02-02 11:31,Subscriptions,14.73,outcome
+2026-02-02 19:41,Utilities,209.25,outcome
+2026-02-03 21:32,Groceries,61.12,outcome
+2026-02-04 09:08,Groceries,22.66,outcome
+2026-02-05 18:21,Entertainment,48.45,outcome
+2026-02-06 07:00,Groceries,118.04,outcome
+2026-02-06 07:02,Coffee & Drinks,8.32,outcome
+2026-02-06 14:10,Coffee & Drinks,4.03,outcome
+2026-02-06 19:10,Dining Out,60.58,outcome
+2026-02-06 22:25,Groceries,31.50,outcome
+2026-02-08 08:01,Subscriptions,3.00,outcome
+2026-02-08 21:48,Groceries,28.05,outcome
+2026-02-09 14:20,Dining Out,4.05,outcome
+2026-02-10 11:13,Shopping,102.61,outcome
+2026-02-11 19:10,Dining Out,15.85,outcome
+2026-02-12 08:12,Dining Out,30.99,outcome
+2026-02-12 16:06,Subscriptions,15.15,outcome
+2026-02-12 20:23,Groceries,68.88,outcome
+2026-02-12 22:10,Shopping,145.70,outcome
+2026-02-13 18:36,Entertainment,3.98,outcome
+2026-02-16 13:37,Dining Out,38.28,outcome
+2026-02-16 16:51,Transportation,34.45,outcome
+2026-02-17 08:02,Groceries,33.59,outcome
+2026-02-17 22:15,Coffee & Drinks,7.02,outcome
+2026-02-18 19:47,Entertainment,16.75,outcome
+2026-02-20 21:53,Groceries,10.31,outcome
+2026-02-20 22:29,Groceries,27.92,outcome
+2026-02-21 11:05,Groceries,71.50,outcome
+2026-02-21 15:43,Dining Out,67.71,outcome
+2026-02-21 17:46,Healthcare,36.30,outcome
+2026-02-21 21:38,Coffee & Drinks,4.85,outcome
+2026-02-22 20:15,Cashback,30.63,income
+2026-02-25 08:40,Dining Out,27.58,outcome
+2026-02-25 09:28,Entertainment,18.81,outcome
+2026-02-26 11:01,Utilities,108.88,outcome
+2026-02-26 12:43,Transportation,140.15,outcome
+2026-02-26 14:04,Transportation,3.25,outcome
+2026-02-26 15:07,Dining Out,21.57,outcome
+2026-02-26 18:16,Entertainment,72.16,outcome
+2026-02-27 09:30,Salary,3553.55,income
+2026-02-27 15:19,Healthcare,3.00,outcome
+2026-02-27 18:38,Coffee & Drinks,3.14,outcome
+2026-02-28 09:39,Utilities,90.97,outcome
+2026-03-01 19:54,Groceries,28.10,outcome
+2026-03-01 20:46,Transportation,21.48,outcome
+2026-03-02 07:07,Dining Out,25.18,outcome
+2026-03-02 11:44,Dining Out,3.00,outcome
+2026-03-02 15:40,Groceries,17.62,outcome
+2026-03-03 08:04,Dining Out,30.94,outcome
+2026-03-03 16:10,Coffee & Drinks,12.64,outcome
+2026-03-04 08:02,Entertainment,7.26,outcome
+2026-03-04 11:06,Healthcare,101.52,outcome
+2026-03-04 12:22,Dining Out,32.29,outcome
+2026-03-05 07:01,Dining Out,25.48,outcome
+2026-03-07 16:48,Coffee & Drinks,11.15,outcome
+2026-03-08 08:07,Groceries,235.29,outcome
+2026-03-08 10:16,Groceries,5.28,outcome
+2026-03-08 13:13,Entertainment,67.27,outcome
+2026-03-09 14:53,Utilities,338.28,outcome
+2026-03-10 08:45,Subscriptions,13.67,outcome
+2026-03-11 14:24,Transportation,58.60,outcome
+2026-03-11 15:45,Groceries,39.16,outcome
+2026-03-11 22:54,Subscriptions,33.97,outcome
+2026-03-12 22:06,Coffee & Drinks,9.20,outcome
+2026-03-13 11:00,Dividends,102.76,income
+2026-03-14 07:33,Coffee & Drinks,7.60,outcome
+2026-03-14 21:05,Groceries,73.11,outcome
+2026-03-16 12:31,Coffee & Drinks,8.04,outcome
+2026-03-17 07:10,Utilities,31.60,outcome
+2026-03-18 20:43,Groceries,44.03,outcome
+2026-03-20 20:15,Cashback,25.35,income
+2026-03-21 08:44,Dining Out,29.92,outcome
+2026-03-21 16:30,Healthcare,13.37,outcome
+2026-03-22 09:56,Entertainment,31.87,outcome
+2026-03-24 21:11,Groceries,72.80,outcome
+2026-03-25 08:00,Coffee & Drinks,9.73,outcome
+2026-03-25 18:58,Subscriptions,4.70,outcome
+2026-03-26 13:18,Healthcare,38.01,outcome
+2026-03-26 15:18,Groceries,64.12,outcome
+2026-03-26 20:01,Shopping,163.55,outcome
+2026-03-27 07:54,Transportation,24.02,outcome
+2026-03-27 09:30,Salary,3445.06,income
+2026-03-28 19:06,Entertainment,53.50,outcome
+2026-03-28 22:30,Transportation,75.16,outcome
+2026-04-01 11:16,Dining Out,53.99,outcome
+2026-04-01 20:33,Healthcare,28.85,outcome
+2026-04-02 07:04,Coffee & Drinks,5.66,outcome
+2026-04-02 07:25,Dining Out,4.68,outcome
+2026-04-04 21:34,Shopping,165.03,outcome
+2026-04-05 14:46,Transportation,17.05,outcome
+2026-04-05 21:42,Utilities,29.49,outcome
+2026-04-06 10:29,Entertainment,3.00,outcome
+2026-04-07 12:08,Coffee & Drinks,3.00,outcome
+2026-04-07 16:16,Groceries,3.00,outcome
+2026-04-07 19:29,Dining Out,3.00,outcome
+2026-04-07 22:32,Shopping,152.81,outcome
+2026-04-08 13:17,Transportation,18.35,outcome
+2026-04-08 16:29,Dining Out,3.00,outcome
+2026-04-08 17:12,Transportation,16.72,outcome
+2026-04-08 19:29,Coffee & Drinks,5.75,outcome
+2026-04-09 10:14,Coffee & Drinks,5.05,outcome
+2026-04-09 13:06,Dining Out,22.51,outcome
+2026-04-09 13:10,Subscriptions,46.34,outcome
+2026-04-09 19:25,Coffee & Drinks,3.00,outcome
+2026-04-10 11:46,Transportation,48.91,outcome
+2026-04-10 19:33,Coffee & Drinks,3.00,outcome
+2026-04-11 18:06,Groceries,33.31,outcome
+2026-04-11 18:10,Transportation,44.54,outcome
+2026-04-12 08:16,Coffee & Drinks,3.80,outcome
+2026-04-13 19:57,Groceries,131.13,outcome
+2026-04-14 12:24,Groceries,31.06,outcome
+2026-04-14 14:50,Entertainment,19.51,outcome
+2026-04-14 17:16,Entertainment,28.39,outcome
+2026-04-14 20:40,Coffee & Drinks,3.00,outcome
+2026-04-14 22:29,Healthcare,19.01,outcome
+2026-04-16 10:02,Subscriptions,29.47,outcome
+2026-04-18 17:10,Utilities,195.60,outcome
+2026-04-19 17:33,Utilities,94.92,outcome
+2026-04-19 20:15,Cashback,33.48,income
+2026-04-20 19:00,Dining Out,51.14,outcome
+2026-04-21 07:23,Groceries,86.90,outcome
+2026-04-21 10:17,Dining Out,3.00,outcome
+2026-04-21 10:57,Entertainment,5.04,outcome
+2026-04-21 14:43,Entertainment,104.01,outcome
+2026-04-22 12:57,Healthcare,28.16,outcome
+2026-04-23 10:40,Groceries,84.01,outcome
+2026-04-23 18:37,Coffee & Drinks,3.46,outcome
+2026-04-24 09:27,Groceries,140.12,outcome
+2026-04-24 14:58,Dining Out,3.00,outcome
+2026-04-25 08:22,Utilities,97.53,outcome
+2026-04-25 09:51,Coffee & Drinks,3.00,outcome
+2026-04-27 09:30,Salary,3437.02,income
+2026-04-28 20:44,Dining Out,15.47,outcome
+2026-05-01 13:04,Utilities,6.17,outcome
+2026-05-01 15:22,Groceries,15.55,outcome
+2026-05-02 13:45,Healthcare,126.00,outcome
+2026-05-02 13:52,Coffee & Drinks,3.00,outcome
+2026-05-02 21:40,Coffee & Drinks,3.00,outcome
+2026-05-03 17:50,Groceries,86.28,outcome
+2026-05-03 21:42,Transportation,45.86,outcome
+2026-05-04 10:16,Transportation,39.40,outcome
+2026-05-04 22:31,Entertainment,3.21,outcome
+2026-05-05 09:13,Coffee & Drinks,3.31,outcome
+2026-05-05 14:11,Utilities,69.49,outcome
+2026-05-05 20:15,Cashback,17.53,income
+2026-05-08 16:20,Groceries,34.90,outcome
+2026-05-10 10:00,Coffee & Drinks,9.76,outcome
+2026-05-10 19:03,Groceries,9.78,outcome
+2026-05-11 15:55,Shopping,43.08,outcome
+2026-05-12 11:59,Groceries,164.94,outcome
+2026-05-12 22:25,Shopping,11.42,outcome
+2026-05-13 08:25,Coffee & Drinks,3.00,outcome
+2026-05-13 15:27,Groceries,72.32,outcome
+2026-05-16 08:50,Coffee & Drinks,10.15,outcome
+2026-05-16 12:34,Dining Out,3.00,outcome
+2026-05-16 13:18,Subscriptions,39.08,outcome
+2026-05-16 13:33,Transportation,24.18,outcome
+2026-05-16 22:27,Groceries,65.49,outcome
+2026-05-17 18:13,Shopping,8.14,outcome
+2026-05-17 19:39,Coffee & Drinks,3.00,outcome
+2026-05-18 16:12,Transportation,35.52,outcome
+2026-05-20 07:10,Dining Out,13.39,outcome
+2026-05-20 08:43,Entertainment,3.58,outcome
+2026-05-20 09:42,Groceries,46.32,outcome
+2026-05-20 09:43,Transportation,38.20,outcome
+2026-05-20 10:37,Utilities,81.64,outcome
+2026-05-21 07:01,Entertainment,24.43,outcome
+2026-05-21 16:16,Utilities,254.67,outcome
+2026-05-21 18:40,Entertainment,6.15,outcome
+2026-05-21 22:50,Shopping,154.02,outcome
+2026-05-22 12:30,Groceries,82.19,outcome
+2026-05-23 18:00,Freelance,502.92,income
+2026-05-23 22:15,Dining Out,86.99,outcome
+2026-05-23 22:42,Dining Out,17.38,outcome
+2026-05-24 17:51,Entertainment,44.19,outcome
+2026-05-25 12:06,Coffee & Drinks,8.13,outcome
+2026-05-27 09:30,Salary,3519.36,income
+2026-05-27 17:29,Dining Out,64.01,outcome
+2026-05-28 18:21,Subscriptions,20.01,outcome
+2026-06-01 20:36,Groceries,19.90,outcome
+2026-06-02 17:23,Dining Out,8.37,outcome
+2026-06-02 19:29,Shopping,102.15,outcome
+2026-06-03 07:43,Groceries,88.52,outcome
+2026-06-03 13:55,Utilities,79.13,outcome
+2026-06-04 11:30,Utilities,30.67,outcome
+2026-06-04 20:36,Groceries,72.39,outcome
+2026-06-05 16:37,Entertainment,3.00,outcome
+2026-06-07 13:05,Coffee & Drinks,9.01,outcome
+2026-06-12 11:46,Transportation,41.53,outcome
+2026-06-13 11:30,Groceries,5.50,outcome
+2026-06-13 13:50,Subscriptions,3.00,outcome
+2026-06-13 15:56,Coffee & Drinks,17.32,outcome
+2026-06-13 19:38,Entertainment,11.39,outcome
+2026-06-13 21:17,Dining Out,57.60,outcome
+2026-06-14 07:00,Utilities,138.96,outcome
+2026-06-14 12:37,Healthcare,3.00,outcome
+2026-06-14 14:24,Entertainment,56.24,outcome
+2026-06-16 11:00,Dividends,203.93,income
+2026-06-17 13:12,Coffee & Drinks,3.00,outcome
+2026-06-18 09:34,Subscriptions,60.05,outcome
+2026-06-18 22:22,Subscriptions,13.57,outcome
+2026-06-18 22:51,Subscriptions,16.45,outcome
+2026-06-19 08:52,Groceries,26.78,outcome
+2026-06-19 21:30,Dining Out,73.79,outcome
+2026-06-21 08:31,Groceries,60.70,outcome
+2026-06-21 12:40,Dining Out,5.30,outcome
+2026-06-21 22:29,Transportation,16.45,outcome
+2026-06-22 10:54,Utilities,45.53,outcome
+2026-06-22 12:09,Dining Out,22.39,outcome
+2026-06-22 15:58,Transportation,7.11,outcome
+2026-06-23 13:59,Shopping,227.92,outcome
+2026-06-23 19:28,Groceries,232.91,outcome
+2026-06-25 09:14,Coffee & Drinks,4.08,outcome
+2026-06-25 09:18,Transportation,27.03,outcome
+2026-06-25 14:51,Entertainment,10.33,outcome
+2026-06-25 20:35,Groceries,74.43,outcome
+2026-06-26 10:23,Dining Out,61.84,outcome
+2026-06-26 17:18,Dining Out,34.17,outcome
+2026-06-26 20:30,Dining Out,20.04,outcome
+2026-06-27 08:18,Healthcare,21.74,outcome
+2026-06-27 09:30,Salary,3465.45,income
+2026-06-27 11:51,Healthcare,61.30,outcome
+2026-06-27 17:30,Coffee & Drinks,15.45,outcome
+2026-06-28 22:38,Dining Out,9.36,outcome
+2026-07-02 07:53,Dining Out,46.94,outcome
+2026-07-02 13:55,Groceries,18.08,outcome
+2026-07-02 15:22,Dining Out,4.76,outcome
+2026-07-02 15:50,Dining Out,7.14,outcome
+2026-07-02 17:12,Utilities,15.14,outcome
+2026-07-03 11:20,Groceries,149.24,outcome
+2026-07-03 19:59,Transportation,29.23,outcome
+2026-07-04 09:16,Transportation,12.07,outcome
+2026-07-05 07:17,Coffee & Drinks,3.00,outcome
+2026-07-05 08:40,Coffee & Drinks,9.93,outcome
+2026-07-05 15:53,Utilities,225.26,outcome
+2026-07-06 19:05,Utilities,53.19,outcome
+2026-07-08 14:11,Dining Out,40.53,outcome
+2026-07-09 07:06,Groceries,55.60,outcome
+2026-07-11 18:16,Entertainment,20.63,outcome
+2026-07-13 07:40,Shopping,221.01,outcome
+2026-07-13 10:23,Entertainment,6.78,outcome
+2026-07-14 20:15,Coffee & Drinks,3.00,outcome
+2026-07-15 11:17,Coffee & Drinks,4.03,outcome
+2026-07-15 12:23,Dining Out,64.37,outcome
+2026-07-15 14:51,Healthcare,87.38,outcome
+2026-07-15 22:07,Coffee & Drinks,3.00,outcome
+2026-07-15 22:54,Transportation,52.00,outcome
+2026-07-16 10:20,Coffee & Drinks,3.00,outcome
+2026-07-16 16:07,Coffee & Drinks,3.86,outcome
+2026-07-19 13:16,Groceries,34.08,outcome
+2026-07-19 16:21,Coffee & Drinks,3.09,outcome
+2026-07-19 20:15,Cashback,17.69,income
+2026-07-19 21:48,Entertainment,9.96,outcome
+2026-07-20 07:22,Groceries,75.96,outcome
+2026-07-20 18:56,Subscriptions,3.00,outcome
+2026-07-21 10:30,Entertainment,68.26,outcome
+2026-07-22 16:37,Entertainment,6.24,outcome
+2026-07-24 11:49,Subscriptions,3.50,outcome
+2026-07-25 15:27,Groceries,46.89,outcome
+2026-07-26 08:10,Subscriptions,18.73,outcome
+2026-07-26 12:16,Coffee & Drinks,3.00,outcome
+2026-07-26 13:35,Coffee & Drinks,5.35,outcome
+2026-07-27 09:30,Salary,3272.28,income
+2026-07-27 14:04,Subscriptions,16.98,outcome
+2026-07-28 22:37,Groceries,226.07,outcome
+2026-08-01 14:05,Healthcare,132.63,outcome
+2026-08-01 20:58,Transportation,6.45,outcome
+2026-08-03 10:22,Dining Out,77.99,outcome
+2026-08-04 19:56,Coffee & Drinks,4.11,outcome
+2026-08-04 22:28,Entertainment,42.33,outcome
+2026-08-05 14:55,Coffee & Drinks,19.56,outcome
+2026-08-05 21:00,Groceries,8.38,outcome
+2026-08-06 18:02,Transportation,7.36,outcome
+2026-08-06 18:36,Transportation,8.20,outcome
+2026-08-07 11:39,Utilities,3.00,outcome
+2026-08-08 11:42,Coffee & Drinks,3.00,outcome
+2026-08-08 20:15,Cashback,32.98,income
+2026-08-08 21:06,Shopping,69.97,outcome
+2026-08-09 10:07,Coffee & Drinks,3.00,outcome
+2026-08-10 13:00,Utilities,119.23,outcome
+2026-08-10 15:35,Subscriptions,7.67,outcome
+2026-08-12 20:02,Groceries,12.43,outcome
+2026-08-13 12:52,Coffee & Drinks,14.94,outcome
+2026-08-14 13:17,Groceries,92.82,outcome
+2026-08-14 18:00,Freelance,444.43,income
+2026-08-16 15:11,Utilities,24.14,outcome
+2026-08-17 07:33,Entertainment,102.86,outcome
+2026-08-17 17:32,Groceries,67.77,outcome
+2026-08-19 12:08,Groceries,90.39,outcome
+2026-08-19 21:47,Coffee & Drinks,11.42,outcome
+2026-08-21 22:05,Transportation,27.58,outcome
+2026-08-22 13:37,Utilities,158.73,outcome
+2026-08-23 14:52,Dining Out,126.12,outcome
+2026-08-23 19:36,Dining Out,6.85,outcome
+2026-08-25 14:45,Groceries,10.08,outcome
+2026-08-25 22:08,Transportation,16.72,outcome
+2026-08-26 16:11,Groceries,118.99,outcome
+2026-08-27 07:01,Subscriptions,37.99,outcome
+2026-08-27 09:30,Salary,3303.12,income
+2026-08-27 12:33,Groceries,68.65,outcome
+2026-08-27 17:49,Dining Out,8.02,outcome
+2026-08-27 21:33,Shopping,24.76,outcome
+2026-08-28 15:15,Transportation,31.58,outcome
