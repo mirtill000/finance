@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestione Finanze Familiari</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon">💶</span>
+        <span>GESTIONE FINANZE FAMILIARI</span>
+      </div>
+      <div class="topbar-right" id="dataUpdatedAt"></div>
+    </header>
+
+    <section class="greeting-row">
+      <div class="greeting">
+        <h1>Buonasera, <span id="userName" class="accent-name">Andrea</span></h1>
+        <p class="subtitle">Ecco il riepilogo delle finanze familiari</p>
+      </div>
+      <div class="controls">
+        <div class="control-group">
+          <label for="monthSelect">Mese</label>
+          <select id="monthSelect"></select>
+        </div>
+        <span id="txCountLabel" class="muted"></span>
+        <button id="btnSettings" class="btn-ghost" type="button">⚙ Impostazioni</button>
+        <label class="btn-ghost file-btn">
+          📂 Importa CSV
+          <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+        </label>
+      </div>
+    </section>
+
+    <section class="kpi-grid" id="kpiGrid"></section>
+
+    <section class="charts-row">
+      <div class="panel">
+        <h2>Andamento Patrimonio (<span id="monthsCount">-</span> mesi)</h2>
+        <div class="chart-wrap"><svg id="comboChart" preserveAspectRatio="none"></svg></div>
+        <div class="legend" id="comboLegend"></div>
+      </div>
+      <div class="panel">
+        <h2>Ripartizione Spese — <span id="pieMonthLabel">-</span></h2>
+        <div class="chart-wrap chart-wrap-pie"><svg id="pieChart" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="legend legend-pie" id="pieLegend"></div>
+      </div>
+    </section>
+
+    <section class="lists-row">
+      <div class="panel">
+        <h2>Analisi Spese per Categoria (Mese Selezionato)</h2>
+        <div class="list-header cat-row">
+          <span>Categoria</span><span>Speso / Budget</span><span>% Utilizzo</span>
+        </div>
+        <div id="categoryList" class="list-body"></div>
+      </div>
+      <div class="panel">
+        <h2>Transazioni Recenti (Mese Selezionato)</h2>
+        <div class="list-header tx-row">
+          <span>Data</span><span>Categoria</span><span>Tipo</span><span>Valore</span>
+        </div>
+        <div id="txList" class="list-body"></div>
+      </div>
+    </section>
+
+    <section id="alertBox" class="alert"></section>
+
+    <footer class="footer">
+      <span id="footerLeft"></span>
+      <span>Modifica il budget nelle Impostazioni · seleziona il mese in alto per aggiornare la dashboard</span>
+    </footer>
+  </div>
+
+  <div id="settingsModal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Impostazioni</h3>
+        <button id="closeSettings" class="btn-icon" type="button">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-field">
+          <label for="settingName">Nome (saluto in dashboard)</label>
+          <input type="text" id="settingName">
+        </div>
+        <div class="settings-field">
+          <label for="settingGoal">Obiettivo tasso di risparmio (%)</label>
+          <input type="number" id="settingGoal" min="0" max="100" step="1">
+        </div>
+        <h4>Budget mensile per categoria</h4>
+        <div id="budgetEditor" class="budget-editor"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnResetSample" class="btn-ghost" type="button">Ripristina dati di esempio</button>
+        <button id="btnSaveSettings" class="btn-primary" type="button">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/sample-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
