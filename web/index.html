@@ -318,10 +318,73 @@ table.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
 .modal-grid .mi .ml { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 3px; }
 .modal-grid .mi .mv { font-size: 12.5px; font-weight: 700; font-family: var(--font-mono); }
 .modal-close-row { text-align: center; }
+.modal-box-wide { width: min(640px, 94vw); max-height: 85vh; display: flex; flex-direction: column; }
+.modal-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.modal-head-row h3 { margin: 0; }
+.modal-lead { color: var(--text-muted); font-size: 12px; margin: 4px 0 16px; line-height: 1.5; }
+.modal-close-row-split { display: flex; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px; }
+.budget-editor { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+.budget-edit-row { display: grid; grid-template-columns: 1fr 120px; align-items: center; gap: 10px; padding: 6px 0; }
+.budget-edit-row label { font-size: 12.5px; display: flex; align-items: center; gap: 6px; }
+.budget-edit-row input { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 7px 9px; border-radius: 7px; font-family: var(--font-mono); font-size: 12.5px; text-align: right; }
+.budget-edit-row.unset label { color: var(--warning); }
+.budget-edit-row .unset-badge { font-size: 9.5px; text-transform: uppercase; background: rgba(255,170,0,0.15); color: var(--warning); padding: 1px 6px; border-radius: 100px; }
+
+/* ===================== chart empty state ===================== */
+.chart-empty {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;
+}
+
+/* ===================== filter chip / pagination ===================== */
+.filter-chip {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 100px;
+  padding: 6px 12px; font-size: 11.5px; color: var(--text-muted); white-space: nowrap;
+}
+.pagination { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 4px 2px; font-size: 12px; color: var(--text-muted); }
+.pagination .pg-controls { display: flex; align-items: center; gap: 6px; }
+.pagination button { background: var(--card2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination button:not(:disabled):hover { border-color: var(--secondary); }
+
+/* ===================== accessibility: focus ===================== */
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible,
+.tab-btn:focus-visible, [tabindex]:focus-visible, tr[tabindex]:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+.dropzone:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+table.data-table tbody tr:focus-visible { outline: 2px solid var(--secondary); outline-offset: -2px; }
+
+/* ===================== tablet tuning ===================== */
+@media (max-width: 1024px) {
+  .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  .sim-layout { grid-template-columns: 1fr; }
+  .stat-strip { grid-template-columns: repeat(2, 1fr); }
+  .topbar-brand { font-size: 13px; }
+  #liveClock { display: none; }
+}
+@media (max-width: 640px) {
+  .metric-grid { grid-template-columns: 1fr; }
+  .stat-strip { grid-template-columns: 1fr; }
+  .filter-bar { padding: 12px 14px; }
+  .tab-btn { padding: 12px 12px; font-size: 12.5px; }
+}
+
+/* ===================== print ===================== */
+@media print {
+  .topbar, .filter-bar, .tabs, .appfooter, #btnEditBudgets, .modal-overlay, .pagination,
+  #btnExportCsv, #btnPrint, #btnSettings, #btnNewCsv, #btnResetFilters { display: none !important; }
+  body, #app { background: #fff !important; color: #111 !important; }
+  .panel, .metric-card, .kpi-card { border: 1px solid #ccc !important; background: #fff !important; break-inside: avoid; }
+  a, .metric-value, .kpi-value { color: #111 !important; }
+}
 
 /* misc */
 .section-spacer { height: 4px; }
 .text-center { text-align: center; }
+.muted { color: var(--text-muted); font-size: 11.5px; }
+.muted a { text-decoration: underline; }
 footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size: 11px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-style: italic; }
 
 </style>
@@ -333,8 +396,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <h1>Family Finance <span>Dashboard PRO</span></h1>
     <p class="lead">Carica il tuo CSV di transazioni per generare la dashboard: entrate/uscite, budget per categoria, simulatore finanziario e analisi avanzate — tutto elaborato nel browser, nessun dato lascia il tuo computer.</p>
 
-    <div id="dropzone" class="dropzone">
-      <div class="dz-icon">📄</div>
+    <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Trascina qui il tuo file CSV, oppure premi Invio per selezionarlo dal computer">
+      <div class="dz-icon" aria-hidden="true">📄</div>
       <div class="dz-title">Trascina qui il tuo file CSV</div>
       <div class="dz-sub">oppure clicca per selezionarlo</div>
       <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
@@ -361,7 +424,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   <header class="topbar">
     <div class="topbar-brand"><span class="dot"></span> FAMILY FINANCE <span style="color:var(--purple)">PRO</span></div>
     <div class="topbar-right">
-      <span id="liveClock" class="tabular"></span>
+      <span id="liveClock" class="tabular" aria-live="off"></span>
+      <button id="btnPrint" class="btn btn-ghost btn-sm" type="button" title="Stampa o esporta il tab corrente in PDF">🖨️ Stampa/PDF</button>
+      <button id="btnSettings" class="btn btn-ghost btn-sm" type="button">⚙ Impostazioni</button>
       <button id="btnNewCsv" class="btn btn-ghost btn-sm" type="button">🔄 Nuovo CSV</button>
     </div>
   </header>
@@ -389,20 +454,24 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="outcome">Uscite</option>
       </select>
     </div>
-    <div class="filter-field" style="justify-content:flex-end; flex-direction:row; align-items:flex-end;">
-      <span id="filterSummary" class="metric-sub" style="margin:0;"></span>
+    <div class="filter-field">
+      <label>&nbsp;</label>
+      <button id="btnResetFilters" class="btn btn-ghost btn-sm" type="button">✕ Reset filtri</button>
+    </div>
+    <div class="filter-field" style="justify-content:flex-end; flex-direction:row; align-items:flex-end; margin-left:auto;">
+      <span id="filterSummary" class="filter-chip" role="status"></span>
     </div>
   </div>
 
-  <nav class="tabs">
-    <button class="tab-btn active" data-tab="overview" type="button">📊 Overview</button>
-    <button class="tab-btn" data-tab="simulator" type="button">🧪 Simulatore</button>
-    <button class="tab-btn" data-tab="analytics" type="button">📈 Analytics</button>
-    <button class="tab-btn" data-tab="transactions" type="button">📋 Transazioni</button>
+  <nav class="tabs" role="tablist" aria-label="Sezioni della dashboard">
+    <button id="tabbtn-overview" class="tab-btn active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="tab-overview">📊 Overview</button>
+    <button id="tabbtn-simulator" class="tab-btn" data-tab="simulator" type="button" role="tab" aria-selected="false" aria-controls="tab-simulator">🧪 Simulatore</button>
+    <button id="tabbtn-analytics" class="tab-btn" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics">📈 Analytics</button>
+    <button id="tabbtn-transactions" class="tab-btn" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions">📋 Transazioni</button>
   </nav>
 
   <!-- ===================== OVERVIEW ===================== -->
-  <section id="tab-overview" class="tab-panel active">
+  <section id="tab-overview" class="tab-panel active" role="tabpanel" aria-labelledby="tabbtn-overview">
     <div class="metric-grid" id="overviewMetrics"></div>
 
     <div class="grid-2">
@@ -412,7 +481,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       </div>
       <div class="panel">
         <h3>Distribuzione Spese <span class="panel-tag" id="pieRangeTag"></span></h3>
-        <div class="chart-box"><canvas id="chartCategoryPie"></canvas></div>
+        <div class="chart-box">
+          <canvas id="chartCategoryPie"></canvas>
+          <div class="chart-empty hidden" id="pieEmptyMsg">📭 Nessuna spesa nel periodo selezionato</div>
+        </div>
       </div>
     </div>
 
@@ -422,7 +494,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <div class="chart-box short"><canvas id="chartWeekly"></canvas></div>
       </div>
       <div class="panel">
-        <h3>Budget vs Spese</h3>
+        <h3>Budget vs Spese <button id="btnEditBudgets" class="btn-link" type="button">Modifica budget</button></h3>
         <div id="budgetList"></div>
       </div>
     </div>
@@ -440,7 +512,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   </section>
 
   <!-- ===================== SIMULATOR ===================== -->
-  <section id="tab-simulator" class="tab-panel">
+  <section id="tab-simulator" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-simulator">
     <div class="sim-layout">
       <div class="panel sim-form">
         <h3>Nuova Simulazione</h3>
@@ -517,7 +589,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   </section>
 
   <!-- ===================== ANALYTICS ===================== -->
-  <section id="tab-analytics" class="tab-panel">
+  <section id="tab-analytics" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-analytics">
     <div class="stat-strip" id="analyticsStats"></div>
     <div class="grid-2">
       <div class="panel">
@@ -542,7 +614,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   </section>
 
   <!-- ===================== TRANSACTIONS ===================== -->
-  <section id="tab-transactions" class="tab-panel">
+  <section id="tab-transactions" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-transactions">
     <div class="filter-bar" style="padding:0 0 16px; border-bottom:none;">
       <div class="filter-field">
         <label for="txFilterCategory">Categoria</label>
@@ -558,9 +630,19 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       </div>
       <div class="filter-field" style="flex:1; min-width:200px;">
         <label for="txSearch">Ricerca</label>
-        <input type="text" id="txSearch" placeholder="Cerca per categoria...">
+        <input type="text" id="txSearch" placeholder="Cerca per categoria, importo, tipo o data...">
       </div>
-      <div class="filter-field" style="justify-content:flex-end; flex-direction:row; align-items:flex-end;">
+      <div class="filter-field">
+        <label for="txPageSize">Righe per pagina</label>
+        <select id="txPageSize">
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="99999">Tutte</option>
+        </select>
+      </div>
+      <div class="filter-field" style="justify-content:flex-end; flex-direction:row; align-items:flex-end; gap:10px;">
+        <button id="btnExportCsv" class="btn btn-ghost btn-sm" type="button">⬇️ Esporta CSV</button>
         <span id="txCount" class="metric-sub" style="margin:0;"></span>
       </div>
     </div>
@@ -578,6 +660,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
           <tbody></tbody>
         </table>
       </div>
+      <div class="pagination" id="txPagination"></div>
     </div>
   </section>
 
@@ -599,6 +682,21 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="mi"><div class="ml">ID Transazione</div><div class="mv" id="mxId">-</div></div>
     </div>
     <div class="modal-close-row"><button id="btnCloseModal" class="btn btn-ghost btn-sm" type="button">Chiudi</button></div>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modal-box modal-box-wide">
+    <div class="modal-head-row">
+      <h3 id="settingsTitle">⚙ Impostazioni Budget</h3>
+      <button id="closeSettings" class="btn-icon" type="button" aria-label="Chiudi impostazioni">✕</button>
+    </div>
+    <p class="modal-lead">Imposta il budget mensile per ogni categoria di spesa. Le categorie provenienti dal tuo CSV che non hanno ancora un budget sono evidenziate.</p>
+    <div id="budgetEditor" class="budget-editor"></div>
+    <div class="modal-close-row modal-close-row-split">
+      <button id="btnResetBudgets" class="btn-ghost btn-sm" type="button">Ripristina default</button>
+      <button id="btnSaveBudgets" class="btn btn-primary btn-sm" type="button">Salva Budget</button>
+    </div>
   </div>
 </div>
 
@@ -1232,6 +1330,7 @@ const DAY_NAMES = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 const MONTH_NAMES = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
 const CHART_PALETTE = ["#00ff88", "#00b8ff", "#ff6b35", "#a855f7", "#ffaa00", "#ff4757", "#34d399", "#60a5fa", "#f472b6", "#fbbf24", "#2dd4bf", "#c084fc", "#f87171"];
 const LS_KEY = "ffdpro_transactions_v1";
+const LS_BUDGETS_KEY = "ffdpro_budgets_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno" };
 
 const PRESETS = [
@@ -1247,11 +1346,14 @@ const PRESETS = [
 
 const state = {
   transactions: [],
+  budgets: {},
   filters: { period: "month", category: "all", type: "all" },
   simulations: [],
   charts: {},
   txSort: { field: "date", dir: "desc" },
   txFilters: { category: "all", type: "all", search: "" },
+  txPage: 1,
+  txPageSize: 25,
   activeTab: "overview",
 };
 let simIdSeq = 1;
@@ -1352,16 +1454,34 @@ function loadPersisted() {
     return arr.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
   } catch (e) { return null; }
 }
+function saveBudgets() {
+  try { localStorage.setItem(LS_BUDGETS_KEY, JSON.stringify(state.budgets)); } catch (e) { /* ignore */ }
+}
+function loadBudgets() {
+  try {
+    const raw = localStorage.getItem(LS_BUDGETS_KEY);
+    state.budgets = raw ? JSON.parse(raw) : { ...DEFAULT_BUDGETS };
+  } catch (e) { state.budgets = { ...DEFAULT_BUDGETS }; }
+}
+function ensureBudgetKeysForTransactions() {
+  const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome").map((t) => t.category));
+  let changed = false;
+  for (const cat of outcomeCats) {
+    if (!(cat in state.budgets)) { state.budgets[cat] = 0; changed = true; }
+  }
+  if (changed) saveBudgets();
+}
 
 // ---------------------------------------------------------------- data helpers
 function latestDate() {
   return state.transactions.reduce((mx, t) => (t.date > mx ? t.date : mx), new Date(0));
 }
 function getAllCategories() {
-  const set = new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES]);
+  const set = new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES, ...Object.keys(state.budgets)]);
   for (const t of state.transactions) set.add(t.category);
   return Array.from(set);
 }
+function getBudgetCategories() { return Object.keys(state.budgets); }
 function sumBy(txs, type) { return txs.filter((t) => t.type === type).reduce((s, t) => s + t.value, 0); }
 function monthsCoveredCount(txs) { const set = new Set(txs.map((t) => monthKey(t.date))); return Math.max(1, set.size); }
 
@@ -1417,11 +1537,12 @@ function computeMonthlySeries(txs) {
 }
 function computeBudgetBreakdown(periodTxs) {
   const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
-  return EXPENSE_CATEGORIES.map((cat) => {
+  return getBudgetCategories().map((cat) => {
     const speso = periodTxs.filter((t) => t.type === "outcome" && t.category === cat).reduce((s, t) => s + t.value, 0);
-    const budget = (DEFAULT_BUDGETS[cat] || 0) * monthsN;
+    const budgetPerMonth = state.budgets[cat] || 0;
+    const budget = budgetPerMonth * monthsN;
     const percent = budget > 0 ? speso / budget : null;
-    return { category: cat, speso, budget, percent };
+    return { category: cat, speso, budget, percent, unset: budgetPerMonth === 0 };
   });
 }
 function computeInsights(periodTxs, budgetBreakdown, withActions) {
@@ -1538,26 +1659,17 @@ function renderOverview() {
   });
 
   const budgetBreakdown = computeBudgetBreakdown(periodTxs);
-  const pieRows = budgetBreakdown.map((b) => ({ category: b.category, speso: periodTxs.filter((t) => t.type === "outcome" && t.category === b.category).reduce((s, t) => s + t.value, 0) })).filter((r) => r.speso > 0);
-  const extraCats = getAllCategories().filter((c) => !EXPENSE_CATEGORIES.includes(c));
-  for (const c of extraCats) {
-    const speso = periodTxs.filter((t) => t.type === "outcome" && t.category === c).reduce((s, t) => s + t.value, 0);
-    if (speso > 0) pieRows.push({ category: c, speso });
-  }
-  pieRows.sort((a, b) => b.speso - a.speso);
+  const pieRows = budgetBreakdown.filter((b) => b.speso > 0).map((b) => ({ category: b.category, speso: b.speso })).sort((a, b) => b.speso - a.speso);
+  document.getElementById("pieEmptyMsg").classList.toggle("hidden", pieRows.length > 0);
+  const pieContainerWidth = document.getElementById("chartCategoryPie").parentElement.clientWidth;
   renderChart("chartCategoryPie", {
     type: "doughnut",
     data: { labels: pieRows.map((r) => `${catIcon(r.category)} ${r.category}`), datasets: [{ data: pieRows.map((r) => r.speso), backgroundColor: CHART_PALETTE, borderColor: "#111827", borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: "60%",
-      plugins: { legend: { position: window.innerWidth < 720 ? "bottom" : "right" }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtCurrency(c.parsed)}` } } },
+      plugins: { legend: { position: pieContainerWidth < 460 ? "bottom" : "right" }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtCurrency(c.parsed)}` } } },
     },
   });
-  if (!pieRows.length) {
-    const canvas = document.getElementById("chartCategoryPie");
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
 
   const weekly = new Array(7).fill(0);
   for (const t of periodTxs) { if (t.type !== "outcome") continue; const dow = (t.date.getDay() + 6) % 7; weekly[dow] += t.value; }
@@ -1569,9 +1681,25 @@ function renderOverview() {
 
   const budgetList = document.getElementById("budgetList");
   budgetList.innerHTML = "";
-  for (const b of budgetBreakdown) {
+  const visibleBudgetRows = budgetBreakdown.filter((b) => b.speso > 0 || !b.unset);
+  if (!visibleBudgetRows.length) {
+    budgetList.appendChild(el("div", "sim-empty", "Nessuna categoria di spesa ancora tracciata. Importa un CSV o apri le Impostazioni."));
+  }
+  for (const b of visibleBudgetRows) {
     const row = el("div", "budget-row");
     row.appendChild(el("div", "budget-cat", `${catIcon(b.category)} ${b.category}`));
+    if (b.unset) {
+      row.appendChild(el("div", "budget-amounts", fmtCurrency(b.speso)));
+      const hint = el("div", "muted", "Budget non impostato — ");
+      const link = el("a", null, "impostalo");
+      link.href = "#";
+      link.style.color = "var(--secondary)";
+      link.addEventListener("click", (e) => { e.preventDefault(); openSettings(); });
+      hint.appendChild(link);
+      row.appendChild(hint);
+      budgetList.appendChild(row);
+      continue;
+    }
     row.appendChild(el("div", "budget-amounts" + (b.percent > 1 ? " over" : ""), `${fmtCurrency(b.speso)} / ${fmtCurrency(b.budget)}`));
     const track = el("div", "track");
     const pct = clamp(b.percent || 0, 0, 1.4);
@@ -1608,6 +1736,9 @@ function renderInsightList(box, insights) {
 }
 function buildTxRow(t) {
   const row = el("div", "tx-row");
+  row.setAttribute("role", "button");
+  row.setAttribute("tabindex", "0");
+  row.setAttribute("aria-label", `${t.category}, ${t.type === "income" ? "entrata" : "uscita"} ${fmtCurrency(t.value, 2)}, ${fmtDateTimeShort(t.date)}`);
   row.appendChild(el("div", "tx-icon", catIcon(t.category)));
   const mid = el("div", "tx-mid");
   mid.appendChild(el("div", "tx-cat", t.category));
@@ -1615,6 +1746,7 @@ function buildTxRow(t) {
   row.appendChild(mid);
   row.appendChild(el("div", "tx-amt " + (t.type === "income" ? "pos" : "neg"), (t.type === "income" ? "+" : "-") + fmtCurrency(t.value, 2)));
   row.addEventListener("click", () => openTxModal(t));
+  row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTxModal(t); } });
   return row;
 }
 
@@ -1818,7 +1950,15 @@ function getTxFiltered() {
   let txs = state.transactions.filter((t) => {
     if (state.txFilters.category !== "all" && t.category !== state.txFilters.category) return false;
     if (state.txFilters.type !== "all" && t.type !== state.txFilters.type) return false;
-    if (state.txFilters.search) { const q = state.txFilters.search.toLowerCase(); if (!t.category.toLowerCase().includes(q)) return false; }
+    if (state.txFilters.search) {
+      const q = state.txFilters.search.toLowerCase();
+      const typeLabel = t.type === "income" ? "entrata" : "uscita";
+      const amountFormatted = fmtCurrency(t.value, 2);
+      const amountPlain = t.value.toFixed(2).replace(".", ",");
+      const dateStr = fmtDateTimeShort(t.date).toLowerCase();
+      const haystack = `${t.category} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
     return true;
   });
   const { field, dir } = state.txSort;
@@ -1831,11 +1971,39 @@ function getTxFiltered() {
   });
   return txs;
 }
+function csvEscape(v) { const s = String(v); return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function exportTransactionsCSV() {
+  const rows = getTxFiltered();
+  if (!rows.length) { alert("Nessuna transazione da esportare con i filtri correnti."); return; }
+  const lines = ["datetime,category,value,type"];
+  for (const t of rows) {
+    const iso = `${t.date.getFullYear()}-${pad2(t.date.getMonth() + 1)}-${pad2(t.date.getDate())} ${pad2(t.date.getHours())}:${pad2(t.date.getMinutes())}`;
+    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type].join(","));
+  }
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `transazioni_export_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 function renderTransactions() {
   const tbody = document.querySelector("#txTable tbody");
   tbody.innerHTML = "";
-  const rows = getTxFiltered();
-  document.getElementById("txCount").textContent = `${rows.length} transazioni`;
+  const allRows = getTxFiltered();
+  const pageSize = state.txPageSize;
+  const totalPages = Math.max(1, Math.ceil(allRows.length / pageSize));
+  state.txPage = clamp(state.txPage, 1, totalPages);
+  const startIdx = (state.txPage - 1) * pageSize;
+  const rows = allRows.slice(startIdx, startIdx + pageSize);
+
+  document.getElementById("txCount").textContent = allRows.length
+    ? `${startIdx + 1}–${Math.min(startIdx + rows.length, allRows.length)} di ${allRows.length} transazioni`
+    : "0 transazioni";
+
   if (!rows.length) {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td colspan="4" class="table-empty">Nessuna transazione corrisponde ai filtri.</td>`;
@@ -1843,15 +2011,35 @@ function renderTransactions() {
   }
   for (const t of rows) {
     const tr = document.createElement("tr");
+    tr.tabIndex = 0;
+    tr.setAttribute("aria-label", `Apri dettaglio transazione ${t.category}`);
     tr.innerHTML = `<td class="tabular">${fmtDateTimeShort(t.date)}</td><td>${catIcon(t.category)} ${t.category}</td>
       <td><span class="badge ${t.type}">${t.type === "income" ? "Entrata" : "Uscita"}</span></td>
       <td class="tabular" style="text-align:right; font-weight:700; color:${t.type === "income" ? "var(--primary)" : "var(--danger)"}">${t.type === "income" ? "+" : "-"}${fmtCurrency(t.value, 2)}</td>`;
     tr.addEventListener("click", () => openTxModal(t));
+    tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTxModal(t); } });
     tbody.appendChild(tr);
   }
   document.querySelectorAll("#txTable th.sortable .arrow").forEach((a) => (a.textContent = ""));
   const activeTh = document.querySelector(`#txTable th[data-sort="${state.txSort.field}"] .arrow`);
   if (activeTh) activeTh.textContent = state.txSort.dir === "asc" ? "▴" : "▾";
+
+  const pager = document.getElementById("txPagination");
+  pager.innerHTML = "";
+  if (allRows.length > 0) {
+    const info = el("span", null, `Pagina ${state.txPage} di ${totalPages}`);
+    const controls = el("div", "pg-controls");
+    const prev = document.createElement("button");
+    prev.type = "button"; prev.textContent = "‹ Precedente"; prev.disabled = state.txPage <= 1;
+    prev.addEventListener("click", () => { state.txPage--; renderTransactions(); });
+    const next = document.createElement("button");
+    next.type = "button"; next.textContent = "Successiva ›"; next.disabled = state.txPage >= totalPages;
+    next.addEventListener("click", () => { state.txPage++; renderTransactions(); });
+    controls.appendChild(prev);
+    controls.appendChild(next);
+    pager.appendChild(info);
+    pager.appendChild(controls);
+  }
 }
 
 // ---------------------------------------------------------------- modal
@@ -1868,6 +2056,49 @@ function openTxModal(t) {
 }
 function closeTxModal() { document.getElementById("txModal").classList.add("hidden"); }
 
+// ---------------------------------------------------------------- settings / budget editor
+function renderBudgetEditor() {
+  const editor = document.getElementById("budgetEditor");
+  editor.innerHTML = "";
+  const known = EXPENSE_CATEGORIES.filter((c) => c in state.budgets);
+  const custom = getBudgetCategories().filter((c) => !EXPENSE_CATEGORIES.includes(c)).sort((a, b) => a.localeCompare(b));
+  for (const cat of [...known, ...custom]) {
+    const unset = !state.budgets[cat];
+    const row = el("div", "budget-edit-row" + (unset ? " unset" : ""));
+    const label = el("label", null, `${catIcon(cat)} ${cat}` + (unset ? ' <span class="unset-badge">non impostato</span>' : ""));
+    label.setAttribute("for", "budget_" + cat.replace(/\W+/g, "_"));
+    const input = document.createElement("input");
+    input.type = "number"; input.min = "0"; input.step = "1";
+    input.id = "budget_" + cat.replace(/\W+/g, "_");
+    input.dataset.category = cat;
+    input.value = state.budgets[cat] || 0;
+    input.setAttribute("aria-label", `Budget mensile per ${cat}`);
+    row.appendChild(label);
+    row.appendChild(input);
+    editor.appendChild(row);
+  }
+}
+function openSettings() {
+  renderBudgetEditor();
+  document.getElementById("settingsModal").classList.remove("hidden");
+}
+function closeSettings() { document.getElementById("settingsModal").classList.add("hidden"); }
+function saveBudgetsFromModal() {
+  const inputs = document.querySelectorAll("#budgetEditor input");
+  inputs.forEach((inp) => { state.budgets[inp.dataset.category] = parseFloat(inp.value) || 0; });
+  saveBudgets();
+  closeSettings();
+  renderTab(state.activeTab);
+}
+function resetBudgetsToDefault() {
+  if (!confirm("Ripristinare i budget predefiniti per tutte le categorie? Le personalizzazioni verranno perse.")) return;
+  state.budgets = { ...DEFAULT_BUDGETS };
+  ensureBudgetKeysForTransactions();
+  saveBudgets();
+  renderBudgetEditor();
+  renderTab(state.activeTab);
+}
+
 // ---------------------------------------------------------------- tabs & filters wiring
 function renderTab(name) {
   if (name === "overview") renderOverview();
@@ -1877,7 +2108,11 @@ function renderTab(name) {
 }
 function switchTab(name) {
   state.activeTab = name;
-  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll(".tab-btn").forEach((b) => {
+    const active = b.dataset.tab === name;
+    b.classList.toggle("active", active);
+    b.setAttribute("aria-selected", active ? "true" : "false");
+  });
   document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === "tab-" + name));
   requestAnimationFrame(() => renderTab(name));
 }
@@ -1900,6 +2135,8 @@ function populateCategoryFilters() {
 function loadTransactions(rows) {
   state.transactions = rows.map((r, i) => ({ ...r, id: "TXN-" + String(i + 1).padStart(6, "0") }));
   state.simulations = [];
+  state.txPage = 1;
+  ensureBudgetKeysForTransactions();
   persistTransactions();
   populateCategoryFilters();
   populateSimStartMonths();
@@ -1911,9 +2148,16 @@ function loadTransactions(rows) {
   updateFilterSummary();
   switchTab(state.activeTab);
 }
+function confirmDataReplace() {
+  if (!state.simulations.length) return true;
+  return confirm(`Hai ${state.simulations.length} simulazioni attive nel Simulatore che verranno azzerate caricando nuovi dati. Continuare?`);
+}
 function updateFilterSummary() {
   const n = getPeriodFiltered().length;
-  document.getElementById("filterSummary").textContent = `${n} transazioni nel filtro`;
+  const catSel = document.getElementById("filterCategory");
+  const catLabel = state.filters.category === "all" ? "tutte le categorie" : catSel.options[catSel.selectedIndex]?.textContent || state.filters.category;
+  const typeLabel = state.filters.type === "all" ? "tutti i tipi" : state.filters.type === "income" ? "solo entrate" : "solo uscite";
+  document.getElementById("filterSummary").textContent = `${periodLabel()} · ${catLabel} · ${typeLabel} → ${n} transazioni`;
 }
 function showWelcomeError(msg) {
   const box = document.getElementById("welcomeError");
@@ -1927,6 +2171,7 @@ function handleFile(file) {
   reader.onload = () => {
     try {
       const rows = parseCSV(reader.result);
+      if (!confirmDataReplace()) return;
       loadTransactions(rows);
     } catch (err) {
       showWelcomeError("Errore nell'importazione: " + err.message);
@@ -1936,13 +2181,16 @@ function handleFile(file) {
   reader.readAsText(file, "UTF-8");
 }
 function loadSampleData() {
+  if (!confirmDataReplace()) return;
   const rows = SAMPLE_TRANSACTIONS_PRO.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
   loadTransactions(rows);
 }
 function resetToWelcome() {
+  if (state.transactions.length && !confirm("Sei sicuro di voler cancellare i dati caricati? Questa azione non può essere annullata.")) return;
   localStorage.removeItem(LS_KEY);
   state.transactions = [];
   state.simulations = [];
+  state.txPage = 1;
   Object.values(state.charts).forEach((c) => c && c.destroy());
   state.charts = {};
   document.getElementById("app").classList.add("hidden");
@@ -1954,10 +2202,12 @@ function resetToWelcome() {
 // ---------------------------------------------------------------- init
 function init() {
   chartTheme();
+  loadBudgets();
 
   const dropzone = document.getElementById("dropzone");
   const fileInput = document.getElementById("fileInput");
   dropzone.addEventListener("click", () => fileInput.click());
+  dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } });
   document.getElementById("btnBrowse").addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
   dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("dragover"); });
@@ -1968,21 +2218,33 @@ function init() {
   });
   document.getElementById("btnSample").addEventListener("click", loadSampleData);
   document.getElementById("btnNewCsv").addEventListener("click", resetToWelcome);
+  document.getElementById("btnPrint").addEventListener("click", () => window.print());
 
   document.querySelectorAll(".tab-btn").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
   document.getElementById("filterPeriod").addEventListener("change", (e) => { state.filters.period = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterType").addEventListener("change", (e) => { state.filters.type = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("btnResetFilters").addEventListener("click", () => {
+    state.filters = { period: "month", category: "all", type: "all" };
+    document.getElementById("filterPeriod").value = "month";
+    document.getElementById("filterCategory").value = "all";
+    document.getElementById("filterType").value = "all";
+    updateFilterSummary();
+    renderTab(state.activeTab);
+  });
 
-  document.getElementById("txFilterCategory").addEventListener("change", (e) => { state.txFilters.category = e.target.value; renderTransactions(); });
-  document.getElementById("txFilterType").addEventListener("change", (e) => { state.txFilters.type = e.target.value; renderTransactions(); });
-  document.getElementById("txSearch").addEventListener("input", (e) => { state.txFilters.search = e.target.value; renderTransactions(); });
+  document.getElementById("txFilterCategory").addEventListener("change", (e) => { state.txFilters.category = e.target.value; state.txPage = 1; renderTransactions(); });
+  document.getElementById("txFilterType").addEventListener("change", (e) => { state.txFilters.type = e.target.value; state.txPage = 1; renderTransactions(); });
+  document.getElementById("txSearch").addEventListener("input", (e) => { state.txFilters.search = e.target.value; state.txPage = 1; renderTransactions(); });
+  document.getElementById("txPageSize").addEventListener("change", (e) => { state.txPageSize = parseInt(e.target.value, 10); state.txPage = 1; renderTransactions(); });
+  document.getElementById("btnExportCsv").addEventListener("click", exportTransactionsCSV);
   document.querySelectorAll("#txTable th.sortable").forEach((th) => {
     th.addEventListener("click", () => {
       const field = th.dataset.sort;
       if (state.txSort.field === field) state.txSort.dir = state.txSort.dir === "asc" ? "desc" : "asc";
       else { state.txSort.field = field; state.txSort.dir = "desc"; }
+      state.txPage = 1;
       renderTransactions();
     });
   });
@@ -2000,10 +2262,26 @@ function init() {
     document.getElementById("simAmount").value = "";
     renderSimulator();
   });
-  document.getElementById("btnClearSims").addEventListener("click", () => { state.simulations = []; renderSimulator(); });
+  document.getElementById("btnClearSims").addEventListener("click", () => {
+    if (!state.simulations.length) return;
+    if (!confirm(`Rimuovere tutte le ${state.simulations.length} simulazioni attive?`)) return;
+    state.simulations = [];
+    renderSimulator();
+  });
 
   document.getElementById("btnCloseModal").addEventListener("click", closeTxModal);
   document.getElementById("txModal").addEventListener("click", (e) => { if (e.target.id === "txModal") closeTxModal(); });
+
+  document.getElementById("btnSettings").addEventListener("click", openSettings);
+  document.getElementById("btnEditBudgets").addEventListener("click", openSettings);
+  document.getElementById("closeSettings").addEventListener("click", closeSettings);
+  document.getElementById("settingsModal").addEventListener("click", (e) => { if (e.target.id === "settingsModal") closeSettings(); });
+  document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
+  document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); }
+  });
 
   function tickClock() {
     document.getElementById("liveClock").textContent = new Date().toLocaleString("it-IT", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
