@@ -251,6 +251,7 @@ button, input, select { font-family: inherit; }
 .badge { display: inline-block; padding: 3px 9px; border-radius: 100px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.2px; text-transform: uppercase; }
 .badge.income { background: rgba(0,255,136,0.14); color: var(--primary); }
 .badge.outcome { background: rgba(255,71,87,0.14); color: var(--danger); }
+.tx-desc-hint { font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
 
 /* ===================== alert box ===================== */
 .alert-banner { margin: 0 0 16px; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; border: 1px solid var(--border); }
@@ -319,16 +320,40 @@ table.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
 .modal-grid .mi .mv { font-size: 12.5px; font-weight: 700; font-family: var(--font-mono); }
 .modal-close-row { text-align: center; }
 .modal-box-wide { width: min(640px, 94vw); max-height: 85vh; display: flex; flex-direction: column; }
-.modal-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.modal-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-shrink: 0; }
 .modal-head-row h3 { margin: 0; }
+.modal-scroll-body { overflow-y: auto; padding-right: 6px; flex: 1 1 auto; min-height: 0; }
+.modal-scroll-body h4 { margin: 22px 0 4px; font-size: 13px; color: var(--text); }
+.modal-scroll-body h4:first-child { margin-top: 2px; }
 .modal-lead { color: var(--text-muted); font-size: 12px; margin: 4px 0 16px; line-height: 1.5; }
-.modal-close-row-split { display: flex; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px; }
-.budget-editor { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+.modal-close-row-split { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px; }
+.budget-editor { display: flex; flex-direction: column; gap: 8px; }
 .budget-edit-row { display: grid; grid-template-columns: 1fr 120px; align-items: center; gap: 10px; padding: 6px 0; }
 .budget-edit-row label { font-size: 12.5px; display: flex; align-items: center; gap: 6px; }
 .budget-edit-row input { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 7px 9px; border-radius: 7px; font-family: var(--font-mono); font-size: 12.5px; text-align: right; }
 .budget-edit-row.unset label { color: var(--warning); }
 .budget-edit-row .unset-badge { font-size: 9.5px; text-transform: uppercase; background: rgba(255,170,0,0.15); color: var(--warning); padding: 1px 6px; border-radius: 100px; }
+
+/* ===================== merchant rules dictionary ===================== */
+.rule-editor { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; padding-right: 4px; }
+.rule-row { display: grid; grid-template-columns: 1fr 150px 28px; align-items: center; gap: 8px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.rule-row .rk { font-family: var(--font-mono); color: var(--text); }
+.rule-row .rc { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+.rule-row .rm { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; }
+.rule-row .rm:hover { color: var(--danger); }
+.rule-add-row { display: grid; grid-template-columns: 1fr 150px auto; gap: 8px; align-items: center; margin-bottom: 4px; }
+.rule-add-row input, .rule-add-row select {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 10px; border-radius: 7px; font-size: 12.5px;
+}
+.review-list { display: flex; flex-direction: column; gap: 8px; }
+.review-row {
+  display: grid; grid-template-columns: 1fr 140px auto; gap: 8px; align-items: center;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,170,0,0.05);
+}
+.review-row .rv-desc { font-size: 12px; font-weight: 600; }
+.review-row .rv-count { font-size: 10.5px; color: var(--text-muted); font-weight: 400; }
+.review-row select { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 6px 8px; border-radius: 6px; font-size: 12px; }
 
 /* ===================== chart empty state ===================== */
 .chart-empty {
@@ -415,7 +440,13 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <strong>Formato richiesto (intestazione obbligatoria):</strong><br>
       datetime,category,value,type<br>
       2025-01-15 09:30,Groceries,127.50,outcome<br>
-      2025-01-15 14:00,Salary,3500.00,income
+      2025-01-15 14:00,Salary,3500.00,income<br>
+      <br>
+      <strong>Categoria sconosciuta?</strong> Sostituisci <em>category</em> con una colonna <em>description</em>
+      (l'estratto conto dell'esercente): la categoria verrà indovinata da un dizionario di parole chiave,
+      modificabile in Impostazioni.<br>
+      datetime,description,value,type<br>
+      2025-01-15 09:30,ESSELUNGA RIPAMONTI,42.10,outcome
     </div>
   </div>
 </div>
@@ -680,6 +711,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="mi"><div class="ml">Ora</div><div class="mv" id="mxTime">-</div></div>
       <div class="mi"><div class="ml">Tipo</div><div class="mv" id="mxType">-</div></div>
       <div class="mi"><div class="ml">ID Transazione</div><div class="mv" id="mxId">-</div></div>
+      <div class="mi hidden" id="mxDescRow" style="grid-column: 1 / -1;"><div class="ml">Descrizione originale</div><div class="mv" id="mxDesc" style="font-family:var(--font-main); font-weight:600;">-</div></div>
     </div>
     <div class="modal-close-row"><button id="btnCloseModal" class="btn btn-ghost btn-sm" type="button">Chiudi</button></div>
   </div>
@@ -688,14 +720,36 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 <div id="settingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
   <div class="modal-box modal-box-wide">
     <div class="modal-head-row">
-      <h3 id="settingsTitle">⚙ Impostazioni Budget</h3>
+      <h3 id="settingsTitle">⚙ Impostazioni</h3>
       <button id="closeSettings" class="btn-icon" type="button" aria-label="Chiudi impostazioni">✕</button>
     </div>
-    <p class="modal-lead">Imposta il budget mensile per ogni categoria di spesa. Le categorie provenienti dal tuo CSV che non hanno ancora un budget sono evidenziate.</p>
-    <div id="budgetEditor" class="budget-editor"></div>
-    <div class="modal-close-row modal-close-row-split">
-      <button id="btnResetBudgets" class="btn-ghost btn-sm" type="button">Ripristina default</button>
-      <button id="btnSaveBudgets" class="btn btn-primary btn-sm" type="button">Salva Budget</button>
+    <div class="modal-scroll-body">
+      <h4>Budget per categoria</h4>
+      <p class="modal-lead">Imposta il budget mensile per ogni categoria di spesa. Le categorie provenienti dal tuo CSV che non hanno ancora un budget sono evidenziate.</p>
+      <div id="budgetEditor" class="budget-editor"></div>
+      <div class="modal-close-row modal-close-row-split">
+        <button id="btnResetBudgets" class="btn-ghost btn-sm" type="button">Ripristina default</button>
+        <button id="btnSaveBudgets" class="btn btn-primary btn-sm" type="button">Salva Budget</button>
+      </div>
+
+      <h4>🔮 Dizionario categorie (matching automatico)</h4>
+      <p class="modal-lead">Quando importi un CSV con una colonna descrizione/esercente ma senza categoria, il testo viene confrontato con queste parole chiave (case-insensitive) per assegnare automaticamente una categoria.</p>
+      <div id="ruleEditor" class="rule-editor"></div>
+      <div class="rule-add-row">
+        <input type="text" id="newRuleKeyword" placeholder="Parola chiave, es. ESSELUNGA">
+        <select id="newRuleCategory"></select>
+        <button id="btnAddRule" class="btn btn-primary btn-sm" type="button">+ Aggiungi</button>
+      </div>
+      <div class="modal-close-row modal-close-row-split" style="border-top: none; margin-top: 2px;">
+        <button id="btnResetDictionary" class="btn-link" type="button">Ripristina dizionario predefinito</button>
+        <span id="ruleCount" class="muted"></span>
+      </div>
+
+      <div id="reviewSection" class="hidden">
+        <h4>Transazioni da categorizzare (<span id="reviewCount">0</span>)</h4>
+        <p class="modal-lead">Nessuna parola chiave del dizionario ha trovato corrispondenza. Assegna una categoria: verrà applicata a tutte le transazioni con la stessa descrizione.</p>
+        <div id="reviewList" class="review-list"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1317,20 +1371,73 @@ const SAMPLE_TRANSACTIONS_PRO = [
 
 const EXPENSE_CATEGORIES = ["Groceries", "Utilities", "Transportation", "Dining Out", "Entertainment", "Healthcare", "Subscriptions", "Shopping", "Coffee & Drinks"];
 const INCOME_CATEGORIES = ["Salary", "Freelance", "Dividends", "Cashback"];
+const NEEDS_CATEGORY = "Da categorizzare";
 const CATEGORY_ICONS = {
   "Groceries": "🛒", "Salary": "💼", "Coffee & Drinks": "☕", "Dining Out": "🍽️",
   "Transportation": "🚗", "Shopping": "🛍️", "Utilities": "💡", "Freelance": "💻",
   "Entertainment": "🎬", "Healthcare": "🏥", "Dividends": "📈", "Subscriptions": "📱", "Cashback": "💰",
+  [NEEDS_CATEGORY]: "❓",
 };
 const DEFAULT_BUDGETS = {
   "Groceries": 600, "Coffee & Drinks": 80, "Dining Out": 350, "Transportation": 200,
   "Shopping": 400, "Utilities": 400, "Entertainment": 200, "Healthcare": 150, "Subscriptions": 100,
 };
+// Regole di default per il matching esercente -> categoria (parola chiave, case/accent-insensitive, sottostringa).
+const DEFAULT_MERCHANT_RULES = [
+  { keyword: "ESSELUNGA", category: "Groceries" }, { keyword: "COOP", category: "Groceries" },
+  { keyword: "CONAD", category: "Groceries" }, { keyword: "CARREFOUR", category: "Groceries" },
+  { keyword: "LIDL", category: "Groceries" }, { keyword: "EUROSPIN", category: "Groceries" },
+  { keyword: "IPERCOOP", category: "Groceries" }, { keyword: "PAM", category: "Groceries" },
+  { keyword: "SUPERMERCATO", category: "Groceries" }, { keyword: "ALIMENTARI", category: "Groceries" },
+  { keyword: "GROCERY", category: "Groceries" }, { keyword: "WHOLE FOODS", category: "Groceries" },
+  { keyword: "TRADER JOE", category: "Groceries" },
+  { keyword: "ESSO", category: "Transportation" }, { keyword: "AGIP", category: "Transportation" },
+  { keyword: "ENI STATION", category: "Transportation" }, { keyword: "Q8", category: "Transportation" },
+  { keyword: "TAMOIL", category: "Transportation" }, { keyword: "IP CARBURANTI", category: "Transportation" },
+  { keyword: "SHELL", category: "Transportation" }, { keyword: "BENZINA", category: "Transportation" },
+  { keyword: "AUTOSTRADE", category: "Transportation" }, { keyword: "TELEPASS", category: "Transportation" },
+  { keyword: "ATM MILANO", category: "Transportation" }, { keyword: "TRENITALIA", category: "Transportation" },
+  { keyword: "ITALO", category: "Transportation" }, { keyword: "UBER", category: "Transportation" },
+  { keyword: "TAXI", category: "Transportation" }, { keyword: "PARKING", category: "Transportation" },
+  { keyword: "PARCHEGGIO", category: "Transportation" },
+  { keyword: "FARMACIA", category: "Healthcare" }, { keyword: "PHARMACY", category: "Healthcare" },
+  { keyword: "BOOTS", category: "Healthcare" }, { keyword: "OSPEDALE", category: "Healthcare" },
+  { keyword: "CLINICA", category: "Healthcare" }, { keyword: "DENTIST", category: "Healthcare" },
+  { keyword: "DENTISTA", category: "Healthcare" }, { keyword: "AMBULATORIO", category: "Healthcare" },
+  { keyword: "RESTAURAN", category: "Dining Out" }, { keyword: "RISTORANTE", category: "Dining Out" },
+  { keyword: "PIZZERIA", category: "Dining Out" }, { keyword: "TRATTORIA", category: "Dining Out" },
+  { keyword: "SUSHI", category: "Dining Out" }, { keyword: "MCDONALD", category: "Dining Out" },
+  { keyword: "BURGER", category: "Dining Out" }, { keyword: "KFC", category: "Dining Out" },
+  { keyword: "KEBAB", category: "Dining Out" }, { keyword: "TRATTORIA", category: "Dining Out" },
+  { keyword: "DELIVEROO", category: "Dining Out" }, { keyword: "GLOVO", category: "Dining Out" },
+  { keyword: "JUST EAT", category: "Dining Out" },
+  { keyword: "BAR ", category: "Coffee & Drinks" }, { keyword: "CAFFE", category: "Coffee & Drinks" },
+  { keyword: "CAFFÈ", category: "Coffee & Drinks" }, { keyword: "STARBUCKS", category: "Coffee & Drinks" },
+  { keyword: "COFFEE", category: "Coffee & Drinks" }, { keyword: "PASTICCERIA", category: "Coffee & Drinks" },
+  { keyword: "NETFLIX", category: "Subscriptions" }, { keyword: "SPOTIFY", category: "Subscriptions" },
+  { keyword: "DISNEY+", category: "Subscriptions" }, { keyword: "AMAZON PRIME", category: "Subscriptions" },
+  { keyword: "APPLE.COM", category: "Subscriptions" }, { keyword: "ICLOUD", category: "Subscriptions" },
+  { keyword: "PALESTRA", category: "Entertainment" }, { keyword: "GYM", category: "Entertainment" },
+  { keyword: "CINEMA", category: "Entertainment" }, { keyword: "TEATRO", category: "Entertainment" },
+  { keyword: "MUSEO", category: "Entertainment" }, { keyword: "STEAM", category: "Entertainment" },
+  { keyword: "PLAYSTATION", category: "Entertainment" }, { keyword: "XBOX", category: "Entertainment" },
+  { keyword: "ZARA", category: "Shopping" }, { keyword: "H&M", category: "Shopping" },
+  { keyword: "AMAZON", category: "Shopping" }, { keyword: "IKEA", category: "Shopping" },
+  { keyword: "DECATHLON", category: "Shopping" }, { keyword: "MEDIAWORLD", category: "Shopping" },
+  { keyword: "ZALANDO", category: "Shopping" },
+  { keyword: "ENEL", category: "Utilities" }, { keyword: "ENI GAS", category: "Utilities" },
+  { keyword: "TIM ", category: "Utilities" }, { keyword: "VODAFONE", category: "Utilities" },
+  { keyword: "WINDTRE", category: "Utilities" }, { keyword: "FASTWEB", category: "Utilities" },
+  { keyword: "ACQUA", category: "Utilities" }, { keyword: "CONDOMINIO", category: "Utilities" },
+  { keyword: "STIPENDIO", category: "Salary" }, { keyword: "SALARY", category: "Salary" },
+  { keyword: "PAYROLL", category: "Salary" },
+];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 const MONTH_NAMES = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
 const CHART_PALETTE = ["#00ff88", "#00b8ff", "#ff6b35", "#a855f7", "#ffaa00", "#ff4757", "#34d399", "#60a5fa", "#f472b6", "#fbbf24", "#2dd4bf", "#c084fc", "#f87171"];
 const LS_KEY = "ffdpro_transactions_v1";
 const LS_BUDGETS_KEY = "ffdpro_budgets_v1";
+const LS_RULES_KEY = "ffdpro_merchant_rules_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno" };
 
 const PRESETS = [
@@ -1347,6 +1454,7 @@ const PRESETS = [
 const state = {
   transactions: [],
   budgets: {},
+  merchantRules: [],
   filters: { period: "month", category: "all", type: "all" },
   simulations: [],
   charts: {},
@@ -1420,22 +1528,35 @@ function parseCSV(text) {
   const idx = {
     date: header.findIndex((h) => h.includes("datetime") || h.includes("data") || h.includes("date")),
     cat: header.findIndex((h) => h.includes("categ")),
+    desc: header.findIndex((h) => h.includes("descr") || h.includes("merchant") || h.includes("esercente") || h.includes("presso") || h.includes("memo") || h.includes("note")),
     val: header.findIndex((h) => h.includes("value") || h.includes("valor") || h.includes("amount") || h.includes("importo")),
     type: header.findIndex((h) => h.includes("type") || h.includes("tipo")),
   };
-  if (idx.date < 0 || idx.cat < 0 || idx.val < 0 || idx.type < 0) {
-    throw new Error("Colonne obbligatorie mancanti. Servono: datetime, category, value, type.");
+  if (idx.date < 0 || idx.val < 0 || idx.type < 0) {
+    throw new Error("Colonne obbligatorie mancanti. Servono: datetime, value, type.");
+  }
+  if (idx.cat < 0 && idx.desc < 0) {
+    throw new Error("Serve almeno una colonna tra category e description/merchant (per la categorizzazione automatica).");
   }
   const rows = [];
+  const neededCols = [idx.date, idx.val, idx.type, idx.cat, idx.desc].filter((n) => n >= 0);
+  const maxCol = Math.max(...neededCols);
   for (let i = 1; i < lines.length; i++) {
     const parts = splitCSVLine(lines[i], delim);
-    if (parts.length <= Math.max(idx.date, idx.cat, idx.val, idx.type)) continue;
+    if (parts.length <= maxCol) continue;
     const d = parseDateFlexible(parts[idx.date]);
     const v = parseFloat(normalizeNumber(parts[idx.val]));
-    const cat = parts[idx.cat].trim();
     const type = normalizeType(parts[idx.type]);
-    if (!d || isNaN(v) || !cat) continue;
-    rows.push({ date: d, category: cat, type, value: Math.abs(v) });
+    const rawCat = idx.cat >= 0 ? parts[idx.cat].trim() : "";
+    const desc = idx.desc >= 0 ? parts[idx.desc].trim() : "";
+    if (!d || isNaN(v) || (!rawCat && !desc)) continue;
+    let category = rawCat, autoCategorized = false;
+    if (!category) {
+      const guess = guessCategory(desc);
+      category = guess || NEEDS_CATEGORY;
+      autoCategorized = true;
+    }
+    rows.push({ date: d, category, type, value: Math.abs(v), description: desc || null, autoCategorized });
   }
   if (!rows.length) throw new Error("Nessuna riga valida trovata nel file.");
   return rows;
@@ -1443,7 +1564,7 @@ function parseCSV(text) {
 
 // ---------------------------------------------------------------- persistence
 function persistTransactions() {
-  const raw = state.transactions.map((t) => [t.date.toISOString(), t.category, t.type, t.value]);
+  const raw = state.transactions.map((t) => [t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized]);
   try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
 }
 function loadPersisted() {
@@ -1451,7 +1572,7 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
+    return arr.map(([iso, cat, type, val, desc, auto]) => ({ date: new Date(iso), category: cat, type, value: val, description: desc || null, autoCategorized: !!auto }));
   } catch (e) { return null; }
 }
 function saveBudgets() {
@@ -1464,12 +1585,42 @@ function loadBudgets() {
   } catch (e) { state.budgets = { ...DEFAULT_BUDGETS }; }
 }
 function ensureBudgetKeysForTransactions() {
-  const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome").map((t) => t.category));
+  const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome" && t.category !== NEEDS_CATEGORY).map((t) => t.category));
   let changed = false;
   for (const cat of outcomeCats) {
     if (!(cat in state.budgets)) { state.budgets[cat] = 0; changed = true; }
   }
   if (changed) saveBudgets();
+}
+
+// ---------------------------------------------------------------- merchant -> category matching
+function saveMerchantRules() {
+  try { localStorage.setItem(LS_RULES_KEY, JSON.stringify(state.merchantRules)); } catch (e) { /* ignore */ }
+}
+function loadMerchantRules() {
+  try {
+    const raw = localStorage.getItem(LS_RULES_KEY);
+    state.merchantRules = raw ? JSON.parse(raw) : DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
+  } catch (e) { state.merchantRules = DEFAULT_MERCHANT_RULES.map((r) => ({ ...r })); }
+}
+function normalizeForMatch(s) {
+  return (s || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function guessCategory(description) {
+  const norm = normalizeForMatch(description);
+  if (!norm) return null;
+  let best = null;
+  for (const rule of state.merchantRules) {
+    const kw = normalizeForMatch(rule.keyword);
+    if (kw && norm.includes(kw)) {
+      if (!best || kw.length > best.kwLen) best = { category: rule.category, kwLen: kw.length };
+    }
+  }
+  return best ? best.category : null;
 }
 
 // ---------------------------------------------------------------- data helpers
@@ -1549,6 +1700,12 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
   const insights = [];
   const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
   const savingsRate = income > 0 ? (income - outcome) / income : 0;
+  const uncategorized = periodTxs.filter((t) => t.category === NEEDS_CATEGORY);
+  if (uncategorized.length) {
+    insights.push({ level: "warning", icon: "🔮", title: `${uncategorized.length} transazioni da categorizzare`,
+      text: "Non riconosciute dal dizionario esercente → categoria.",
+      action: "Apri Impostazioni per assegnarle e migliorare il dizionario." });
+  }
   for (const b of budgetBreakdown) {
     if (b.percent === null) continue;
     if (b.percent > 1) {
@@ -1956,7 +2113,7 @@ function getTxFiltered() {
       const amountFormatted = fmtCurrency(t.value, 2);
       const amountPlain = t.value.toFixed(2).replace(".", ",");
       const dateStr = fmtDateTimeShort(t.date).toLowerCase();
-      const haystack = `${t.category} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr}`.toLowerCase();
+      const haystack = `${t.category} ${t.description || ""} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -2013,7 +2170,8 @@ function renderTransactions() {
     const tr = document.createElement("tr");
     tr.tabIndex = 0;
     tr.setAttribute("aria-label", `Apri dettaglio transazione ${t.category}`);
-    tr.innerHTML = `<td class="tabular">${fmtDateTimeShort(t.date)}</td><td>${catIcon(t.category)} ${t.category}</td>
+    const descLine = t.description ? `<div class="tx-desc-hint">${t.description}${t.autoCategorized ? " 🔮" : ""}</div>` : "";
+    tr.innerHTML = `<td class="tabular">${fmtDateTimeShort(t.date)}</td><td>${catIcon(t.category)} ${t.category}${descLine}</td>
       <td><span class="badge ${t.type}">${t.type === "income" ? "Entrata" : "Uscita"}</span></td>
       <td class="tabular" style="text-align:right; font-weight:700; color:${t.type === "income" ? "var(--primary)" : "var(--danger)"}">${t.type === "income" ? "+" : "-"}${fmtCurrency(t.value, 2)}</td>`;
     tr.addEventListener("click", () => openTxModal(t));
@@ -2052,6 +2210,13 @@ function openTxModal(t) {
   document.getElementById("mxTime").textContent = fmtTime(t.date);
   document.getElementById("mxType").textContent = t.type === "income" ? "Entrata" : "Uscita";
   document.getElementById("mxId").textContent = t.id;
+  const descRow = document.getElementById("mxDescRow");
+  if (t.description) {
+    document.getElementById("mxDesc").textContent = t.description + (t.autoCategorized ? " (categoria assegnata automaticamente)" : "");
+    descRow.classList.remove("hidden");
+  } else {
+    descRow.classList.add("hidden");
+  }
   document.getElementById("txModal").classList.remove("hidden");
 }
 function closeTxModal() { document.getElementById("txModal").classList.add("hidden"); }
@@ -2080,6 +2245,8 @@ function renderBudgetEditor() {
 }
 function openSettings() {
   renderBudgetEditor();
+  renderRuleEditor();
+  renderReviewSection();
   document.getElementById("settingsModal").classList.remove("hidden");
 }
 function closeSettings() { document.getElementById("settingsModal").classList.add("hidden"); }
@@ -2095,6 +2262,114 @@ function resetBudgetsToDefault() {
   state.budgets = { ...DEFAULT_BUDGETS };
   ensureBudgetKeysForTransactions();
   saveBudgets();
+  renderBudgetEditor();
+  renderTab(state.activeTab);
+}
+
+// ---------------------------------------------------------------- settings / dictionary editor
+function allCategoryOptions() {
+  const set = new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES, ...getBudgetCategories()]);
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+function populateCategorySelect(sel, selected) {
+  sel.innerHTML = "";
+  for (const c of allCategoryOptions()) {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = `${catIcon(c)} ${c}`;
+    if (c === selected) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+function renderRuleEditor() {
+  const editor = document.getElementById("ruleEditor");
+  editor.innerHTML = "";
+  state.merchantRules.forEach((rule, i) => {
+    const row = el("div", "rule-row");
+    row.appendChild(el("div", "rk", rule.keyword));
+    row.appendChild(el("div", "rc", `${catIcon(rule.category)} ${rule.category}`));
+    const rm = el("button", "rm", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", `Rimuovi regola ${rule.keyword}`);
+    rm.addEventListener("click", () => removeRule(i));
+    row.appendChild(rm);
+    editor.appendChild(row);
+  });
+  document.getElementById("ruleCount").textContent = `${state.merchantRules.length} regole`;
+  populateCategorySelect(document.getElementById("newRuleCategory"));
+}
+function removeRule(index) {
+  state.merchantRules.splice(index, 1);
+  saveMerchantRules();
+  renderRuleEditor();
+}
+function addRuleFromForm() {
+  const kwInput = document.getElementById("newRuleKeyword");
+  const keyword = kwInput.value.trim();
+  const category = document.getElementById("newRuleCategory").value;
+  if (!keyword) { alert("Inserisci una parola chiave."); return; }
+  state.merchantRules.unshift({ keyword, category });
+  saveMerchantRules();
+  kwInput.value = "";
+  renderRuleEditor();
+}
+function resetDictionaryToDefault() {
+  if (!confirm("Ripristinare il dizionario predefinito? Le regole personalizzate aggiunte finora verranno perse.")) return;
+  state.merchantRules = DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
+  saveMerchantRules();
+  renderRuleEditor();
+}
+function computeReviewGroups() {
+  const groups = new Map();
+  for (const t of state.transactions) {
+    if (t.category !== NEEDS_CATEGORY) continue;
+    const key = t.description || "(senza descrizione)";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(t);
+  }
+  return Array.from(groups.entries()).map(([description, txs]) => ({ description, txs, count: txs.length })).sort((a, b) => b.count - a.count);
+}
+function renderReviewSection() {
+  const groups = computeReviewGroups();
+  const section = document.getElementById("reviewSection");
+  section.classList.toggle("hidden", groups.length === 0);
+  document.getElementById("reviewCount").textContent = groups.reduce((s, g) => s + g.count, 0);
+  const list = document.getElementById("reviewList");
+  list.innerHTML = "";
+  for (const g of groups) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", g.description));
+    desc.appendChild(el("div", "rv-count", `${g.count} transazione${g.count > 1 ? "i" : ""}`));
+    const sel = document.createElement("select");
+    populateCategorySelect(sel);
+    const btn = el("button", "btn btn-primary btn-sm", "Assegna");
+    btn.type = "button";
+    btn.addEventListener("click", () => assignCategoryToDescription(g.description, sel.value));
+    row.appendChild(desc);
+    row.appendChild(sel);
+    row.appendChild(btn);
+    list.appendChild(row);
+  }
+}
+function assignCategoryToDescription(description, category) {
+  let count = 0;
+  for (const t of state.transactions) {
+    if (t.category === NEEDS_CATEGORY && (t.description || "(senza descrizione)") === description) {
+      t.category = category;
+      count++;
+    }
+  }
+  if (description !== "(senza descrizione)") {
+    const keyword = description.split(/\s+/)[0];
+    if (keyword && !state.merchantRules.some((r) => normalizeForMatch(r.keyword) === normalizeForMatch(keyword))) {
+      state.merchantRules.unshift({ keyword, category });
+      saveMerchantRules();
+    }
+  }
+  ensureBudgetKeysForTransactions();
+  persistTransactions();
+  renderRuleEditor();
+  renderReviewSection();
   renderBudgetEditor();
   renderTab(state.activeTab);
 }
@@ -2203,6 +2478,7 @@ function resetToWelcome() {
 function init() {
   chartTheme();
   loadBudgets();
+  loadMerchantRules();
 
   const dropzone = document.getElementById("dropzone");
   const fileInput = document.getElementById("fileInput");
@@ -2278,6 +2554,8 @@ function init() {
   document.getElementById("settingsModal").addEventListener("click", (e) => { if (e.target.id === "settingsModal") closeSettings(); });
   document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
   document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
+  document.getElementById("btnAddRule").addEventListener("click", addRuleFromForm);
+  document.getElementById("btnResetDictionary").addEventListener("click", resetDictionaryToDefault);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeTxModal(); closeSettings(); }
