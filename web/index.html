@@ -210,20 +210,87 @@ button, input, select { font-family: inherit; }
 }
 .filter-field select:focus, .filter-field input:focus { outline: 1.5px solid var(--secondary); }
 
-.tabs {
-  display: flex; gap: 4px; padding: 0 22px; border-bottom: 1px solid var(--border);
-  overflow-x: auto;
+/* ===================== app shell: sidebar layout ===================== */
+.app-shell { display: flex; align-items: flex-start; }
+.sidebar {
+  flex: 0 0 210px; display: flex; flex-direction: column; gap: 2px;
+  padding: 18px 12px; border-right: 1px solid var(--border);
+  position: sticky; top: 53px; align-self: stretch;
 }
-.tab-btn {
-  background: transparent; border: none; color: var(--text-muted);
-  padding: 14px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer;
-  border-bottom: 2px solid transparent; white-space: nowrap;
+.side-nav-item {
+  display: flex; align-items: center; gap: 12px; background: transparent; border: none;
+  color: var(--text-muted); padding: 11px 14px; font-size: 13.5px; font-weight: 700;
+  cursor: pointer; border-radius: 9px; text-align: left; width: 100%;
 }
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.side-nav-item:hover { color: var(--text); background: var(--hover-bg); }
+.side-nav-item.active { color: var(--primary); background: var(--tint-faint); }
+.sni-icon { font-size: 16px; line-height: 1; width: 20px; text-align: center; flex: none; }
+.sni-label { white-space: nowrap; }
+.app-main { flex: 1 1 auto; min-width: 0; }
 
 .tab-panel { display: none; padding: 20px 22px 0; }
 .tab-panel.active { display: block; }
+
+@media (max-width: 1024px) {
+  .sidebar { flex-basis: 64px; padding: 14px 8px; }
+  .sni-label { display: none; }
+  .side-nav-item { justify-content: center; padding: 12px 0; }
+}
+@media (max-width: 640px) {
+  .app-shell { flex-direction: column; }
+  .sidebar {
+    flex-direction: row; flex-basis: auto; width: 100%; position: sticky; top: 0; z-index: 15;
+    border-right: none; border-bottom: 1px solid var(--border); padding: 8px 10px;
+    overflow-x: auto; background: var(--background);
+  }
+  .side-nav-item { flex-direction: column; gap: 4px; padding: 8px 10px; font-size: 11px; }
+  .sni-label { display: block; white-space: nowrap; }
+}
+
+/* ===================== Overview: layout variants ===================== */
+.overview-layout-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.ol-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 700; }
+.overview-variant.hidden { display: none; }
+
+/* Priorità variant */
+.hero-row { display: grid; grid-template-columns: 1fr 1.6fr; gap: 16px; margin-bottom: 16px; }
+.hero-card {
+  background: linear-gradient(145deg, var(--card), var(--card2)); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px 24px; display: flex; flex-direction: column; justify-content: center;
+}
+.hero-value { font-family: var(--font-mono); font-size: 40px; font-weight: 800; line-height: 1.1; margin-top: 4px; }
+.hero-spark { height: auto; border-radius: 14px; background: var(--card); border: 1px solid var(--border); padding: 10px; }
+.secondary-section { margin-top: 4px; }
+.secondary-label {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);
+  font-weight: 700; margin: 4px 0 10px; padding-top: 14px; border-top: 1px dashed var(--border);
+}
+.panel.compact { padding: 14px 16px; }
+.panel.compact h3 { font-size: 12.5px; margin-bottom: 8px; }
+@media (max-width: 1024px) { .hero-row { grid-template-columns: 1fr; } }
+
+/* Accordion variant */
+.accordion-list { display: flex; flex-direction: column; gap: 10px; }
+.acc-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.acc-item > .acc-summary {
+  width: 100%; background: transparent; border: none; color: var(--text); font-family: inherit;
+  cursor: pointer; padding: 14px 18px; font-size: 13.5px; font-weight: 700;
+  display: flex; align-items: center; gap: 10px; text-align: left; user-select: none;
+}
+.acc-item > .acc-summary::after { content: "▾"; margin-left: auto; color: var(--text-muted); transition: transform 0.15s; }
+.acc-item > .acc-summary[aria-expanded="true"]::after { transform: rotate(180deg); }
+.acc-item > .acc-summary:hover { background: var(--hover-bg); }
+.acc-body { padding: 4px 18px 18px; }
+.acc-body-actions { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+
+/* Narrativa variant */
+.narrative-panel { margin-bottom: 16px; }
+.narrative-text { font-size: 15px; line-height: 1.75; color: var(--text); margin: 0; }
+.narrative-text strong { color: var(--primary); font-family: var(--font-mono); font-weight: 800; }
+.narrative-text strong.neg { color: var(--danger); }
+.narrative-text strong.warn { color: var(--warning); }
 
 /* ===================== KPI / metric cards ===================== */
 .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
@@ -421,7 +488,7 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 
 /* ===================== accessibility: focus ===================== */
 a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible,
-.tab-btn:focus-visible, [tabindex]:focus-visible, tr[tabindex]:focus-visible {
+.side-nav-item:focus-visible, [tabindex]:focus-visible, tr[tabindex]:focus-visible {
   outline: 2px solid var(--secondary);
   outline-offset: 2px;
 }
@@ -440,13 +507,13 @@ table.data-table tbody tr:focus-visible { outline: 2px solid var(--secondary); o
   .metric-grid { grid-template-columns: 1fr; }
   .stat-strip { grid-template-columns: 1fr; }
   .filter-bar { padding: 12px 14px; }
-  .tab-btn { padding: 12px 12px; font-size: 12.5px; }
 }
 
 /* ===================== print ===================== */
 @media print {
-  .topbar, .filter-bar, .tabs, .appfooter, #btnEditBudgets, .modal-overlay, .pagination,
-  #btnExportCsv, #btnPrint, #btnSettings, #btnNewCsv, #btnResetFilters { display: none !important; }
+  .topbar, .filter-bar, .sidebar, .appfooter, #btnEditBudgets, #btnEditBudgetsPriorita, #btnEditBudgetsAccordion, #btnEditBudgetsNarrativa,
+  .modal-overlay, .pagination, .acc-body-actions,
+  #btnExportCsv, #btnPrint, #btnSettings, #btnNewCsv, #btnResetFilters, .overview-layout-row { display: none !important; }
   body, #app { background: #fff !important; color: #111 !important; }
   .panel, .metric-card, .kpi-card { border: 1px solid #ccc !important; background: #fff !important; break-inside: avoid; }
   a, .metric-value, .kpi-value { color: #111 !important; }
@@ -555,15 +622,29 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     </div>
   </div>
 
-  <nav class="tabs" role="tablist" aria-label="Sezioni della dashboard">
-    <button id="tabbtn-overview" class="tab-btn active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="tab-overview">📊 Overview</button>
-    <button id="tabbtn-simulator" class="tab-btn" data-tab="simulator" type="button" role="tab" aria-selected="false" aria-controls="tab-simulator">🧪 Simulatore</button>
-    <button id="tabbtn-analytics" class="tab-btn" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics">📈 Analytics</button>
-    <button id="tabbtn-transactions" class="tab-btn" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions">📋 Transazioni</button>
+  <div class="app-shell">
+  <nav class="sidebar" role="tablist" aria-label="Sezioni della dashboard">
+    <button id="tabbtn-overview" class="side-nav-item active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="tab-overview"><span class="sni-icon" aria-hidden="true">📊</span><span class="sni-label">Overview</span></button>
+    <button id="tabbtn-simulator" class="side-nav-item" data-tab="simulator" type="button" role="tab" aria-selected="false" aria-controls="tab-simulator"><span class="sni-icon" aria-hidden="true">🧪</span><span class="sni-label">Simulatore</span></button>
+    <button id="tabbtn-analytics" class="side-nav-item" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics"><span class="sni-icon" aria-hidden="true">📈</span><span class="sni-label">Analytics</span></button>
+    <button id="tabbtn-transactions" class="side-nav-item" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions"><span class="sni-icon" aria-hidden="true">📋</span><span class="sni-label">Transazioni</span></button>
   </nav>
+
+  <div class="app-main">
 
   <!-- ===================== OVERVIEW ===================== -->
   <section id="tab-overview" class="tab-panel active" role="tabpanel" aria-labelledby="tabbtn-overview">
+    <div class="overview-layout-row">
+      <label for="overviewLayoutSelect" class="ol-label">Vista:</label>
+      <select id="overviewLayoutSelect" class="theme-select">
+        <option value="classica">📐 Classica</option>
+        <option value="priorita">🥇 Priorità</option>
+        <option value="accordion">📚 Accordion</option>
+        <option value="narrativa">📝 Narrativa</option>
+      </select>
+    </div>
+
+    <div id="overviewClassica" class="overview-variant">
     <div class="metric-grid" id="overviewMetrics"></div>
 
     <div class="grid-2">
@@ -599,6 +680,132 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="panel">
         <h3>Ultime Transazioni</h3>
         <div id="recentTxList" class="tx-list"></div>
+      </div>
+    </div>
+    </div>
+    <!-- ============ Overview: PRIORITÀ ============ -->
+    <div id="overviewPriorita" class="overview-variant hidden">
+      <div class="hero-row">
+        <div class="hero-card">
+          <div class="metric-label">Saldo Netto <span class="panel-tag" id="prioritaPeriodTag"></span></div>
+          <div class="hero-value" id="prioritaHeroValue">€0</div>
+          <div class="metric-sub" id="prioritaHeroSub"></div>
+        </div>
+        <div class="hero-spark chart-box"><canvas id="chartHeroSpark"></canvas></div>
+      </div>
+      <div class="metric-grid" id="prioritaChips"></div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Flusso di Cassa <span class="panel-tag">entrate / uscite / saldo cumulativo</span></h3>
+          <div class="chart-box"><canvas id="chartCashflowPriorita"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Budget vs Spese <button id="btnEditBudgetsPriorita" class="btn-link" type="button">Modifica budget</button></h3>
+          <div id="budgetListPriorita"></div>
+        </div>
+      </div>
+      <div class="secondary-section">
+        <div class="secondary-label">Altri dettagli</div>
+        <div class="grid-3">
+          <div class="panel compact">
+            <h3>Distribuzione Spese</h3>
+            <div class="chart-box short"><canvas id="chartCategoryPiePriorita"></canvas></div>
+          </div>
+          <div class="panel compact">
+            <h3>Pattern Settimanale</h3>
+            <div class="chart-box short"><canvas id="chartWeeklyPriorita"></canvas></div>
+          </div>
+          <div class="panel compact">
+            <h3>Smart Insights</h3>
+            <div id="overviewInsightsPriorita" class="insight-list"></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px;">
+          <h3>Ultime Transazioni</h3>
+          <div id="recentTxListPriorita" class="tx-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Overview: ACCORDION ============ -->
+    <div id="overviewAccordion" class="overview-variant hidden">
+      <div class="metric-grid" id="accordionMetrics"></div>
+      <div class="accordion-list">
+        <div class="acc-item">
+          <button class="acc-summary" type="button" aria-expanded="true" aria-controls="accBody-cashflow"><span class="acc-icon" aria-hidden="true">💰</span> Flusso di Cassa <span class="panel-tag">entrate / uscite / saldo cumulativo</span></button>
+          <div class="acc-body" id="accBody-cashflow">
+            <div class="chart-box"><canvas id="chartCashflowAccordion"></canvas></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-summary" type="button" aria-expanded="false" aria-controls="accBody-pie"><span class="acc-icon" aria-hidden="true">🥧</span> Distribuzione Spese</button>
+          <div class="acc-body" id="accBody-pie" hidden>
+            <div class="chart-box">
+              <canvas id="chartCategoryPieAccordion"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-summary" type="button" aria-expanded="false" aria-controls="accBody-budget"><span class="acc-icon" aria-hidden="true">🎯</span> Budget vs Spese</button>
+          <div class="acc-body" id="accBody-budget" hidden>
+            <div class="acc-body-actions"><button id="btnEditBudgetsAccordion" class="btn-link" type="button">Modifica budget</button></div>
+            <div id="budgetListAccordion"></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-summary" type="button" aria-expanded="false" aria-controls="accBody-weekly"><span class="acc-icon" aria-hidden="true">📅</span> Pattern Settimanale</button>
+          <div class="acc-body" id="accBody-weekly" hidden>
+            <div class="chart-box short"><canvas id="chartWeeklyAccordion"></canvas></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-summary" type="button" aria-expanded="false" aria-controls="accBody-insights"><span class="acc-icon" aria-hidden="true">💡</span> Smart Insights</button>
+          <div class="acc-body" id="accBody-insights" hidden>
+            <div id="overviewInsightsAccordion" class="insight-list"></div>
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-summary" type="button" aria-expanded="false" aria-controls="accBody-recent"><span class="acc-icon" aria-hidden="true">🧾</span> Ultime Transazioni</button>
+          <div class="acc-body" id="accBody-recent" hidden>
+            <div id="recentTxListAccordion" class="tx-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Overview: NARRATIVA ============ -->
+    <div id="overviewNarrativa" class="overview-variant hidden">
+      <div class="panel narrative-panel">
+        <h3>📝 Il tuo mese in breve <span class="panel-tag" id="narrativaPeriodTag"></span></h3>
+        <p class="narrative-text" id="narrativaSummary"></p>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Flusso di Cassa</h3>
+          <div class="chart-box"><canvas id="chartCashflowNarrativa"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Distribuzione Spese</h3>
+          <div class="chart-box"><canvas id="chartCategoryPieNarrativa"></canvas></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Budget vs Spese <button id="btnEditBudgetsNarrativa" class="btn-link" type="button">Modifica budget</button></h3>
+          <div id="budgetListNarrativa"></div>
+        </div>
+        <div class="panel">
+          <h3>Pattern Settimanale</h3>
+          <div class="chart-box short"><canvas id="chartWeeklyNarrativa"></canvas></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>💡 Punti Salienti</h3>
+        <div id="overviewInsightsNarrativa" class="insight-list"></div>
+      </div>
+      <div class="panel">
+        <h3>Ultime Transazioni</h3>
+        <div id="recentTxListNarrativa" class="tx-list"></div>
       </div>
     </div>
   </section>
@@ -755,6 +962,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="pagination" id="txPagination"></div>
     </div>
   </section>
+
+  </div><!-- /app-main -->
+  </div><!-- /app-shell -->
 
   <footer class="appfooter">
     <span id="footerInfo"></span>
@@ -1524,6 +1734,7 @@ const state = {
   txPage: 1,
   txPageSize: 25,
   activeTab: "overview",
+  overviewLayout: "classica",
 };
 let simIdSeq = 1;
 
@@ -1834,6 +2045,12 @@ function chartTheme() {
 function renderChart(id, config) {
   const canvas = document.getElementById(id);
   if (!canvas) return null;
+  // Skip creating charts on a canvas that's currently inside a collapsed accordion
+  // section (acc-body[hidden]) — Chart.js can only measure/paint correctly once it's visible.
+  if (canvas.closest(".acc-body[hidden]")) {
+    if (state.charts[id]) { state.charts[id].destroy(); delete state.charts[id]; }
+    return null;
+  }
   if (state.charts[id]) state.charts[id].destroy();
   state.charts[id] = new Chart(canvas.getContext("2d"), config);
   return state.charts[id];
@@ -1841,13 +2058,12 @@ function renderChart(id, config) {
 function currencyTick() { return { callback: (v) => fmtCurrency(v) }; }
 
 // ---------------------------------------------------------------- Overview tab
-function renderOverview() {
+function computeOverviewData() {
   const periodTxs = getPeriodFiltered();
   const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
   const net = income - outcome;
   const savingsRate = income > 0 ? net / income : 0;
   const forecast = computeForecastNextMonth();
-
   const cards = [
     { label: "Saldo Netto", value: fmtCurrency(net), cls: net >= 0 ? "pos" : "neg", sub: periodLabel() },
     { label: "Entrate", value: fmtCurrency(income), cls: "pos", sub: `${periodTxs.filter((t) => t.type === "income").length} transazioni` },
@@ -1855,7 +2071,18 @@ function renderOverview() {
     { label: "Obiettivo", value: fmtPercent(savingsRate), cls: savingsRate >= 0.2 ? "pos" : "warn", sub: "Target: 20% di risparmio" },
     { label: "Previsione", value: fmtCurrency(forecast), cls: "acc", sub: "Saldo stimato prossimo mese" },
   ];
-  const grid = document.getElementById("overviewMetrics");
+  const monthlySeries = computeMonthlySeries(getCategoryTypeFiltered());
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const pieRows = budgetBreakdown.filter((b) => b.speso > 0).map((b) => ({ category: b.category, speso: b.speso })).sort((a, b) => b.speso - a.speso);
+  const weekly = new Array(7).fill(0);
+  for (const t of periodTxs) { if (t.type !== "outcome") continue; const dow = (t.date.getDay() + 6) % 7; weekly[dow] += t.value; }
+  const insights = computeInsights(periodTxs, budgetBreakdown, false);
+  const recent = periodTxs.slice().sort((a, b) => b.date - a.date).slice(0, 8);
+  return { periodTxs, income, outcome, net, savingsRate, forecast, cards, monthlySeries, budgetBreakdown, pieRows, weekly, insights, recent };
+}
+function renderMetricCards(containerId, cards) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
   grid.innerHTML = "";
   for (const c of cards) {
     const card = el("div", "metric-card");
@@ -1864,11 +2091,9 @@ function renderOverview() {
     card.appendChild(el("div", "metric-sub", c.sub));
     grid.appendChild(card);
   }
-
-  document.getElementById("pieRangeTag").textContent = periodLabel();
-
-  const monthlySeries = computeMonthlySeries(getCategoryTypeFiltered());
-  renderChart("chartCashflow", {
+}
+function renderCashflowChart(canvasId, monthlySeries) {
+  renderChart(canvasId, {
     data: {
       labels: monthlySeries.map((m) => m.label),
       datasets: [
@@ -1886,12 +2111,13 @@ function renderOverview() {
       plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } },
     },
   });
-
-  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
-  const pieRows = budgetBreakdown.filter((b) => b.speso > 0).map((b) => ({ category: b.category, speso: b.speso })).sort((a, b) => b.speso - a.speso);
-  document.getElementById("pieEmptyMsg").classList.toggle("hidden", pieRows.length > 0);
-  const pieContainerWidth = document.getElementById("chartCategoryPie").parentElement.clientWidth;
-  renderChart("chartCategoryPie", {
+}
+function renderCategoryPieChart(canvasId, emptyMsgId, pieRows) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  if (emptyMsgId) document.getElementById(emptyMsgId).classList.toggle("hidden", pieRows.length > 0);
+  const pieContainerWidth = canvas.parentElement.clientWidth;
+  renderChart(canvasId, {
     type: "doughnut",
     data: { labels: pieRows.map((r) => `${catIcon(r.category)} ${r.category}`), datasets: [{ data: pieRows.map((r) => r.speso), backgroundColor: CHART_PALETTE, borderColor: cssVar("--pie-border"), borderWidth: 2 }] },
     options: {
@@ -1899,16 +2125,17 @@ function renderOverview() {
       plugins: { legend: { position: pieContainerWidth < 460 ? "bottom" : "right" }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtCurrency(c.parsed)}` } } },
     },
   });
-
-  const weekly = new Array(7).fill(0);
-  for (const t of periodTxs) { if (t.type !== "outcome") continue; const dow = (t.date.getDay() + 6) % 7; weekly[dow] += t.value; }
-  renderChart("chartWeekly", {
+}
+function renderWeeklyChart(canvasId, weekly) {
+  renderChart(canvasId, {
     type: "bar",
     data: { labels: DAY_NAMES, datasets: [{ label: "Uscite", data: weekly, backgroundColor: cssVar("--accent"), borderRadius: 5 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: currencyTick() } } },
   });
-
-  const budgetList = document.getElementById("budgetList");
+}
+function renderBudgetList(containerId, budgetBreakdown) {
+  const budgetList = document.getElementById(containerId);
+  if (!budgetList) return;
   budgetList.innerHTML = "";
   const visibleBudgetRows = budgetBreakdown.filter((b) => b.speso > 0 || !b.unset);
   if (!visibleBudgetRows.length) {
@@ -1940,15 +2167,82 @@ function renderOverview() {
     row.appendChild(track);
     budgetList.appendChild(row);
   }
-
-  const insightsBox = document.getElementById("overviewInsights");
-  renderInsightList(insightsBox, computeInsights(periodTxs, budgetBreakdown, false));
-
-  const recentBox = document.getElementById("recentTxList");
+}
+function renderRecentTx(containerId, recent) {
+  const recentBox = document.getElementById(containerId);
+  if (!recentBox) return;
   recentBox.innerHTML = "";
-  const recent = periodTxs.slice().sort((a, b) => b.date - a.date).slice(0, 8);
   if (!recent.length) recentBox.appendChild(el("div", "sim-empty", "Nessuna transazione nel periodo selezionato."));
   for (const t of recent) recentBox.appendChild(buildTxRow(t));
+}
+function buildNarrativeSummary(data) {
+  const { income, outcome, net, savingsRate, pieRows, budgetBreakdown } = data;
+  const topCat = pieRows[0];
+  const overBudget = budgetBreakdown.filter((b) => !b.unset && b.percent > 1);
+  let html = `Nel periodo selezionato (<strong>${periodLabel()}</strong>) hai incassato <strong class="pos">${fmtCurrency(income)}</strong> e speso <strong class="neg">${fmtCurrency(outcome)}</strong>, `;
+  html += net >= 0
+    ? `chiudendo con un saldo positivo di <strong class="pos">${fmtCurrency(net)}</strong> (tasso di risparmio ${fmtPercent(savingsRate)}).`
+    : `chiudendo in rosso di <strong class="neg">${fmtCurrency(Math.abs(net))}</strong>.`;
+  if (topCat) html += ` La categoria che pesa di più è <strong>${catIcon(topCat.category)} ${topCat.category}</strong>, con ${fmtCurrency(topCat.speso)} spesi.`;
+  if (overBudget.length) html += ` Attenzione: hai superato il budget in ${overBudget.length === 1 ? "1 categoria" : overBudget.length + " categorie"} (${overBudget.map((b) => b.category).join(", ")}).`;
+  else if (budgetBreakdown.some((b) => !b.unset)) html += ` Tutti i budget impostati sono sotto controllo.`;
+  return html;
+}
+function renderOverviewClassica(data) {
+  renderMetricCards("overviewMetrics", data.cards);
+  document.getElementById("pieRangeTag").textContent = periodLabel();
+  renderCashflowChart("chartCashflow", data.monthlySeries);
+  renderCategoryPieChart("chartCategoryPie", "pieEmptyMsg", data.pieRows);
+  renderWeeklyChart("chartWeekly", data.weekly);
+  renderBudgetList("budgetList", data.budgetBreakdown);
+  renderInsightList(document.getElementById("overviewInsights"), data.insights);
+  renderRecentTx("recentTxList", data.recent);
+}
+function renderOverviewPriorita(data) {
+  document.getElementById("prioritaPeriodTag").textContent = periodLabel();
+  const heroValue = document.getElementById("prioritaHeroValue");
+  heroValue.textContent = fmtCurrency(data.net);
+  heroValue.className = "hero-value " + (data.net >= 0 ? "pos" : "neg");
+  document.getElementById("prioritaHeroSub").textContent = `${fmtCurrency(data.income)} entrate · ${fmtCurrency(data.outcome)} uscite`;
+  renderChart("chartHeroSpark", {
+    type: "line",
+    data: { labels: data.monthlySeries.map((m) => m.label), datasets: [{ data: data.monthlySeries.map((m) => m.cumulative), borderColor: cssVar("--secondary"), backgroundColor: hexToRgba(cssVar("--secondary"), 0.15), fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmtCurrency(c.parsed.y) } } }, scales: { x: { display: false }, y: { display: false } } },
+  });
+  renderMetricCards("prioritaChips", data.cards.filter((c) => c.label !== "Saldo Netto"));
+  renderCashflowChart("chartCashflowPriorita", data.monthlySeries);
+  renderBudgetList("budgetListPriorita", data.budgetBreakdown);
+  renderCategoryPieChart("chartCategoryPiePriorita", null, data.pieRows);
+  renderWeeklyChart("chartWeeklyPriorita", data.weekly);
+  renderInsightList(document.getElementById("overviewInsightsPriorita"), data.insights);
+  renderRecentTx("recentTxListPriorita", data.recent);
+}
+function renderOverviewAccordion(data) {
+  renderMetricCards("accordionMetrics", data.cards);
+  renderCashflowChart("chartCashflowAccordion", data.monthlySeries);
+  renderCategoryPieChart("chartCategoryPieAccordion", null, data.pieRows);
+  renderBudgetList("budgetListAccordion", data.budgetBreakdown);
+  renderWeeklyChart("chartWeeklyAccordion", data.weekly);
+  renderInsightList(document.getElementById("overviewInsightsAccordion"), data.insights);
+  renderRecentTx("recentTxListAccordion", data.recent);
+}
+function renderOverviewNarrativa(data) {
+  document.getElementById("narrativaPeriodTag").textContent = periodLabel();
+  document.getElementById("narrativaSummary").innerHTML = buildNarrativeSummary(data);
+  renderCashflowChart("chartCashflowNarrativa", data.monthlySeries);
+  renderCategoryPieChart("chartCategoryPieNarrativa", null, data.pieRows);
+  renderBudgetList("budgetListNarrativa", data.budgetBreakdown);
+  renderWeeklyChart("chartWeeklyNarrativa", data.weekly);
+  renderInsightList(document.getElementById("overviewInsightsNarrativa"), data.insights);
+  renderRecentTx("recentTxListNarrativa", data.recent);
+}
+function renderOverview() {
+  const data = computeOverviewData();
+  const layout = state.overviewLayout || "classica";
+  if (layout === "priorita") renderOverviewPriorita(data);
+  else if (layout === "accordion") renderOverviewAccordion(data);
+  else if (layout === "narrativa") renderOverviewNarrativa(data);
+  else renderOverviewClassica(data);
 }
 function renderInsightList(box, insights) {
   box.innerHTML = "";
@@ -2455,7 +2749,7 @@ function renderTab(name) {
 }
 function switchTab(name) {
   state.activeTab = name;
-  document.querySelectorAll(".tab-btn").forEach((b) => {
+  document.querySelectorAll(".side-nav-item").forEach((b) => {
     const active = b.dataset.tab === name;
     b.classList.toggle("active", active);
     b.setAttribute("aria-selected", active ? "true" : "false");
@@ -2580,8 +2874,30 @@ function initThemeControls() {
   }
 }
 
+const LS_OVERVIEW_LAYOUT_KEY = "ffdpro_overview_layout_v1";
+const OVERVIEW_VARIANTS = ["classica", "priorita", "accordion", "narrativa"];
+function applyOverviewLayout(mode) {
+  if (!OVERVIEW_VARIANTS.includes(mode)) mode = "classica";
+  state.overviewLayout = mode;
+  try { localStorage.setItem(LS_OVERVIEW_LAYOUT_KEY, mode); } catch (e) { /* ignore */ }
+  for (const v of OVERVIEW_VARIANTS) {
+    const box = document.getElementById("overview" + v.charAt(0).toUpperCase() + v.slice(1));
+    if (box) box.classList.toggle("hidden", v !== mode);
+  }
+  const sel = document.getElementById("overviewLayoutSelect");
+  if (sel) sel.value = mode;
+  if (state.transactions.length && state.activeTab === "overview") renderOverview();
+}
+function initOverviewLayoutControl() {
+  let saved = "classica";
+  try { saved = localStorage.getItem(LS_OVERVIEW_LAYOUT_KEY) || "classica"; } catch (e) { /* ignore */ }
+  applyOverviewLayout(saved);
+  document.getElementById("overviewLayoutSelect").addEventListener("change", (e) => applyOverviewLayout(e.target.value));
+}
+
 function init() {
   initThemeControls();
+  initOverviewLayoutControl();
   chartTheme();
   loadBudgets();
   loadMerchantRules();
@@ -2602,7 +2918,7 @@ function init() {
   document.getElementById("btnNewCsv").addEventListener("click", resetToWelcome);
   document.getElementById("btnPrint").addEventListener("click", () => window.print());
 
-  document.querySelectorAll(".tab-btn").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+  document.querySelectorAll(".side-nav-item").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
   document.getElementById("filterPeriod").addEventListener("change", (e) => { state.filters.period = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
@@ -2656,6 +2972,18 @@ function init() {
 
   document.getElementById("btnSettings").addEventListener("click", openSettings);
   document.getElementById("btnEditBudgets").addEventListener("click", openSettings);
+  document.getElementById("btnEditBudgetsPriorita").addEventListener("click", openSettings);
+  document.getElementById("btnEditBudgetsAccordion").addEventListener("click", openSettings);
+  document.getElementById("btnEditBudgetsNarrativa").addEventListener("click", openSettings);
+  document.querySelectorAll("#overviewAccordion .acc-summary").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const body = document.getElementById(btn.getAttribute("aria-controls"));
+      const nowOpen = body.hidden;
+      body.hidden = !nowOpen;
+      btn.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+      if (nowOpen && state.transactions.length) renderOverviewAccordion(computeOverviewData());
+    });
+  });
   document.getElementById("closeSettings").addEventListener("click", closeSettings);
   document.getElementById("settingsModal").addEventListener("click", (e) => { if (e.target.id === "settingsModal") closeSettings(); });
   document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
