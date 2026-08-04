@@ -1,0 +1,494 @@
+Data e Ora;Categoria;Valore;Tipo
+03/07/2025 13:58;Ristoranti e Bar;13,58;Uscita
+04/07/2025 19:05;Casa e Bollette;39,95;Uscita
+05/07/2025 13:48;Alimentari;46,16;Uscita
+05/07/2025 22:05;Salute;19,74;Uscita
+07/07/2025 09:02;Casa e Bollette;497,06;Uscita
+08/07/2025 17:53;Ristoranti e Bar;49,15;Uscita
+08/07/2025 18:30;Rimborsi;48,14;Entrata
+09/07/2025 11:15;Svago;38,49;Uscita
+11/07/2025 10:05;Alimentari;6,83;Uscita
+11/07/2025 19:17;Ristoranti e Bar;43,19;Uscita
+12/07/2025 18:13;Trasporti;71,05;Uscita
+13/07/2025 10:22;Alimentari;131,99;Uscita
+14/07/2025 14:28;Alimentari;14,77;Uscita
+14/07/2025 17:17;Alimentari;18,95;Uscita
+15/07/2025 15:35;Abbigliamento;17,22;Uscita
+15/07/2025 18:10;Trasporti;56,83;Uscita
+18/07/2025 16:53;Casa e Bollette;203,27;Uscita
+19/07/2025 15:51;Alimentari;28,78;Uscita
+19/07/2025 20:57;Svago;15,49;Uscita
+21/07/2025 12:34;Trasporti;3,00;Uscita
+21/07/2025 18:36;Casa e Bollette;179,21;Uscita
+21/07/2025 21:09;Svago;28,55;Uscita
+22/07/2025 09:38;Trasporti;17,75;Uscita
+22/07/2025 15:44;Trasporti;3,00;Uscita
+24/07/2025 15:32;Altre Spese;25,60;Uscita
+24/07/2025 15:47;Svago;51,76;Uscita
+24/07/2025 20:00;Altri Redditi;320,89;Entrata
+25/07/2025 08:14;Ristoranti e Bar;35,02;Uscita
+25/07/2025 08:55;Salute;70,28;Uscita
+25/07/2025 12:32;Altre Spese;30,82;Uscita
+25/07/2025 17:07;Assicurazioni;98,83;Uscita
+26/07/2025 12:44;Alimentari;152,72;Uscita
+26/07/2025 20:38;Istruzione;27,68;Uscita
+27/07/2025 08:51;Ristoranti e Bar;41,13;Uscita
+27/07/2025 09:00;Stipendio;2377,89;Entrata
+27/07/2025 09:05;Stipendio Partner;1855,00;Entrata
+28/07/2025 07:43;Abbigliamento;11,68;Uscita
+28/07/2025 07:48;Alimentari;64,59;Uscita
+02/08/2025 14:56;Alimentari;136,03;Uscita
+03/08/2025 08:14;Trasporti;28,10;Uscita
+03/08/2025 08:55;Trasporti;46,24;Uscita
+03/08/2025 11:08;Alimentari;217,25;Uscita
+03/08/2025 21:51;Svago;8,29;Uscita
+04/08/2025 20:22;Ristoranti e Bar;3,00;Uscita
+06/08/2025 19:00;Salute;41,20;Uscita
+07/08/2025 13:45;Casa e Bollette;145,63;Uscita
+07/08/2025 16:13;Istruzione;53,52;Uscita
+08/08/2025 14:00;Trasporti;37,97;Uscita
+10/08/2025 19:42;Casa e Bollette;319,75;Uscita
+11/08/2025 08:03;Abbigliamento;9,49;Uscita
+12/08/2025 20:00;Altri Redditi;285,88;Entrata
+13/08/2025 15:59;Salute;4,45;Uscita
+13/08/2025 17:51;Ristoranti e Bar;33,65;Uscita
+14/08/2025 13:06;Ristoranti e Bar;10,34;Uscita
+14/08/2025 20:29;Ristoranti e Bar;29,63;Uscita
+14/08/2025 22:30;Svago;7,43;Uscita
+17/08/2025 21:07;Casa e Bollette;346,96;Uscita
+19/08/2025 09:05;Alimentari;68,05;Uscita
+19/08/2025 14:37;Altre Spese;33,74;Uscita
+19/08/2025 22:32;Abbigliamento;105,01;Uscita
+20/08/2025 08:39;Altre Spese;49,82;Uscita
+21/08/2025 07:05;Svago;16,51;Uscita
+21/08/2025 10:03;Ristoranti e Bar;12,37;Uscita
+21/08/2025 18:28;Casa e Bollette;69,60;Uscita
+21/08/2025 18:30;Rimborsi;96,00;Entrata
+23/08/2025 22:09;Istruzione;21,36;Uscita
+24/08/2025 22:52;Alimentari;59,77;Uscita
+25/08/2025 14:10;Svago;24,37;Uscita
+26/08/2025 22:51;Ristoranti e Bar;16,71;Uscita
+27/08/2025 09:00;Stipendio;2432,53;Entrata
+27/08/2025 09:05;Stipendio Partner;2024,10;Entrata
+27/08/2025 16:15;Alimentari;60,60;Uscita
+28/08/2025 08:43;Ristoranti e Bar;12,42;Uscita
+28/08/2025 10:03;Svago;3,00;Uscita
+28/08/2025 10:15;Ristoranti e Bar;8,14;Uscita
+28/08/2025 12:03;Abbigliamento;41,12;Uscita
+28/08/2025 12:04;Assicurazioni;108,43;Uscita
+01/09/2025 10:04;Ristoranti e Bar;15,50;Uscita
+01/09/2025 17:49;Ristoranti e Bar;33,81;Uscita
+04/09/2025 15:11;Altre Spese;17,06;Uscita
+05/09/2025 08:19;Svago;38,87;Uscita
+05/09/2025 15:10;Ristoranti e Bar;42,92;Uscita
+05/09/2025 15:18;Trasporti;75,79;Uscita
+06/09/2025 21:53;Alimentari;122,87;Uscita
+07/09/2025 21:22;Abbigliamento;32,31;Uscita
+08/09/2025 12:51;Salute;47,23;Uscita
+08/09/2025 18:18;Alimentari;39,70;Uscita
+09/09/2025 11:59;Alimentari;8,01;Uscita
+10/09/2025 14:14;Abbigliamento;5,41;Uscita
+11/09/2025 13:43;Trasporti;11,26;Uscita
+12/09/2025 08:57;Svago;22,25;Uscita
+12/09/2025 09:56;Alimentari;176,03;Uscita
+13/09/2025 17:17;Assicurazioni;70,95;Uscita
+14/09/2025 14:17;Istruzione;74,85;Uscita
+15/09/2025 10:04;Alimentari;35,92;Uscita
+18/09/2025 13:32;Alimentari;112,62;Uscita
+19/09/2025 10:00;Bonus;409,11;Entrata
+19/09/2025 11:27;Svago;73,38;Uscita
+19/09/2025 15:02;Altre Spese;52,88;Uscita
+20/09/2025 13:45;Trasporti;15,04;Uscita
+21/09/2025 07:42;Casa e Bollette;525,21;Uscita
+22/09/2025 10:56;Casa e Bollette;10,96;Uscita
+22/09/2025 17:01;Altre Spese;37,85;Uscita
+23/09/2025 20:00;Altri Redditi;164,83;Entrata
+23/09/2025 20:35;Ristoranti e Bar;46,23;Uscita
+24/09/2025 11:59;Salute;9,24;Uscita
+24/09/2025 17:50;Istruzione;3,00;Uscita
+24/09/2025 21:35;Ristoranti e Bar;21,75;Uscita
+25/09/2025 20:39;Salute;6,47;Uscita
+27/09/2025 09:00;Stipendio;2266,40;Entrata
+27/09/2025 09:05;Stipendio Partner;1981,47;Entrata
+27/09/2025 15:02;Ristoranti e Bar;8,57;Uscita
+27/09/2025 16:59;Casa e Bollette;322,47;Uscita
+28/09/2025 22:14;Abbigliamento;4,57;Uscita
+03/10/2025 16:32;Trasporti;36,72;Uscita
+05/10/2025 14:24;Altre Spese;7,05;Uscita
+05/10/2025 21:42;Salute;54,49;Uscita
+06/10/2025 22:28;Istruzione;13,96;Uscita
+08/10/2025 10:29;Salute;5,85;Uscita
+10/10/2025 13:27;Casa e Bollette;53,04;Uscita
+10/10/2025 14:51;Trasporti;84,67;Uscita
+10/10/2025 16:42;Alimentari;101,82;Uscita
+11/10/2025 17:42;Alimentari;133,26;Uscita
+13/10/2025 14:09;Ristoranti e Bar;3,00;Uscita
+14/10/2025 09:42;Alimentari;118,84;Uscita
+14/10/2025 13:45;Ristoranti e Bar;60,96;Uscita
+14/10/2025 14:11;Svago;11,34;Uscita
+14/10/2025 17:25;Alimentari;34,95;Uscita
+17/10/2025 17:48;Salute;56,15;Uscita
+18/10/2025 07:19;Casa e Bollette;462,44;Uscita
+18/10/2025 09:08;Altre Spese;16,32;Uscita
+18/10/2025 21:57;Istruzione;68,44;Uscita
+19/10/2025 16:25;Casa e Bollette;260,75;Uscita
+20/10/2025 20:00;Altri Redditi;345,74;Entrata
+21/10/2025 14:17;Assicurazioni;101,11;Uscita
+22/10/2025 12:39;Casa e Bollette;113,22;Uscita
+22/10/2025 17:05;Trasporti;3,67;Uscita
+23/10/2025 11:45;Altre Spese;46,22;Uscita
+23/10/2025 19:31;Ristoranti e Bar;40,20;Uscita
+24/10/2025 13:23;Alimentari;3,00;Uscita
+25/10/2025 09:29;Ristoranti e Bar;4,99;Uscita
+26/10/2025 12:42;Trasporti;34,35;Uscita
+27/10/2025 09:00;Stipendio;2271,68;Entrata
+27/10/2025 09:05;Stipendio Partner;1936,91;Entrata
+27/10/2025 14:43;Trasporti;3,00;Uscita
+27/10/2025 15:49;Abbigliamento;56,29;Uscita
+28/10/2025 10:46;Alimentari;80,00;Uscita
+28/10/2025 10:49;Svago;94,27;Uscita
+01/11/2025 08:22;Trasporti;3,00;Uscita
+01/11/2025 14:12;Trasporti;11,38;Uscita
+04/11/2025 07:59;Ristoranti e Bar;12,95;Uscita
+05/11/2025 07:58;Casa e Bollette;591,82;Uscita
+05/11/2025 20:11;Salute;109,08;Uscita
+06/11/2025 10:49;Ristoranti e Bar;24,93;Uscita
+08/11/2025 09:49;Trasporti;11,08;Uscita
+08/11/2025 15:27;Alimentari;52,94;Uscita
+09/11/2025 15:35;Altre Spese;54,62;Uscita
+09/11/2025 21:15;Abbigliamento;139,24;Uscita
+10/11/2025 19:25;Ristoranti e Bar;68,33;Uscita
+11/11/2025 07:31;Assicurazioni;100,02;Uscita
+12/11/2025 15:21;Altre Spese;51,97;Uscita
+12/11/2025 16:48;Alimentari;3,42;Uscita
+12/11/2025 21:45;Salute;12,87;Uscita
+13/11/2025 07:05;Casa e Bollette;60,44;Uscita
+13/11/2025 20:34;Alimentari;217,53;Uscita
+14/11/2025 15:20;Istruzione;27,41;Uscita
+14/11/2025 18:04;Svago;48,05;Uscita
+14/11/2025 20:00;Altri Redditi;185,16;Entrata
+15/11/2025 18:30;Rimborsi;84,05;Entrata
+16/11/2025 07:24;Alimentari;83,22;Uscita
+17/11/2025 17:00;Svago;90,34;Uscita
+18/11/2025 22:29;Istruzione;43,95;Uscita
+19/11/2025 14:06;Ristoranti e Bar;5,93;Uscita
+21/11/2025 08:48;Trasporti;40,17;Uscita
+21/11/2025 20:08;Casa e Bollette;34,62;Uscita
+22/11/2025 10:50;Ristoranti e Bar;46,04;Uscita
+23/11/2025 13:04;Ristoranti e Bar;20,83;Uscita
+23/11/2025 16:54;Ristoranti e Bar;13,32;Uscita
+24/11/2025 14:31;Alimentari;223,76;Uscita
+27/11/2025 09:00;Stipendio;2292,79;Entrata
+27/11/2025 09:05;Stipendio Partner;1932,97;Entrata
+27/11/2025 09:30;Trasporti;4,64;Uscita
+27/11/2025 12:19;Ristoranti e Bar;5,17;Uscita
+27/11/2025 20:16;Trasporti;26,30;Uscita
+28/11/2025 21:11;Casa e Bollette;130,34;Uscita
+01/12/2025 11:17;Casa e Bollette;164,46;Uscita
+02/12/2025 08:35;Casa e Bollette;44,03;Uscita
+02/12/2025 15:55;Trasporti;3,00;Uscita
+02/12/2025 20:47;Abbigliamento;7,69;Uscita
+03/12/2025 08:09;Trasporti;9,48;Uscita
+03/12/2025 08:10;Salute;31,31;Uscita
+03/12/2025 12:00;Ristoranti e Bar;24,84;Uscita
+03/12/2025 19:31;Trasporti;30,56;Uscita
+04/12/2025 12:12;Alimentari;24,50;Uscita
+04/12/2025 13:20;Alimentari;19,81;Uscita
+04/12/2025 14:41;Svago;70,75;Uscita
+05/12/2025 16:05;Trasporti;23,21;Uscita
+07/12/2025 13:16;Ristoranti e Bar;3,00;Uscita
+07/12/2025 22:17;Alimentari;120,80;Uscita
+08/12/2025 10:35;Trasporti;87,66;Uscita
+08/12/2025 12:35;Ristoranti e Bar;29,41;Uscita
+09/12/2025 12:37;Altre Spese;17,80;Uscita
+09/12/2025 13:27;Svago;3,00;Uscita
+10/12/2025 11:40;Casa e Bollette;708,03;Uscita
+10/12/2025 15:14;Alimentari;41,86;Uscita
+11/12/2025 10:00;Bonus;296,54;Entrata
+11/12/2025 15:01;Abbigliamento;87,91;Uscita
+13/12/2025 15:32;Istruzione;40,62;Uscita
+14/12/2025 16:36;Ristoranti e Bar;55,61;Uscita
+14/12/2025 21:44;Ristoranti e Bar;17,11;Uscita
+15/12/2025 16:44;Istruzione;31,81;Uscita
+16/12/2025 10:52;Trasporti;15,19;Uscita
+18/12/2025 18:27;Alimentari;9,65;Uscita
+18/12/2025 18:30;Rimborsi;128,56;Entrata
+20/12/2025 08:39;Ristoranti e Bar;15,53;Uscita
+21/12/2025 21:58;Altre Spese;15,82;Uscita
+22/12/2025 09:10;Ristoranti e Bar;4,17;Uscita
+22/12/2025 14:59;Svago;24,85;Uscita
+23/12/2025 21:17;Alimentari;28,51;Uscita
+24/12/2025 10:48;Ristoranti e Bar;38,93;Uscita
+24/12/2025 16:06;Alimentari;188,12;Uscita
+24/12/2025 17:22;Alimentari;126,55;Uscita
+25/12/2025 15:36;Assicurazioni;73,65;Uscita
+26/12/2025 16:38;Salute;6,57;Uscita
+27/12/2025 09:00;Stipendio;2252,03;Entrata
+27/12/2025 09:05;Stipendio Partner;2039,61;Entrata
+28/12/2025 21:04;Svago;3,24;Uscita
+01/01/2026 20:05;Trasporti;56,55;Uscita
+02/01/2026 13:33;Alimentari;45,43;Uscita
+03/01/2026 17:16;Alimentari;21,60;Uscita
+05/01/2026 09:17;Svago;27,68;Uscita
+05/01/2026 20:55;Altre Spese;9,46;Uscita
+05/01/2026 21:34;Salute;5,86;Uscita
+06/01/2026 16:35;Trasporti;91,88;Uscita
+08/01/2026 19:14;Istruzione;31,94;Uscita
+08/01/2026 21:35;Ristoranti e Bar;18,71;Uscita
+10/01/2026 21:56;Casa e Bollette;667,74;Uscita
+11/01/2026 10:49;Alimentari;176,77;Uscita
+11/01/2026 13:44;Istruzione;26,70;Uscita
+12/01/2026 22:40;Alimentari;28,47;Uscita
+13/01/2026 07:42;Alimentari;12,23;Uscita
+15/01/2026 07:46;Altre Spese;3,00;Uscita
+15/01/2026 10:33;Altre Spese;65,41;Uscita
+16/01/2026 08:08;Assicurazioni;109,54;Uscita
+16/01/2026 16:32;Ristoranti e Bar;13,09;Uscita
+16/01/2026 18:21;Salute;8,39;Uscita
+18/01/2026 11:59;Casa e Bollette;170,66;Uscita
+22/01/2026 22:55;Salute;6,06;Uscita
+23/01/2026 15:26;Ristoranti e Bar;38,34;Uscita
+24/01/2026 22:45;Abbigliamento;6,10;Uscita
+25/01/2026 20:21;Svago;22,53;Uscita
+26/01/2026 14:45;Trasporti;4,41;Uscita
+26/01/2026 15:52;Svago;4,26;Uscita
+26/01/2026 19:24;Abbigliamento;133,74;Uscita
+27/01/2026 08:29;Alimentari;149,71;Uscita
+27/01/2026 09:00;Stipendio;2337,18;Entrata
+27/01/2026 09:05;Stipendio Partner;2012,85;Entrata
+27/01/2026 22:30;Ristoranti e Bar;41,32;Uscita
+28/01/2026 21:26;Alimentari;85,22;Uscita
+01/02/2026 08:20;Alimentari;78,83;Uscita
+03/02/2026 14:40;Alimentari;35,50;Uscita
+03/02/2026 16:20;Assicurazioni;93,18;Uscita
+04/02/2026 10:28;Alimentari;52,09;Uscita
+06/02/2026 09:39;Casa e Bollette;517,64;Uscita
+06/02/2026 16:57;Alimentari;3,92;Uscita
+08/02/2026 19:36;Ristoranti e Bar;33,12;Uscita
+08/02/2026 20:36;Casa e Bollette;325,93;Uscita
+09/02/2026 07:57;Trasporti;44,70;Uscita
+09/02/2026 18:30;Rimborsi;74,01;Entrata
+10/02/2026 07:53;Ristoranti e Bar;3,63;Uscita
+10/02/2026 12:04;Trasporti;70,19;Uscita
+10/02/2026 13:24;Ristoranti e Bar;42,43;Uscita
+10/02/2026 14:38;Svago;3,65;Uscita
+10/02/2026 21:02;Abbigliamento;107,84;Uscita
+12/02/2026 16:44;Ristoranti e Bar;38,54;Uscita
+17/02/2026 15:53;Altre Spese;77,74;Uscita
+21/02/2026 10:57;Istruzione;37,54;Uscita
+21/02/2026 13:39;Salute;116,23;Uscita
+21/02/2026 15:29;Trasporti;39,09;Uscita
+22/02/2026 12:10;Casa e Bollette;65,67;Uscita
+22/02/2026 16:14;Alimentari;189,84;Uscita
+22/02/2026 19:17;Ristoranti e Bar;3,00;Uscita
+24/02/2026 09:27;Alimentari;22,80;Uscita
+24/02/2026 22:53;Svago;37,16;Uscita
+26/02/2026 18:33;Altre Spese;19,53;Uscita
+26/02/2026 21:57;Trasporti;14,39;Uscita
+27/02/2026 09:00;Stipendio;2380,96;Entrata
+27/02/2026 09:05;Stipendio Partner;1880,87;Entrata
+28/02/2026 08:39;Alimentari;177,48;Uscita
+28/02/2026 22:06;Ristoranti e Bar;22,37;Uscita
+02/03/2026 08:19;Casa e Bollette;266,02;Uscita
+04/03/2026 07:08;Abbigliamento;95,63;Uscita
+05/03/2026 19:29;Trasporti;17,46;Uscita
+05/03/2026 20:33;Altre Spese;45,68;Uscita
+07/03/2026 14:21;Salute;86,61;Uscita
+09/03/2026 08:44;Ristoranti e Bar;85,01;Uscita
+09/03/2026 11:08;Istruzione;83,04;Uscita
+11/03/2026 18:30;Rimborsi;134,55;Entrata
+12/03/2026 09:50;Alimentari;335,17;Uscita
+12/03/2026 10:43;Ristoranti e Bar;8,42;Uscita
+12/03/2026 13:28;Ristoranti e Bar;30,11;Uscita
+12/03/2026 15:37;Alimentari;49,58;Uscita
+12/03/2026 20:37;Trasporti;141,92;Uscita
+13/03/2026 07:16;Alimentari;37,20;Uscita
+13/03/2026 18:06;Alimentari;5,86;Uscita
+14/03/2026 10:08;Casa e Bollette;28,37;Uscita
+15/03/2026 14:54;Ristoranti e Bar;14,55;Uscita
+17/03/2026 10:00;Bonus;586,95;Entrata
+18/03/2026 10:29;Alimentari;25,71;Uscita
+18/03/2026 13:37;Salute;28,45;Uscita
+19/03/2026 17:01;Assicurazioni;70,59;Uscita
+21/03/2026 07:03;Svago;53,12;Uscita
+21/03/2026 21:58;Casa e Bollette;247,65;Uscita
+22/03/2026 13:41;Svago;16,52;Uscita
+22/03/2026 14:30;Alimentari;9,28;Uscita
+23/03/2026 16:41;Casa e Bollette;212,97;Uscita
+24/03/2026 11:56;Trasporti;20,25;Uscita
+25/03/2026 11:50;Salute;23,60;Uscita
+26/03/2026 17:15;Svago;3,00;Uscita
+27/03/2026 09:00;Stipendio;2282,91;Entrata
+27/03/2026 09:05;Stipendio Partner;2032,81;Entrata
+28/03/2026 21:05;Svago;4,65;Uscita
+03/04/2026 09:27;Trasporti;10,30;Uscita
+03/04/2026 13:24;Istruzione;29,93;Uscita
+03/04/2026 17:38;Alimentari;188,99;Uscita
+04/04/2026 13:09;Ristoranti e Bar;36,08;Uscita
+04/04/2026 18:51;Trasporti;43,26;Uscita
+05/04/2026 08:37;Trasporti;24,01;Uscita
+05/04/2026 09:08;Alimentari;31,29;Uscita
+06/04/2026 15:44;Svago;3,00;Uscita
+08/04/2026 20:21;Casa e Bollette;189,42;Uscita
+09/04/2026 13:48;Altre Spese;16,51;Uscita
+09/04/2026 17:24;Alimentari;11,61;Uscita
+10/04/2026 16:22;Ristoranti e Bar;5,00;Uscita
+10/04/2026 17:49;Abbigliamento;12,40;Uscita
+11/04/2026 18:00;Svago;3,00;Uscita
+12/04/2026 18:30;Rimborsi;96,72;Entrata
+14/04/2026 10:18;Altre Spese;6,58;Uscita
+14/04/2026 10:20;Casa e Bollette;237,22;Uscita
+14/04/2026 17:42;Casa e Bollette;245,92;Uscita
+16/04/2026 21:04;Alimentari;33,73;Uscita
+17/04/2026 10:22;Altre Spese;3,00;Uscita
+17/04/2026 20:00;Altri Redditi;139,82;Entrata
+17/04/2026 20:06;Alimentari;154,13;Uscita
+18/04/2026 17:42;Trasporti;35,37;Uscita
+19/04/2026 09:56;Abbigliamento;66,38;Uscita
+19/04/2026 19:04;Salute;41,77;Uscita
+20/04/2026 16:29;Alimentari;114,86;Uscita
+21/04/2026 07:38;Svago;38,42;Uscita
+22/04/2026 15:01;Svago;12,83;Uscita
+22/04/2026 22:14;Ristoranti e Bar;43,77;Uscita
+22/04/2026 22:33;Altre Spese;12,62;Uscita
+25/04/2026 08:43;Assicurazioni;72,10;Uscita
+25/04/2026 15:36;Ristoranti e Bar;5,72;Uscita
+25/04/2026 16:58;Svago;8,10;Uscita
+26/04/2026 10:54;Alimentari;19,95;Uscita
+27/04/2026 09:00;Stipendio;2272,73;Entrata
+27/04/2026 09:05;Stipendio Partner;1862,71;Entrata
+27/04/2026 21:25;Casa e Bollette;208,37;Uscita
+28/04/2026 10:22;Ristoranti e Bar;4,10;Uscita
+28/04/2026 18:07;Ristoranti e Bar;3,00;Uscita
+01/05/2026 21:58;Alimentari;88,39;Uscita
+02/05/2026 18:53;Abbigliamento;84,64;Uscita
+03/05/2026 17:36;Alimentari;30,20;Uscita
+04/05/2026 11:16;Ristoranti e Bar;3,00;Uscita
+04/05/2026 19:01;Alimentari;146,71;Uscita
+07/05/2026 12:38;Ristoranti e Bar;92,56;Uscita
+07/05/2026 20:00;Altri Redditi;287,18;Entrata
+11/05/2026 14:21;Trasporti;53,16;Uscita
+11/05/2026 17:09;Salute;84,17;Uscita
+12/05/2026 09:19;Istruzione;39,23;Uscita
+13/05/2026 08:27;Alimentari;97,40;Uscita
+14/05/2026 19:45;Alimentari;187,58;Uscita
+15/05/2026 09:30;Salute;44,97;Uscita
+15/05/2026 13:20;Altre Spese;82,23;Uscita
+15/05/2026 16:50;Salute;3,00;Uscita
+17/05/2026 09:25;Trasporti;31,46;Uscita
+17/05/2026 18:04;Alimentari;4,48;Uscita
+20/05/2026 18:30;Rimborsi;37,12;Entrata
+20/05/2026 19:29;Assicurazioni;81,48;Uscita
+20/05/2026 21:53;Casa e Bollette;755,84;Uscita
+21/05/2026 20:18;Alimentari;25,13;Uscita
+23/05/2026 18:05;Casa e Bollette;187,40;Uscita
+24/05/2026 11:15;Ristoranti e Bar;74,86;Uscita
+25/05/2026 18:22;Ristoranti e Bar;21,56;Uscita
+25/05/2026 21:43;Svago;45,49;Uscita
+25/05/2026 22:29;Svago;9,79;Uscita
+27/05/2026 09:00;Stipendio;2383,43;Entrata
+27/05/2026 09:05;Stipendio Partner;1859,08;Entrata
+28/05/2026 16:47;Trasporti;44,68;Uscita
+03/06/2026 11:58;Casa e Bollette;321,67;Uscita
+03/06/2026 14:52;Assicurazioni;90,53;Uscita
+05/06/2026 09:41;Trasporti;9,63;Uscita
+05/06/2026 11:04;Ristoranti e Bar;25,09;Uscita
+06/06/2026 12:46;Ristoranti e Bar;6,38;Uscita
+07/06/2026 11:55;Salute;55,84;Uscita
+08/06/2026 07:20;Altre Spese;4,91;Uscita
+09/06/2026 21:57;Abbigliamento;31,74;Uscita
+10/06/2026 10:00;Bonus;380,21;Entrata
+10/06/2026 10:32;Ristoranti e Bar;15,27;Uscita
+11/06/2026 11:38;Ristoranti e Bar;55,45;Uscita
+12/06/2026 16:24;Alimentari;46,39;Uscita
+12/06/2026 16:41;Casa e Bollette;37,01;Uscita
+13/06/2026 09:23;Altre Spese;36,40;Uscita
+13/06/2026 11:10;Ristoranti e Bar;24,17;Uscita
+13/06/2026 18:15;Altre Spese;29,29;Uscita
+14/06/2026 12:52;Salute;56,49;Uscita
+14/06/2026 17:43;Alimentari;117,24;Uscita
+15/06/2026 12:23;Alimentari;106,47;Uscita
+18/06/2026 10:45;Istruzione;32,78;Uscita
+18/06/2026 14:19;Svago;20,63;Uscita
+20/06/2026 08:50;Alimentari;41,21;Uscita
+21/06/2026 17:04;Alimentari;305,70;Uscita
+22/06/2026 11:21;Casa e Bollette;231,85;Uscita
+22/06/2026 20:32;Trasporti;89,48;Uscita
+22/06/2026 21:29;Svago;3,00;Uscita
+23/06/2026 19:08;Casa e Bollette;225,42;Uscita
+25/06/2026 08:42;Ristoranti e Bar;4,29;Uscita
+25/06/2026 21:14;Svago;30,52;Uscita
+26/06/2026 17:52;Trasporti;44,44;Uscita
+26/06/2026 22:57;Svago;9,13;Uscita
+27/06/2026 09:00;Stipendio;2371,00;Entrata
+27/06/2026 09:05;Stipendio Partner;1950,27;Entrata
+27/06/2026 13:23;Svago;20,94;Uscita
+28/06/2026 10:18;Istruzione;4,72;Uscita
+01/07/2026 18:15;Casa e Bollette;311,39;Uscita
+02/07/2026 13:18;Svago;69,34;Uscita
+03/07/2026 07:16;Alimentari;222,07;Uscita
+03/07/2026 07:24;Trasporti;12,10;Uscita
+03/07/2026 20:05;Istruzione;34,63;Uscita
+05/07/2026 08:22;Ristoranti e Bar;19,74;Uscita
+05/07/2026 09:45;Ristoranti e Bar;46,33;Uscita
+05/07/2026 16:27;Casa e Bollette;448,09;Uscita
+07/07/2026 11:35;Alimentari;3,00;Uscita
+08/07/2026 20:40;Alimentari;40,85;Uscita
+09/07/2026 07:22;Trasporti;3,58;Uscita
+10/07/2026 10:03;Alimentari;34,21;Uscita
+11/07/2026 16:32;Svago;4,35;Uscita
+12/07/2026 08:55;Svago;11,14;Uscita
+13/07/2026 17:11;Salute;19,67;Uscita
+13/07/2026 21:57;Salute;15,27;Uscita
+13/07/2026 22:16;Svago;19,36;Uscita
+14/07/2026 15:40;Altre Spese;19,45;Uscita
+16/07/2026 12:51;Ristoranti e Bar;18,96;Uscita
+17/07/2026 14:45;Casa e Bollette;12,69;Uscita
+18/07/2026 16:20;Abbigliamento;80,29;Uscita
+18/07/2026 17:52;Ristoranti e Bar;26,17;Uscita
+21/07/2026 12:53;Ristoranti e Bar;64,88;Uscita
+21/07/2026 17:17;Svago;13,43;Uscita
+21/07/2026 19:23;Trasporti;43,86;Uscita
+22/07/2026 16:19;Assicurazioni;74,10;Uscita
+22/07/2026 19:23;Altre Spese;38,77;Uscita
+24/07/2026 18:39;Altre Spese;11,69;Uscita
+24/07/2026 20:07;Alimentari;67,64;Uscita
+25/07/2026 16:15;Alimentari;67,93;Uscita
+25/07/2026 21:44;Ristoranti e Bar;14,32;Uscita
+26/07/2026 08:04;Altre Spese;3,00;Uscita
+26/07/2026 15:51;Istruzione;20,11;Uscita
+26/07/2026 21:04;Alimentari;39,10;Uscita
+27/07/2026 09:00;Stipendio;2436,17;Entrata
+27/07/2026 09:05;Stipendio Partner;2017,84;Entrata
+28/07/2026 22:02;Trasporti;81,81;Uscita
+01/08/2026 12:31;Casa e Bollette;845,17;Uscita
+01/08/2026 18:30;Rimborsi;48,56;Entrata
+03/08/2026 09:19;Svago;9,87;Uscita
+03/08/2026 11:33;Alimentari;164,95;Uscita
+03/08/2026 21:11;Trasporti;12,95;Uscita
+04/08/2026 11:54;Trasporti;55,84;Uscita
+05/08/2026 20:32;Salute;73,01;Uscita
+05/08/2026 21:23;Alimentari;63,97;Uscita
+06/08/2026 12:50;Ristoranti e Bar;37,35;Uscita
+06/08/2026 17:59;Abbigliamento;41,42;Uscita
+07/08/2026 11:15;Ristoranti e Bar;32,17;Uscita
+12/08/2026 14:07;Ristoranti e Bar;3,00;Uscita
+12/08/2026 19:20;Alimentari;206,81;Uscita
+12/08/2026 21:48;Alimentari;73,53;Uscita
+13/08/2026 22:33;Svago;25,69;Uscita
+14/08/2026 20:52;Svago;39,23;Uscita
+17/08/2026 16:54;Assicurazioni;98,37;Uscita
+17/08/2026 18:08;Salute;10,14;Uscita
+17/08/2026 19:58;Casa e Bollette;34,74;Uscita
+18/08/2026 15:08;Altre Spese;23,56;Uscita
+19/08/2026 08:38;Alimentari;73,57;Uscita
+19/08/2026 09:08;Svago;3,00;Uscita
+21/08/2026 16:39;Altre Spese;13,54;Uscita
+23/08/2026 21:05;Trasporti;9,97;Uscita
+23/08/2026 22:12;Trasporti;30,16;Uscita
+26/08/2026 17:42;Trasporti;31,63;Uscita
+26/08/2026 22:01;Ristoranti e Bar;57,89;Uscita
+27/08/2026 09:00;Stipendio;2352,62;Entrata
+27/08/2026 09:05;Stipendio Partner;1999,98;Entrata
+27/08/2026 10:33;Istruzione;83,75;Uscita
+27/08/2026 12:49;Salute;53,54;Uscita
