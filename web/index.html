@@ -460,6 +460,10 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
   background: var(--card2); border: 1px solid var(--border); color: var(--text);
   padding: 8px 10px; border-radius: 7px; font-size: 12.5px;
 }
+.rule-import-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.rule-import-row .muted code {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono);
+}
 .review-list { display: flex; flex-direction: column; gap: 8px; }
 .review-row {
   display: grid; grid-template-columns: 1fr 140px auto; gap: 8px; align-items: center;
@@ -1011,6 +1015,12 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <select id="newRuleCategory"></select>
         <button id="btnAddRule" class="btn btn-primary btn-sm" type="button">+ Aggiungi</button>
       </div>
+      <div class="rule-import-row">
+        <button id="btnImportDictionary" class="btn-ghost btn-sm" type="button">📂 Importa da CSV</button>
+        <input type="file" id="dictionaryFileInput" accept=".csv,text/csv" hidden>
+        <span class="muted">Colonne attese: <code>keyword,category</code> (con o senza intestazione) — le parole chiave già presenti vengono aggiornate.</span>
+      </div>
+      <div id="dictionaryImportError" class="welcome-error hidden"></div>
       <div class="modal-close-row modal-close-row-split" style="border-top: none; margin-top: 2px;">
         <button id="btnResetDictionary" class="btn-link" type="button">Ripristina dizionario predefinito</button>
         <span id="ruleCount" class="muted"></span>
@@ -1832,6 +1842,59 @@ function parseCSV(text) {
   }
   if (!rows.length) throw new Error("Nessuna riga valida trovata nel file.");
   return rows;
+}
+function parseDictionaryCSV(text) {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  if (!lines.length) throw new Error("Il file è vuoto.");
+  const firstLine = lines[0];
+  const delim = firstLine.split(",").length >= firstLine.split(";").length ? "," : ";";
+  const headerCells = splitCSVLine(firstLine, delim).map((h) => h.trim().toLowerCase());
+  const kwIdx = headerCells.findIndex((h) => h.includes("keyword") || h.includes("parola") || h.includes("esercente") || h.includes("merchant"));
+  const catIdx = headerCells.findIndex((h) => h.includes("categ"));
+  const hasHeader = kwIdx >= 0 && catIdx >= 0;
+  const idx = hasHeader ? { kw: kwIdx, cat: catIdx } : { kw: 0, cat: 1 };
+  const rules = [];
+  for (let i = hasHeader ? 1 : 0; i < lines.length; i++) {
+    const parts = splitCSVLine(lines[i], delim);
+    const keyword = (parts[idx.kw] || "").trim();
+    const category = (parts[idx.cat] || "").trim();
+    if (!keyword || !category) continue;
+    rules.push({ keyword, category });
+  }
+  if (!rules.length) throw new Error("Nessuna riga valida trovata. Formato atteso: keyword,category su ogni riga (con o senza intestazione).");
+  return rules;
+}
+function importDictionaryCSV(file) {
+  const errBox = document.getElementById("dictionaryImportError");
+  errBox.classList.add("hidden");
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = parseDictionaryCSV(reader.result);
+      let added = 0, updated = 0;
+      for (const { keyword, category } of parsed) {
+        const norm = normalizeForMatch(keyword);
+        const existing = state.merchantRules.find((r) => normalizeForMatch(r.keyword) === norm);
+        if (existing) { existing.category = category; updated++; }
+        else { state.merchantRules.unshift({ keyword, category }); added++; }
+      }
+      saveMerchantRules();
+      renderRuleEditor();
+      errBox.classList.remove("hidden");
+      errBox.style.color = "var(--primary)";
+      errBox.textContent = `Dizionario importato: ${added} nuove regole aggiunte, ${updated} aggiornate.`;
+    } catch (err) {
+      errBox.classList.remove("hidden");
+      errBox.style.color = "";
+      errBox.textContent = "Errore nell'importazione del dizionario: " + err.message;
+    }
+  };
+  reader.onerror = () => {
+    errBox.classList.remove("hidden");
+    errBox.style.color = "";
+    errBox.textContent = "Impossibile leggere il file.";
+  };
+  reader.readAsText(file, "UTF-8");
 }
 
 // ---------------------------------------------------------------- persistence
@@ -2990,6 +3053,12 @@ function init() {
   document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
   document.getElementById("btnAddRule").addEventListener("click", addRuleFromForm);
   document.getElementById("btnResetDictionary").addEventListener("click", resetDictionaryToDefault);
+  const dictFileInput = document.getElementById("dictionaryFileInput");
+  document.getElementById("btnImportDictionary").addEventListener("click", () => dictFileInput.click());
+  dictFileInput.addEventListener("change", (e) => {
+    if (e.target.files[0]) importDictionaryCSV(e.target.files[0]);
+    dictFileInput.value = "";
+  });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeTxModal(); closeSettings(); }
