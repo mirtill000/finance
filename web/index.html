@@ -3,104 +3,2023 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestione Finanze Familiari</title>
-<link rel="stylesheet" href="css/style.css">
+<title>Family Finance Dashboard PRO</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --primary: #00ff88;
+  --secondary: #00b8ff;
+  --accent: #ff6b35;
+  --warning: #ffaa00;
+  --danger: #ff4757;
+  --purple: #a855f7;
+  --background: #0a0f1a;
+  --card: #111827;
+  --card2: #161f2e;
+  --text: #e5e7eb;
+  --text-muted: #6b7280;
+  --border: #1f2937;
+  --font-main: "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font-family: inherit; }
+::selection { background: var(--primary); color: #05130c; }
+.hidden { display: none !important; }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ===================== welcome / drop screen ===================== */
+#welcomeScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(0,255,136,0.07), transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(0,184,255,0.07), transparent 45%),
+    var(--background);
+}
+.welcome-card {
+  width: min(560px, 100%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 36px;
+  text-align: center;
+}
+.welcome-logo { font-size: 40px; margin-bottom: 6px; }
+.welcome-card h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.welcome-card h1 span { color: var(--primary); }
+.welcome-card p.lead {
+  margin: 0 0 26px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 34px 18px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  background: rgba(255,255,255,0.015);
+}
+.dropzone.dragover {
+  border-color: var(--primary);
+  background: rgba(0,255,136,0.06);
+}
+.dropzone .dz-icon { font-size: 34px; margin-bottom: 10px; }
+.dropzone .dz-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.dropzone .dz-sub { color: var(--text-muted); font-size: 12.5px; }
+.welcome-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 20px 0; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.welcome-divider::before, .welcome-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.welcome-actions { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.welcome-error {
+  margin-top: 16px;
+  background: rgba(255,71,87,0.1);
+  border: 1px solid rgba(255,71,87,0.4);
+  color: #ffb3b8;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  text-align: left;
+}
+.welcome-format {
+  margin-top: 22px;
+  text-align: left;
+  background: #0d1420;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow-x: auto;
+}
+.welcome-format strong { color: var(--text); }
+
+/* ===================== buttons ===================== */
+.btn {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 9px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: filter 0.12s ease, transform 0.05s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--primary); color: #05130c; border-color: var(--primary); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { background: var(--card2); color: var(--text); }
+.btn-ghost:hover { background: #1c2740; }
+.btn-link { background: transparent; border: none; color: var(--text-muted); text-decoration: underline; font-size: 12.5px; padding: 4px; }
+.btn-link:hover { color: var(--text); }
+.btn-danger-outline { background: transparent; border-color: var(--danger); color: var(--danger); }
+.btn-danger-outline:hover { background: rgba(255,71,87,0.1); }
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ===================== app shell ===================== */
+#app { max-width: 1500px; margin: 0 auto; padding: 0 0 40px; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+  background: #0d1420; position: sticky; top: 0; z-index: 20;
+}
+.topbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: 0.3px; }
+.topbar-brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+#liveClock { font-family: var(--font-mono); color: var(--text-muted); font-size: 12.5px; }
+
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+}
+.filter-field { display: flex; flex-direction: column; gap: 4px; }
+.filter-field label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 700; }
+.filter-field select, .filter-field input {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 7px 10px; border-radius: 7px; font-size: 12.5px; min-width: 140px;
+}
+.filter-field select:focus, .filter-field input:focus { outline: 1.5px solid var(--secondary); }
+
+.tabs {
+  display: flex; gap: 4px; padding: 0 22px; border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.tab-btn {
+  background: transparent; border: none; color: var(--text-muted);
+  padding: 14px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+.tab-panel { display: none; padding: 20px 22px 0; }
+.tab-panel.active { display: block; }
+
+/* ===================== KPI / metric cards ===================== */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.metric-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 18px; position: relative; overflow: hidden;
+}
+.metric-card::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--accent-bar, var(--primary));
+}
+.metric-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 700; margin-bottom: 8px; }
+.metric-value { font-family: var(--font-mono); font-size: 24px; font-weight: 800; }
+.metric-sub { margin-top: 6px; font-size: 11.5px; color: var(--text-muted); }
+.pos { color: var(--primary); }
+.neg { color: var(--danger); }
+.warn { color: var(--warning); }
+.acc { color: var(--secondary); }
+
+/* ===================== panels / cards ===================== */
+.grid-2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+@media (max-width: 980px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+.panel h3 { margin: 0 0 12px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.panel h3 .panel-tag { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
+.chart-box { position: relative; height: 260px; }
+.chart-box.short { height: 210px; }
+.chart-box.tall { height: 320px; }
+
+/* ===================== budget bars ===================== */
+.budget-row { display: grid; grid-template-columns: 1.1fr 0.9fr 1.4fr; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.budget-row:last-child { border-bottom: none; }
+.budget-cat { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.budget-amounts { font-family: var(--font-mono); color: var(--text-muted); text-align: right; }
+.budget-amounts.over { color: var(--danger); font-weight: 700; }
+.track { position: relative; height: 14px; background: #0d1420; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+.track-fill { position: absolute; inset: 0 auto 0 0; border-radius: 7px 0 0 7px; }
+.track-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 10px; font-weight: 700; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.7); }
+
+/* ===================== insight cards ===================== */
+.insight-list { display: flex; flex-direction: column; gap: 8px; }
+.insight {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 8px; font-size: 12.5px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.02);
+}
+.insight .ic { font-size: 16px; line-height: 1; }
+.insight .txt strong { display: block; font-size: 12.5px; margin-bottom: 2px; }
+.insight .txt span.action { display: block; margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
+.insight.danger { border-color: rgba(255,71,87,0.4); }
+.insight.danger .ic { color: var(--danger); }
+.insight.warning { border-color: rgba(255,170,0,0.4); }
+.insight.warning .ic { color: var(--warning); }
+.insight.success { border-color: rgba(0,255,136,0.35); }
+.insight.success .ic { color: var(--primary); }
+.insight.info { border-color: rgba(0,184,255,0.35); }
+.insight.info .ic { color: var(--secondary); }
+
+/* ===================== lists / tx rows ===================== */
+.tx-list { display: flex; flex-direction: column; }
+.tx-row {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center;
+  padding: 9px 4px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 12.5px;
+}
+.tx-row:hover { background: rgba(255,255,255,0.03); }
+.tx-row:last-child { border-bottom: none; }
+.tx-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--card2); font-size: 16px; }
+.tx-mid .tx-cat { font-weight: 700; }
+.tx-mid .tx-date { color: var(--text-muted); font-size: 11px; font-family: var(--font-mono); }
+.tx-amt { font-family: var(--font-mono); font-weight: 700; text-align: right; white-space: nowrap; }
+
+/* ===================== badges ===================== */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 100px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.2px; text-transform: uppercase; }
+.badge.income { background: rgba(0,255,136,0.14); color: var(--primary); }
+.badge.outcome { background: rgba(255,71,87,0.14); color: var(--danger); }
+
+/* ===================== alert box ===================== */
+.alert-banner { margin: 0 0 16px; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; border: 1px solid var(--border); }
+.alert-banner.over { background: rgba(255,71,87,0.1); color: #ffb3b8; }
+.alert-banner.ok { background: rgba(0,255,136,0.08); color: #a7f3d3; }
+
+/* ===================== simulator ===================== */
+.sim-layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 1100px) { .sim-layout { grid-template-columns: 1fr; } }
+.sim-form { display: flex; flex-direction: column; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+.field input, .field select {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 9px 11px; border-radius: 8px; font-size: 13px;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 4px; }
+.preset-btn {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 10px 8px; border-radius: 9px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+}
+.preset-btn:hover { border-color: var(--purple); color: var(--purple); }
+.preset-btn .pi { font-size: 18px; }
+.sim-item {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; margin-bottom: 8px; font-size: 12.5px;
+  background: rgba(255,255,255,0.015);
+}
+.sim-item .si-name { font-weight: 700; }
+.sim-item .si-meta { color: var(--text-muted); font-size: 11px; }
+.sim-item .si-amt { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+.sim-item .si-remove { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px; padding: 2px 6px; }
+.sim-item .si-remove:hover { color: var(--danger); }
+.sim-empty { color: var(--text-muted); font-size: 12.5px; padding: 18px 10px; text-align: center; border: 1px dashed var(--border); border-radius: 9px; }
+
+/* ===================== table ===================== */
+.table-wrap { overflow-x: auto; }
+table.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.data-table th {
+  text-align: left; padding: 9px 10px; color: var(--text-muted); font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); cursor: pointer; white-space: nowrap;
+  user-select: none;
+}
+table.data-table th.sortable:hover { color: var(--text); }
+table.data-table th .arrow { font-size: 9px; margin-left: 3px; opacity: 0.6; }
+table.data-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+table.data-table tbody tr { cursor: pointer; }
+table.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.table-empty { text-align: center; color: var(--text-muted); padding: 30px; font-size: 12.5px; }
+.stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; margin-bottom: 16px; }
+.stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.stat-box .sv { font-family: var(--font-mono); font-size: 19px; font-weight: 800; }
+.stat-box .sl { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+/* ===================== modal ===================== */
+.modal-overlay { position: fixed; inset: 0; background: rgba(5,8,14,0.7); display: flex; align-items: center; justify-content: center; z-index: 60; }
+.modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; width: min(420px, 92vw); padding: 22px; }
+.modal-box .mx-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px; }
+.modal-box .mx-amount { text-align: center; font-family: var(--font-mono); font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.modal-box .mx-cat { text-align: center; font-weight: 700; margin-bottom: 16px; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.modal-grid .mi { background: var(--card2); border-radius: 8px; padding: 9px 11px; }
+.modal-grid .mi .ml { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 3px; }
+.modal-grid .mi .mv { font-size: 12.5px; font-weight: 700; font-family: var(--font-mono); }
+.modal-close-row { text-align: center; }
+
+/* misc */
+.section-spacer { height: 4px; }
+.text-center { text-align: center; }
+footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size: 11px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-style: italic; }
+
+</style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-icon">💶</span>
-        <span>GESTIONE FINANZE FAMILIARI</span>
-      </div>
-      <div class="topbar-right" id="dataUpdatedAt"></div>
-    </header>
+<div id="welcomeScreen">
+  <div class="welcome-card">
+    <div class="welcome-logo">🏦</div>
+    <h1>Family Finance <span>Dashboard PRO</span></h1>
+    <p class="lead">Carica il tuo CSV di transazioni per generare la dashboard: entrate/uscite, budget per categoria, simulatore finanziario e analisi avanzate — tutto elaborato nel browser, nessun dato lascia il tuo computer.</p>
 
-    <section class="greeting-row">
-      <div class="greeting">
-        <h1>Buonasera, <span id="userName" class="accent-name">Andrea</span></h1>
-        <p class="subtitle">Ecco il riepilogo delle finanze familiari</p>
-      </div>
-      <div class="controls">
-        <div class="control-group">
-          <label for="monthSelect">Mese</label>
-          <select id="monthSelect"></select>
-        </div>
-        <span id="txCountLabel" class="muted"></span>
-        <button id="btnSettings" class="btn-ghost" type="button">⚙ Impostazioni</button>
-        <label class="btn-ghost file-btn">
-          📂 Importa CSV
-          <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
-        </label>
-      </div>
-    </section>
+    <div id="dropzone" class="dropzone">
+      <div class="dz-icon">📄</div>
+      <div class="dz-title">Trascina qui il tuo file CSV</div>
+      <div class="dz-sub">oppure clicca per selezionarlo</div>
+      <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+    </div>
 
-    <section class="kpi-grid" id="kpiGrid"></section>
+    <div class="welcome-divider">oppure</div>
+    <div class="welcome-actions">
+      <button id="btnBrowse" class="btn btn-primary" type="button">📂 Carica CSV</button>
+      <button id="btnSample" class="btn-link" type="button">Prova con dati di esempio</button>
+    </div>
 
-    <section class="charts-row">
-      <div class="panel">
-        <h2>Andamento Patrimonio (<span id="monthsCount">-</span> mesi)</h2>
-        <div class="chart-wrap"><svg id="comboChart" preserveAspectRatio="none"></svg></div>
-        <div class="legend" id="comboLegend"></div>
-      </div>
-      <div class="panel">
-        <h2>Ripartizione Spese — <span id="pieMonthLabel">-</span></h2>
-        <div class="chart-wrap chart-wrap-pie"><svg id="pieChart" preserveAspectRatio="xMidYMid meet"></svg></div>
-        <div class="legend legend-pie" id="pieLegend"></div>
-      </div>
-    </section>
+    <div id="welcomeError" class="welcome-error hidden"></div>
 
-    <section class="lists-row">
-      <div class="panel">
-        <h2>Analisi Spese per Categoria (Mese Selezionato)</h2>
-        <div class="list-header cat-row">
-          <span>Categoria</span><span>Speso / Budget</span><span>% Utilizzo</span>
-        </div>
-        <div id="categoryList" class="list-body"></div>
-      </div>
-      <div class="panel">
-        <h2>Transazioni Recenti (Mese Selezionato)</h2>
-        <div class="list-header tx-row">
-          <span>Data</span><span>Categoria</span><span>Tipo</span><span>Valore</span>
-        </div>
-        <div id="txList" class="list-body"></div>
-      </div>
-    </section>
-
-    <section id="alertBox" class="alert"></section>
-
-    <footer class="footer">
-      <span id="footerLeft"></span>
-      <span>Modifica il budget nelle Impostazioni · seleziona il mese in alto per aggiornare la dashboard</span>
-    </footer>
+    <div class="welcome-format">
+      <strong>Formato richiesto (intestazione obbligatoria):</strong><br>
+      datetime,category,value,type<br>
+      2025-01-15 09:30,Groceries,127.50,outcome<br>
+      2025-01-15 14:00,Salary,3500.00,income
+    </div>
   </div>
+</div>
 
-  <div id="settingsModal" class="modal-overlay hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Impostazioni</h3>
-        <button id="closeSettings" class="btn-icon" type="button">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="settings-field">
-          <label for="settingName">Nome (saluto in dashboard)</label>
-          <input type="text" id="settingName">
-        </div>
-        <div class="settings-field">
-          <label for="settingGoal">Obiettivo tasso di risparmio (%)</label>
-          <input type="number" id="settingGoal" min="0" max="100" step="1">
-        </div>
-        <h4>Budget mensile per categoria</h4>
-        <div id="budgetEditor" class="budget-editor"></div>
-      </div>
-      <div class="modal-footer">
-        <button id="btnResetSample" class="btn-ghost" type="button">Ripristina dati di esempio</button>
-        <button id="btnSaveSettings" class="btn-primary" type="button">Salva</button>
-      </div>
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="topbar-brand"><span class="dot"></span> FAMILY FINANCE <span style="color:var(--purple)">PRO</span></div>
+    <div class="topbar-right">
+      <span id="liveClock" class="tabular"></span>
+      <button id="btnNewCsv" class="btn btn-ghost btn-sm" type="button">🔄 Nuovo CSV</button>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <div class="filter-field">
+      <label for="filterPeriod">Periodo</label>
+      <select id="filterPeriod">
+        <option value="all">Tutto</option>
+        <option value="week">Questa Settimana</option>
+        <option value="month" selected>Questo Mese</option>
+        <option value="quarter">Questo Trimestre</option>
+        <option value="year">Quest'Anno</option>
+      </select>
+    </div>
+    <div class="filter-field">
+      <label for="filterCategory">Categoria</label>
+      <select id="filterCategory"><option value="all">Tutte</option></select>
+    </div>
+    <div class="filter-field">
+      <label for="filterType">Tipo</label>
+      <select id="filterType">
+        <option value="all">Tutte</option>
+        <option value="income">Entrate</option>
+        <option value="outcome">Uscite</option>
+      </select>
+    </div>
+    <div class="filter-field" style="justify-content:flex-end; flex-direction:row; align-items:flex-end;">
+      <span id="filterSummary" class="metric-sub" style="margin:0;"></span>
     </div>
   </div>
 
-  <script src="js/sample-data.js"></script>
-  <script src="js/app.js"></script>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="overview" type="button">📊 Overview</button>
+    <button class="tab-btn" data-tab="simulator" type="button">🧪 Simulatore</button>
+    <button class="tab-btn" data-tab="analytics" type="button">📈 Analytics</button>
+    <button class="tab-btn" data-tab="transactions" type="button">📋 Transazioni</button>
+  </nav>
+
+  <!-- ===================== OVERVIEW ===================== -->
+  <section id="tab-overview" class="tab-panel active">
+    <div class="metric-grid" id="overviewMetrics"></div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Flusso di Cassa <span class="panel-tag">entrate / uscite / saldo cumulativo</span></h3>
+        <div class="chart-box"><canvas id="chartCashflow"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Distribuzione Spese <span class="panel-tag" id="pieRangeTag"></span></h3>
+        <div class="chart-box"><canvas id="chartCategoryPie"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Pattern Spese Settimanale</h3>
+        <div class="chart-box short"><canvas id="chartWeekly"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Budget vs Spese</h3>
+        <div id="budgetList"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Smart Insights</h3>
+        <div id="overviewInsights" class="insight-list"></div>
+      </div>
+      <div class="panel">
+        <h3>Ultime Transazioni</h3>
+        <div id="recentTxList" class="tx-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SIMULATOR ===================== -->
+  <section id="tab-simulator" class="tab-panel">
+    <div class="sim-layout">
+      <div class="panel sim-form">
+        <h3>Nuova Simulazione</h3>
+        <div class="field">
+          <label for="simName">Nome</label>
+          <input type="text" id="simName" placeholder="Es. Abbonamento palestra">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="simAmount">Importo (€)</label>
+            <input type="number" id="simAmount" min="0" step="1" placeholder="50">
+          </div>
+          <div class="field">
+            <label for="simType">Tipo</label>
+            <select id="simType">
+              <option value="expense">Spesa</option>
+              <option value="income">Entrata</option>
+              <option value="saving">Risparmio</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="simFrequency">Frequenza</label>
+            <select id="simFrequency">
+              <option value="monthly">Mensile</option>
+              <option value="weekly">Settimanale</option>
+              <option value="yearly">Annuale</option>
+              <option value="once">Una tantum</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="simDuration">Durata (mesi)</label>
+            <input type="number" id="simDuration" min="1" max="12" value="12">
+          </div>
+        </div>
+        <div class="field">
+          <label for="simStartMonth">Mese di inizio</label>
+          <select id="simStartMonth"></select>
+        </div>
+        <button id="btnAddSim" class="btn btn-primary" type="button" style="justify-content:center;">➕ Aggiungi Simulazione</button>
+
+        <h3 style="margin-top:6px;">Preset Rapidi</h3>
+        <div class="preset-grid" id="presetGrid"></div>
+      </div>
+
+      <div>
+        <div class="metric-grid" id="simMetrics"></div>
+        <div class="panel" style="margin-bottom:16px;">
+          <h3>Simulazioni Attive <button id="btnClearSims" class="btn-link" type="button">Rimuovi tutte</button></h3>
+          <div id="simList"></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Proiezione Risparmio Cumulativo</h3>
+            <div class="chart-box"><canvas id="chartSimProjection"></canvas></div>
+          </div>
+          <div class="panel">
+            <h3>Entrate vs Uscite Mensili (proiezione)</h3>
+            <div class="chart-box"><canvas id="chartSimFlow"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Dettaglio 12 Mesi</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="simTable">
+              <thead><tr><th>Mese</th><th>Entrate</th><th>Uscite</th><th>Risparmio Base</th><th>Delta Simulazioni</th><th>Risparmio Totale</th><th>Saldo Cumulativo</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ANALYTICS ===================== -->
+  <section id="tab-analytics" class="tab-panel">
+    <div class="stat-strip" id="analyticsStats"></div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Orari di Spesa</h3>
+        <div class="chart-box"><canvas id="chartHourly"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Confronto Categorie</h3>
+        <div class="chart-box tall"><canvas id="chartCategoryCompare"></canvas></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel" style="grid-column: 1 / -1;">
+        <h3>Trend Risparmio Cumulativo</h3>
+        <div class="chart-box"><canvas id="chartSavingsTrend"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Insights &amp; Azioni Suggerite</h3>
+      <div id="analyticsInsights" class="insight-list"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TRANSACTIONS ===================== -->
+  <section id="tab-transactions" class="tab-panel">
+    <div class="filter-bar" style="padding:0 0 16px; border-bottom:none;">
+      <div class="filter-field">
+        <label for="txFilterCategory">Categoria</label>
+        <select id="txFilterCategory"><option value="all">Tutte</option></select>
+      </div>
+      <div class="filter-field">
+        <label for="txFilterType">Tipo</label>
+        <select id="txFilterType">
+          <option value="all">Tutte</option>
+          <option value="income">Entrate</option>
+          <option value="outcome">Uscite</option>
+        </select>
+      </div>
+      <div class="filter-field" style="flex:1; min-width:200px;">
+        <label for="txSearch">Ricerca</label>
+        <input type="text" id="txSearch" placeholder="Cerca per categoria...">
+      </div>
+      <div class="filter-field" style="justify-content:flex-end; flex-direction:row; align-items:flex-end;">
+        <span id="txCount" class="metric-sub" style="margin:0;"></span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table class="data-table" id="txTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="date">Data <span class="arrow">▾</span></th>
+              <th class="sortable" data-sort="category">Categoria</th>
+              <th class="sortable" data-sort="type">Tipo</th>
+              <th class="sortable" data-sort="value">Valore</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer class="appfooter">
+    <span id="footerInfo"></span>
+    <span>Elaborazione 100% locale nel browser · nessun dato viene inviato a un server</span>
+  </footer>
+</div>
+
+<div id="txModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="mx-icon" id="mxIcon">💳</div>
+    <div class="mx-amount" id="mxAmount">€0</div>
+    <div class="mx-cat" id="mxCat">Categoria</div>
+    <div class="modal-grid">
+      <div class="mi"><div class="ml">Data</div><div class="mv" id="mxDate">-</div></div>
+      <div class="mi"><div class="ml">Ora</div><div class="mv" id="mxTime">-</div></div>
+      <div class="mi"><div class="ml">Tipo</div><div class="mv" id="mxType">-</div></div>
+      <div class="mi"><div class="ml">ID Transazione</div><div class="mv" id="mxId">-</div></div>
+    </div>
+    <div class="modal-close-row"><button id="btnCloseModal" class="btn btn-ghost btn-sm" type="button">Chiudi</button></div>
+  </div>
+</div>
+
+<script>
+const SAMPLE_TRANSACTIONS_PRO = [
+  ["2025-07-01 22:53", "Healthcare", "outcome", 52.47],
+  ["2025-07-02 13:31", "Groceries", "outcome", 81.18],
+  ["2025-07-02 13:49", "Dining Out", "outcome", 6.8],
+  ["2025-07-03 12:09", "Entertainment", "outcome", 6.21],
+  ["2025-07-03 13:28", "Shopping", "outcome", 3.0],
+  ["2025-07-04 09:36", "Groceries", "outcome", 149.75],
+  ["2025-07-04 10:54", "Coffee & Drinks", "outcome", 5.05],
+  ["2025-07-04 16:35", "Groceries", "outcome", 140.98],
+  ["2025-07-05 10:47", "Coffee & Drinks", "outcome", 10.06],
+  ["2025-07-06 10:21", "Shopping", "outcome", 32.03],
+  ["2025-07-08 08:35", "Groceries", "outcome", 5.56],
+  ["2025-07-08 08:36", "Groceries", "outcome", 17.58],
+  ["2025-07-08 12:44", "Utilities", "outcome", 116.94],
+  ["2025-07-09 11:52", "Entertainment", "outcome", 12.42],
+  ["2025-07-10 11:47", "Dining Out", "outcome", 53.59],
+  ["2025-07-10 21:18", "Dining Out", "outcome", 12.96],
+  ["2025-07-11 11:59", "Transportation", "outcome", 27.0],
+  ["2025-07-11 15:30", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-07-13 08:12", "Shopping", "outcome", 151.28],
+  ["2025-07-13 14:09", "Entertainment", "outcome", 31.38],
+  ["2025-07-14 11:34", "Groceries", "outcome", 15.51],
+  ["2025-07-14 12:48", "Transportation", "outcome", 18.76],
+  ["2025-07-14 15:45", "Entertainment", "outcome", 17.57],
+  ["2025-07-14 18:43", "Entertainment", "outcome", 7.08],
+  ["2025-07-15 18:10", "Dining Out", "outcome", 35.15],
+  ["2025-07-15 18:19", "Utilities", "outcome", 174.72],
+  ["2025-07-16 16:05", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-07-16 20:02", "Transportation", "outcome", 70.17],
+  ["2025-07-16 21:30", "Coffee & Drinks", "outcome", 4.81],
+  ["2025-07-18 17:21", "Transportation", "outcome", 16.69],
+  ["2025-07-18 18:39", "Subscriptions", "outcome", 10.38],
+  ["2025-07-19 13:23", "Groceries", "outcome", 34.59],
+  ["2025-07-19 17:08", "Subscriptions", "outcome", 9.71],
+  ["2025-07-19 19:03", "Groceries", "outcome", 9.61],
+  ["2025-07-20 08:06", "Shopping", "outcome", 199.01],
+  ["2025-07-20 10:31", "Dining Out", "outcome", 85.14],
+  ["2025-07-20 18:30", "Coffee & Drinks", "outcome", 4.13],
+  ["2025-07-21 15:22", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-07-22 09:48", "Transportation", "outcome", 23.15],
+  ["2025-07-22 18:01", "Dining Out", "outcome", 4.95],
+  ["2025-07-23 08:29", "Subscriptions", "outcome", 51.15],
+  ["2025-07-23 18:00", "Freelance", "income", 271.73],
+  ["2025-07-23 18:38", "Transportation", "outcome", 3.15],
+  ["2025-07-23 19:56", "Dining Out", "outcome", 3.0],
+  ["2025-07-25 14:05", "Utilities", "outcome", 83.6],
+  ["2025-07-27 09:30", "Salary", "income", 3329.53],
+  ["2025-07-27 12:06", "Groceries", "outcome", 4.28],
+  ["2025-07-28 11:18", "Groceries", "outcome", 9.78],
+  ["2025-08-01 10:33", "Dining Out", "outcome", 8.57],
+  ["2025-08-01 11:11", "Subscriptions", "outcome", 10.73],
+  ["2025-08-02 18:57", "Healthcare", "outcome", 96.21],
+  ["2025-08-03 18:00", "Freelance", "income", 342.35],
+  ["2025-08-04 11:45", "Coffee & Drinks", "outcome", 9.53],
+  ["2025-08-04 19:28", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-08-05 07:55", "Subscriptions", "outcome", 18.52],
+  ["2025-08-06 20:50", "Transportation", "outcome", 114.65],
+  ["2025-08-07 16:50", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-08-07 17:13", "Utilities", "outcome", 66.07],
+  ["2025-08-08 13:51", "Groceries", "outcome", 108.17],
+  ["2025-08-08 15:59", "Coffee & Drinks", "outcome", 12.37],
+  ["2025-08-08 17:40", "Groceries", "outcome", 47.54],
+  ["2025-08-08 19:47", "Groceries", "outcome", 30.09],
+  ["2025-08-08 20:04", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-08-09 13:18", "Entertainment", "outcome", 37.59],
+  ["2025-08-09 13:44", "Groceries", "outcome", 32.81],
+  ["2025-08-09 21:32", "Coffee & Drinks", "outcome", 10.59],
+  ["2025-08-11 09:42", "Coffee & Drinks", "outcome", 14.74],
+  ["2025-08-12 11:35", "Dining Out", "outcome", 57.69],
+  ["2025-08-13 09:46", "Transportation", "outcome", 17.96],
+  ["2025-08-15 11:26", "Coffee & Drinks", "outcome", 3.91],
+  ["2025-08-15 12:38", "Subscriptions", "outcome", 3.0],
+  ["2025-08-16 07:30", "Utilities", "outcome", 225.2],
+  ["2025-08-17 11:34", "Subscriptions", "outcome", 32.08],
+  ["2025-08-17 14:48", "Entertainment", "outcome", 109.56],
+  ["2025-08-17 22:22", "Groceries", "outcome", 65.04],
+  ["2025-08-18 08:20", "Shopping", "outcome", 110.96],
+  ["2025-08-18 11:01", "Dining Out", "outcome", 16.53],
+  ["2025-08-18 13:53", "Coffee & Drinks", "outcome", 4.79],
+  ["2025-08-18 22:32", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-08-19 17:16", "Entertainment", "outcome", 30.96],
+  ["2025-08-20 13:44", "Coffee & Drinks", "outcome", 7.89],
+  ["2025-08-20 18:28", "Groceries", "outcome", 3.08],
+  ["2025-08-20 22:42", "Dining Out", "outcome", 3.63],
+  ["2025-08-21 17:05", "Transportation", "outcome", 27.69],
+  ["2025-08-21 18:09", "Coffee & Drinks", "outcome", 6.51],
+  ["2025-08-24 07:01", "Groceries", "outcome", 60.19],
+  ["2025-08-24 11:27", "Dining Out", "outcome", 45.35],
+  ["2025-08-26 13:30", "Transportation", "outcome", 16.88],
+  ["2025-08-26 14:12", "Groceries", "outcome", 84.99],
+  ["2025-08-26 15:30", "Groceries", "outcome", 45.6],
+  ["2025-08-26 18:23", "Groceries", "outcome", 44.85],
+  ["2025-08-26 19:29", "Transportation", "outcome", 21.93],
+  ["2025-08-27 09:30", "Salary", "income", 3531.54],
+  ["2025-09-01 15:23", "Shopping", "outcome", 74.41],
+  ["2025-09-01 16:19", "Coffee & Drinks", "outcome", 6.02],
+  ["2025-09-01 17:35", "Transportation", "outcome", 23.45],
+  ["2025-09-02 11:00", "Subscriptions", "outcome", 31.88],
+  ["2025-09-02 12:27", "Utilities", "outcome", 26.92],
+  ["2025-09-02 21:11", "Shopping", "outcome", 144.99],
+  ["2025-09-03 10:58", "Groceries", "outcome", 8.99],
+  ["2025-09-03 15:01", "Utilities", "outcome", 144.78],
+  ["2025-09-03 15:27", "Subscriptions", "outcome", 5.24],
+  ["2025-09-04 09:16", "Groceries", "outcome", 18.26],
+  ["2025-09-05 08:33", "Transportation", "outcome", 141.78],
+  ["2025-09-06 08:05", "Subscriptions", "outcome", 21.22],
+  ["2025-09-06 15:28", "Shopping", "outcome", 22.74],
+  ["2025-09-09 08:57", "Groceries", "outcome", 8.42],
+  ["2025-09-09 09:09", "Coffee & Drinks", "outcome", 18.5],
+  ["2025-09-09 09:38", "Utilities", "outcome", 90.15],
+  ["2025-09-10 11:02", "Coffee & Drinks", "outcome", 42.83],
+  ["2025-09-10 13:14", "Healthcare", "outcome", 31.94],
+  ["2025-09-10 16:33", "Dining Out", "outcome", 43.82],
+  ["2025-09-11 11:00", "Dividends", "income", 143.72],
+  ["2025-09-11 13:53", "Healthcare", "outcome", 14.95],
+  ["2025-09-11 16:32", "Groceries", "outcome", 118.54],
+  ["2025-09-11 22:09", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-09-12 07:16", "Dining Out", "outcome", 7.45],
+  ["2025-09-13 08:25", "Coffee & Drinks", "outcome", 4.02],
+  ["2025-09-14 15:25", "Groceries", "outcome", 3.0],
+  ["2025-09-14 15:39", "Transportation", "outcome", 27.52],
+  ["2025-09-15 12:17", "Dining Out", "outcome", 171.11],
+  ["2025-09-16 14:59", "Entertainment", "outcome", 12.06],
+  ["2025-09-16 19:32", "Healthcare", "outcome", 35.69],
+  ["2025-09-17 07:05", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-09-17 18:00", "Freelance", "income", 348.81],
+  ["2025-09-18 13:32", "Entertainment", "outcome", 33.12],
+  ["2025-09-19 11:42", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-09-21 09:51", "Utilities", "outcome", 39.07],
+  ["2025-09-21 14:05", "Coffee & Drinks", "outcome", 4.35],
+  ["2025-09-22 19:55", "Subscriptions", "outcome", 33.39],
+  ["2025-09-22 20:15", "Cashback", "income", 30.48],
+  ["2025-09-23 07:24", "Groceries", "outcome", 44.46],
+  ["2025-09-23 19:48", "Coffee & Drinks", "outcome", 8.61],
+  ["2025-09-25 11:52", "Groceries", "outcome", 258.22],
+  ["2025-09-25 12:17", "Groceries", "outcome", 18.04],
+  ["2025-09-25 13:18", "Dining Out", "outcome", 19.53],
+  ["2025-09-26 14:56", "Groceries", "outcome", 4.5],
+  ["2025-09-27 09:30", "Salary", "income", 3301.24],
+  ["2025-09-27 20:46", "Coffee & Drinks", "outcome", 3.18],
+  ["2025-10-01 22:03", "Transportation", "outcome", 41.13],
+  ["2025-10-02 07:40", "Groceries", "outcome", 212.68],
+  ["2025-10-02 13:04", "Utilities", "outcome", 77.25],
+  ["2025-10-03 22:01", "Dining Out", "outcome", 60.21],
+  ["2025-10-04 13:43", "Transportation", "outcome", 42.65],
+  ["2025-10-04 18:14", "Entertainment", "outcome", 156.82],
+  ["2025-10-05 14:17", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-10-05 15:56", "Entertainment", "outcome", 3.0],
+  ["2025-10-05 18:06", "Groceries", "outcome", 18.71],
+  ["2025-10-06 07:31", "Healthcare", "outcome", 35.35],
+  ["2025-10-07 07:57", "Shopping", "outcome", 21.23],
+  ["2025-10-09 07:29", "Groceries", "outcome", 6.26],
+  ["2025-10-10 21:04", "Dining Out", "outcome", 45.86],
+  ["2025-10-12 09:25", "Shopping", "outcome", 28.45],
+  ["2025-10-13 09:30", "Utilities", "outcome", 132.96],
+  ["2025-10-13 13:58", "Dining Out", "outcome", 3.0],
+  ["2025-10-13 17:07", "Subscriptions", "outcome", 21.28],
+  ["2025-10-13 21:35", "Groceries", "outcome", 119.38],
+  ["2025-10-14 07:51", "Coffee & Drinks", "outcome", 3.73],
+  ["2025-10-14 17:12", "Coffee & Drinks", "outcome", 9.6],
+  ["2025-10-15 22:54", "Utilities", "outcome", 73.18],
+  ["2025-10-16 15:43", "Transportation", "outcome", 8.18],
+  ["2025-10-16 16:45", "Transportation", "outcome", 28.42],
+  ["2025-10-17 09:42", "Groceries", "outcome", 13.05],
+  ["2025-10-17 09:47", "Groceries", "outcome", 5.12],
+  ["2025-10-17 16:29", "Transportation", "outcome", 41.59],
+  ["2025-10-18 14:31", "Groceries", "outcome", 59.36],
+  ["2025-10-22 16:49", "Utilities", "outcome", 33.78],
+  ["2025-10-22 21:25", "Healthcare", "outcome", 54.35],
+  ["2025-10-24 15:23", "Entertainment", "outcome", 12.86],
+  ["2025-10-24 16:16", "Shopping", "outcome", 127.16],
+  ["2025-10-24 22:16", "Groceries", "outcome", 34.77],
+  ["2025-10-25 18:50", "Coffee & Drinks", "outcome", 4.74],
+  ["2025-10-25 19:58", "Coffee & Drinks", "outcome", 31.66],
+  ["2025-10-26 09:47", "Groceries", "outcome", 66.87],
+  ["2025-10-26 09:54", "Groceries", "outcome", 64.36],
+  ["2025-10-27 09:30", "Salary", "income", 3480.42],
+  ["2025-10-27 16:40", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-10-27 17:00", "Subscriptions", "outcome", 29.85],
+  ["2025-10-27 21:17", "Dining Out", "outcome", 85.81],
+  ["2025-11-01 16:47", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-11-01 20:24", "Utilities", "outcome", 130.0],
+  ["2025-11-03 20:15", "Cashback", "income", 9.34],
+  ["2025-11-05 13:15", "Groceries", "outcome", 52.55],
+  ["2025-11-06 12:04", "Groceries", "outcome", 38.49],
+  ["2025-11-07 22:35", "Groceries", "outcome", 38.65],
+  ["2025-11-08 07:00", "Shopping", "outcome", 33.11],
+  ["2025-11-08 10:14", "Dining Out", "outcome", 68.72],
+  ["2025-11-08 21:58", "Groceries", "outcome", 151.84],
+  ["2025-11-09 14:24", "Transportation", "outcome", 5.4],
+  ["2025-11-09 14:42", "Coffee & Drinks", "outcome", 10.25],
+  ["2025-11-09 18:08", "Transportation", "outcome", 8.67],
+  ["2025-11-10 16:16", "Groceries", "outcome", 82.65],
+  ["2025-11-11 20:23", "Coffee & Drinks", "outcome", 8.08],
+  ["2025-11-11 21:27", "Groceries", "outcome", 25.31],
+  ["2025-11-12 15:51", "Utilities", "outcome", 93.46],
+  ["2025-11-13 21:27", "Transportation", "outcome", 87.03],
+  ["2025-11-13 21:28", "Dining Out", "outcome", 98.43],
+  ["2025-11-14 18:14", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-11-16 07:04", "Dining Out", "outcome", 86.64],
+  ["2025-11-16 08:44", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-11-16 13:19", "Coffee & Drinks", "outcome", 3.7],
+  ["2025-11-16 19:07", "Groceries", "outcome", 42.18],
+  ["2025-11-16 20:05", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-11-17 20:44", "Subscriptions", "outcome", 50.15],
+  ["2025-11-18 08:00", "Entertainment", "outcome", 3.6],
+  ["2025-11-18 16:29", "Shopping", "outcome", 52.21],
+  ["2025-11-19 08:41", "Healthcare", "outcome", 129.52],
+  ["2025-11-19 13:56", "Utilities", "outcome", 69.25],
+  ["2025-11-21 14:19", "Groceries", "outcome", 145.6],
+  ["2025-11-22 13:05", "Transportation", "outcome", 38.57],
+  ["2025-11-22 19:12", "Coffee & Drinks", "outcome", 8.14],
+  ["2025-11-24 15:25", "Groceries", "outcome", 19.2],
+  ["2025-11-24 21:05", "Entertainment", "outcome", 58.01],
+  ["2025-11-25 10:06", "Subscriptions", "outcome", 29.9],
+  ["2025-11-25 13:14", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-11-26 22:37", "Dining Out", "outcome", 37.0],
+  ["2025-11-27 09:30", "Salary", "income", 3550.29],
+  ["2025-11-28 09:13", "Coffee & Drinks", "outcome", 8.62],
+  ["2025-12-01 09:17", "Utilities", "outcome", 25.05],
+  ["2025-12-03 08:16", "Dining Out", "outcome", 3.1],
+  ["2025-12-03 08:30", "Shopping", "outcome", 32.41],
+  ["2025-12-03 18:26", "Utilities", "outcome", 77.62],
+  ["2025-12-04 09:59", "Groceries", "outcome", 16.03],
+  ["2025-12-05 20:03", "Groceries", "outcome", 92.53],
+  ["2025-12-06 17:12", "Groceries", "outcome", 16.36],
+  ["2025-12-07 09:57", "Dining Out", "outcome", 7.36],
+  ["2025-12-08 11:26", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-12-08 20:15", "Cashback", "income", 21.1],
+  ["2025-12-09 15:23", "Coffee & Drinks", "outcome", 3.0],
+  ["2025-12-09 17:39", "Dining Out", "outcome", 28.86],
+  ["2025-12-11 17:29", "Subscriptions", "outcome", 47.64],
+  ["2025-12-12 09:32", "Subscriptions", "outcome", 30.81],
+  ["2025-12-12 18:00", "Freelance", "income", 299.05],
+  ["2025-12-13 08:29", "Dining Out", "outcome", 13.52],
+  ["2025-12-13 15:58", "Entertainment", "outcome", 3.49],
+  ["2025-12-13 18:21", "Utilities", "outcome", 9.76],
+  ["2025-12-13 18:49", "Transportation", "outcome", 114.84],
+  ["2025-12-13 21:57", "Groceries", "outcome", 114.1],
+  ["2025-12-15 12:06", "Utilities", "outcome", 193.54],
+  ["2025-12-15 14:47", "Coffee & Drinks", "outcome", 15.79],
+  ["2025-12-16 12:00", "Healthcare", "outcome", 10.64],
+  ["2025-12-16 21:49", "Entertainment", "outcome", 9.34],
+  ["2025-12-18 10:49", "Coffee & Drinks", "outcome", 21.89],
+  ["2025-12-18 17:10", "Shopping", "outcome", 98.63],
+  ["2025-12-19 11:00", "Dividends", "income", 159.32],
+  ["2025-12-20 09:01", "Entertainment", "outcome", 13.71],
+  ["2025-12-20 17:23", "Dining Out", "outcome", 21.51],
+  ["2025-12-21 20:15", "Dining Out", "outcome", 21.5],
+  ["2025-12-23 08:11", "Groceries", "outcome", 42.07],
+  ["2025-12-23 17:46", "Groceries", "outcome", 350.99],
+  ["2025-12-23 21:11", "Coffee & Drinks", "outcome", 7.88],
+  ["2025-12-26 16:52", "Healthcare", "outcome", 69.55],
+  ["2025-12-26 19:02", "Dining Out", "outcome", 14.02],
+  ["2025-12-26 20:05", "Transportation", "outcome", 49.36],
+  ["2025-12-27 09:30", "Salary", "income", 3386.05],
+  ["2025-12-27 14:06", "Entertainment", "outcome", 19.55],
+  ["2025-12-27 16:18", "Coffee & Drinks", "outcome", 45.86],
+  ["2025-12-27 16:52", "Transportation", "outcome", 40.46],
+  ["2026-01-02 13:38", "Groceries", "outcome", 116.2],
+  ["2026-01-02 18:21", "Utilities", "outcome", 121.15],
+  ["2026-01-03 10:24", "Shopping", "outcome", 69.95],
+  ["2026-01-03 12:40", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-01-04 07:30", "Groceries", "outcome", 59.97],
+  ["2026-01-05 08:13", "Utilities", "outcome", 38.89],
+  ["2026-01-05 20:15", "Cashback", "income", 15.6],
+  ["2026-01-06 19:44", "Dining Out", "outcome", 3.0],
+  ["2026-01-07 07:52", "Transportation", "outcome", 125.87],
+  ["2026-01-07 08:25", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-01-07 19:46", "Entertainment", "outcome", 27.95],
+  ["2026-01-08 13:02", "Coffee & Drinks", "outcome", 5.4],
+  ["2026-01-09 20:18", "Dining Out", "outcome", 81.93],
+  ["2026-01-10 14:07", "Groceries", "outcome", 190.16],
+  ["2026-01-11 20:43", "Transportation", "outcome", 10.97],
+  ["2026-01-12 10:09", "Coffee & Drinks", "outcome", 4.67],
+  ["2026-01-12 12:39", "Transportation", "outcome", 73.15],
+  ["2026-01-12 16:10", "Shopping", "outcome", 45.71],
+  ["2026-01-13 13:00", "Entertainment", "outcome", 51.62],
+  ["2026-01-13 13:53", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-01-13 18:29", "Healthcare", "outcome", 35.9],
+  ["2026-01-14 07:55", "Entertainment", "outcome", 41.7],
+  ["2026-01-14 12:27", "Entertainment", "outcome", 6.25],
+  ["2026-01-15 18:02", "Groceries", "outcome", 70.26],
+  ["2026-01-16 12:36", "Coffee & Drinks", "outcome", 18.14],
+  ["2026-01-17 12:24", "Coffee & Drinks", "outcome", 12.43],
+  ["2026-01-17 12:59", "Shopping", "outcome", 150.57],
+  ["2026-01-17 18:00", "Freelance", "income", 361.34],
+  ["2026-01-18 09:41", "Dining Out", "outcome", 12.24],
+  ["2026-01-18 11:40", "Dining Out", "outcome", 61.19],
+  ["2026-01-18 11:41", "Subscriptions", "outcome", 3.0],
+  ["2026-01-21 18:13", "Utilities", "outcome", 54.96],
+  ["2026-01-21 21:02", "Groceries", "outcome", 146.12],
+  ["2026-01-25 07:06", "Utilities", "outcome", 75.52],
+  ["2026-01-25 18:41", "Entertainment", "outcome", 5.98],
+  ["2026-01-26 14:39", "Coffee & Drinks", "outcome", 15.97],
+  ["2026-01-26 19:05", "Subscriptions", "outcome", 82.87],
+  ["2026-01-26 19:42", "Dining Out", "outcome", 5.11],
+  ["2026-01-27 09:30", "Salary", "income", 3301.62],
+  ["2026-01-27 13:59", "Groceries", "outcome", 4.77],
+  ["2026-01-27 14:53", "Groceries", "outcome", 44.04],
+  ["2026-02-01 08:14", "Healthcare", "outcome", 13.39],
+  ["2026-02-01 08:41", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-02-02 07:25", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-02-02 07:36", "Subscriptions", "outcome", 8.41],
+  ["2026-02-02 10:00", "Coffee & Drinks", "outcome", 7.3],
+  ["2026-02-02 11:31", "Subscriptions", "outcome", 14.73],
+  ["2026-02-02 19:41", "Utilities", "outcome", 209.25],
+  ["2026-02-03 21:32", "Groceries", "outcome", 61.12],
+  ["2026-02-04 09:08", "Groceries", "outcome", 22.66],
+  ["2026-02-05 18:21", "Entertainment", "outcome", 48.45],
+  ["2026-02-06 07:00", "Groceries", "outcome", 118.04],
+  ["2026-02-06 07:02", "Coffee & Drinks", "outcome", 8.32],
+  ["2026-02-06 14:10", "Coffee & Drinks", "outcome", 4.03],
+  ["2026-02-06 19:10", "Dining Out", "outcome", 60.58],
+  ["2026-02-06 22:25", "Groceries", "outcome", 31.5],
+  ["2026-02-08 08:01", "Subscriptions", "outcome", 3.0],
+  ["2026-02-08 21:48", "Groceries", "outcome", 28.05],
+  ["2026-02-09 14:20", "Dining Out", "outcome", 4.05],
+  ["2026-02-10 11:13", "Shopping", "outcome", 102.61],
+  ["2026-02-11 19:10", "Dining Out", "outcome", 15.85],
+  ["2026-02-12 08:12", "Dining Out", "outcome", 30.99],
+  ["2026-02-12 16:06", "Subscriptions", "outcome", 15.15],
+  ["2026-02-12 20:23", "Groceries", "outcome", 68.88],
+  ["2026-02-12 22:10", "Shopping", "outcome", 145.7],
+  ["2026-02-13 18:36", "Entertainment", "outcome", 3.98],
+  ["2026-02-16 13:37", "Dining Out", "outcome", 38.28],
+  ["2026-02-16 16:51", "Transportation", "outcome", 34.45],
+  ["2026-02-17 08:02", "Groceries", "outcome", 33.59],
+  ["2026-02-17 22:15", "Coffee & Drinks", "outcome", 7.02],
+  ["2026-02-18 19:47", "Entertainment", "outcome", 16.75],
+  ["2026-02-20 21:53", "Groceries", "outcome", 10.31],
+  ["2026-02-20 22:29", "Groceries", "outcome", 27.92],
+  ["2026-02-21 11:05", "Groceries", "outcome", 71.5],
+  ["2026-02-21 15:43", "Dining Out", "outcome", 67.71],
+  ["2026-02-21 17:46", "Healthcare", "outcome", 36.3],
+  ["2026-02-21 21:38", "Coffee & Drinks", "outcome", 4.85],
+  ["2026-02-22 20:15", "Cashback", "income", 30.63],
+  ["2026-02-25 08:40", "Dining Out", "outcome", 27.58],
+  ["2026-02-25 09:28", "Entertainment", "outcome", 18.81],
+  ["2026-02-26 11:01", "Utilities", "outcome", 108.88],
+  ["2026-02-26 12:43", "Transportation", "outcome", 140.15],
+  ["2026-02-26 14:04", "Transportation", "outcome", 3.25],
+  ["2026-02-26 15:07", "Dining Out", "outcome", 21.57],
+  ["2026-02-26 18:16", "Entertainment", "outcome", 72.16],
+  ["2026-02-27 09:30", "Salary", "income", 3553.55],
+  ["2026-02-27 15:19", "Healthcare", "outcome", 3.0],
+  ["2026-02-27 18:38", "Coffee & Drinks", "outcome", 3.14],
+  ["2026-02-28 09:39", "Utilities", "outcome", 90.97],
+  ["2026-03-01 19:54", "Groceries", "outcome", 28.1],
+  ["2026-03-01 20:46", "Transportation", "outcome", 21.48],
+  ["2026-03-02 07:07", "Dining Out", "outcome", 25.18],
+  ["2026-03-02 11:44", "Dining Out", "outcome", 3.0],
+  ["2026-03-02 15:40", "Groceries", "outcome", 17.62],
+  ["2026-03-03 08:04", "Dining Out", "outcome", 30.94],
+  ["2026-03-03 16:10", "Coffee & Drinks", "outcome", 12.64],
+  ["2026-03-04 08:02", "Entertainment", "outcome", 7.26],
+  ["2026-03-04 11:06", "Healthcare", "outcome", 101.52],
+  ["2026-03-04 12:22", "Dining Out", "outcome", 32.29],
+  ["2026-03-05 07:01", "Dining Out", "outcome", 25.48],
+  ["2026-03-07 16:48", "Coffee & Drinks", "outcome", 11.15],
+  ["2026-03-08 08:07", "Groceries", "outcome", 235.29],
+  ["2026-03-08 10:16", "Groceries", "outcome", 5.28],
+  ["2026-03-08 13:13", "Entertainment", "outcome", 67.27],
+  ["2026-03-09 14:53", "Utilities", "outcome", 338.28],
+  ["2026-03-10 08:45", "Subscriptions", "outcome", 13.67],
+  ["2026-03-11 14:24", "Transportation", "outcome", 58.6],
+  ["2026-03-11 15:45", "Groceries", "outcome", 39.16],
+  ["2026-03-11 22:54", "Subscriptions", "outcome", 33.97],
+  ["2026-03-12 22:06", "Coffee & Drinks", "outcome", 9.2],
+  ["2026-03-13 11:00", "Dividends", "income", 102.76],
+  ["2026-03-14 07:33", "Coffee & Drinks", "outcome", 7.6],
+  ["2026-03-14 21:05", "Groceries", "outcome", 73.11],
+  ["2026-03-16 12:31", "Coffee & Drinks", "outcome", 8.04],
+  ["2026-03-17 07:10", "Utilities", "outcome", 31.6],
+  ["2026-03-18 20:43", "Groceries", "outcome", 44.03],
+  ["2026-03-20 20:15", "Cashback", "income", 25.35],
+  ["2026-03-21 08:44", "Dining Out", "outcome", 29.92],
+  ["2026-03-21 16:30", "Healthcare", "outcome", 13.37],
+  ["2026-03-22 09:56", "Entertainment", "outcome", 31.87],
+  ["2026-03-24 21:11", "Groceries", "outcome", 72.8],
+  ["2026-03-25 08:00", "Coffee & Drinks", "outcome", 9.73],
+  ["2026-03-25 18:58", "Subscriptions", "outcome", 4.7],
+  ["2026-03-26 13:18", "Healthcare", "outcome", 38.01],
+  ["2026-03-26 15:18", "Groceries", "outcome", 64.12],
+  ["2026-03-26 20:01", "Shopping", "outcome", 163.55],
+  ["2026-03-27 07:54", "Transportation", "outcome", 24.02],
+  ["2026-03-27 09:30", "Salary", "income", 3445.06],
+  ["2026-03-28 19:06", "Entertainment", "outcome", 53.5],
+  ["2026-03-28 22:30", "Transportation", "outcome", 75.16],
+  ["2026-04-01 11:16", "Dining Out", "outcome", 53.99],
+  ["2026-04-01 20:33", "Healthcare", "outcome", 28.85],
+  ["2026-04-02 07:04", "Coffee & Drinks", "outcome", 5.66],
+  ["2026-04-02 07:25", "Dining Out", "outcome", 4.68],
+  ["2026-04-04 21:34", "Shopping", "outcome", 165.03],
+  ["2026-04-05 14:46", "Transportation", "outcome", 17.05],
+  ["2026-04-05 21:42", "Utilities", "outcome", 29.49],
+  ["2026-04-06 10:29", "Entertainment", "outcome", 3.0],
+  ["2026-04-07 12:08", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-04-07 16:16", "Groceries", "outcome", 3.0],
+  ["2026-04-07 19:29", "Dining Out", "outcome", 3.0],
+  ["2026-04-07 22:32", "Shopping", "outcome", 152.81],
+  ["2026-04-08 13:17", "Transportation", "outcome", 18.35],
+  ["2026-04-08 16:29", "Dining Out", "outcome", 3.0],
+  ["2026-04-08 17:12", "Transportation", "outcome", 16.72],
+  ["2026-04-08 19:29", "Coffee & Drinks", "outcome", 5.75],
+  ["2026-04-09 10:14", "Coffee & Drinks", "outcome", 5.05],
+  ["2026-04-09 13:06", "Dining Out", "outcome", 22.51],
+  ["2026-04-09 13:10", "Subscriptions", "outcome", 46.34],
+  ["2026-04-09 19:25", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-04-10 11:46", "Transportation", "outcome", 48.91],
+  ["2026-04-10 19:33", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-04-11 18:06", "Groceries", "outcome", 33.31],
+  ["2026-04-11 18:10", "Transportation", "outcome", 44.54],
+  ["2026-04-12 08:16", "Coffee & Drinks", "outcome", 3.8],
+  ["2026-04-13 19:57", "Groceries", "outcome", 131.13],
+  ["2026-04-14 12:24", "Groceries", "outcome", 31.06],
+  ["2026-04-14 14:50", "Entertainment", "outcome", 19.51],
+  ["2026-04-14 17:16", "Entertainment", "outcome", 28.39],
+  ["2026-04-14 20:40", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-04-14 22:29", "Healthcare", "outcome", 19.01],
+  ["2026-04-16 10:02", "Subscriptions", "outcome", 29.47],
+  ["2026-04-18 17:10", "Utilities", "outcome", 195.6],
+  ["2026-04-19 17:33", "Utilities", "outcome", 94.92],
+  ["2026-04-19 20:15", "Cashback", "income", 33.48],
+  ["2026-04-20 19:00", "Dining Out", "outcome", 51.14],
+  ["2026-04-21 07:23", "Groceries", "outcome", 86.9],
+  ["2026-04-21 10:17", "Dining Out", "outcome", 3.0],
+  ["2026-04-21 10:57", "Entertainment", "outcome", 5.04],
+  ["2026-04-21 14:43", "Entertainment", "outcome", 104.01],
+  ["2026-04-22 12:57", "Healthcare", "outcome", 28.16],
+  ["2026-04-23 10:40", "Groceries", "outcome", 84.01],
+  ["2026-04-23 18:37", "Coffee & Drinks", "outcome", 3.46],
+  ["2026-04-24 09:27", "Groceries", "outcome", 140.12],
+  ["2026-04-24 14:58", "Dining Out", "outcome", 3.0],
+  ["2026-04-25 08:22", "Utilities", "outcome", 97.53],
+  ["2026-04-25 09:51", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-04-27 09:30", "Salary", "income", 3437.02],
+  ["2026-04-28 20:44", "Dining Out", "outcome", 15.47],
+  ["2026-05-01 13:04", "Utilities", "outcome", 6.17],
+  ["2026-05-01 15:22", "Groceries", "outcome", 15.55],
+  ["2026-05-02 13:45", "Healthcare", "outcome", 126.0],
+  ["2026-05-02 13:52", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-05-02 21:40", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-05-03 17:50", "Groceries", "outcome", 86.28],
+  ["2026-05-03 21:42", "Transportation", "outcome", 45.86],
+  ["2026-05-04 10:16", "Transportation", "outcome", 39.4],
+  ["2026-05-04 22:31", "Entertainment", "outcome", 3.21],
+  ["2026-05-05 09:13", "Coffee & Drinks", "outcome", 3.31],
+  ["2026-05-05 14:11", "Utilities", "outcome", 69.49],
+  ["2026-05-05 20:15", "Cashback", "income", 17.53],
+  ["2026-05-08 16:20", "Groceries", "outcome", 34.9],
+  ["2026-05-10 10:00", "Coffee & Drinks", "outcome", 9.76],
+  ["2026-05-10 19:03", "Groceries", "outcome", 9.78],
+  ["2026-05-11 15:55", "Shopping", "outcome", 43.08],
+  ["2026-05-12 11:59", "Groceries", "outcome", 164.94],
+  ["2026-05-12 22:25", "Shopping", "outcome", 11.42],
+  ["2026-05-13 08:25", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-05-13 15:27", "Groceries", "outcome", 72.32],
+  ["2026-05-16 08:50", "Coffee & Drinks", "outcome", 10.15],
+  ["2026-05-16 12:34", "Dining Out", "outcome", 3.0],
+  ["2026-05-16 13:18", "Subscriptions", "outcome", 39.08],
+  ["2026-05-16 13:33", "Transportation", "outcome", 24.18],
+  ["2026-05-16 22:27", "Groceries", "outcome", 65.49],
+  ["2026-05-17 18:13", "Shopping", "outcome", 8.14],
+  ["2026-05-17 19:39", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-05-18 16:12", "Transportation", "outcome", 35.52],
+  ["2026-05-20 07:10", "Dining Out", "outcome", 13.39],
+  ["2026-05-20 08:43", "Entertainment", "outcome", 3.58],
+  ["2026-05-20 09:42", "Groceries", "outcome", 46.32],
+  ["2026-05-20 09:43", "Transportation", "outcome", 38.2],
+  ["2026-05-20 10:37", "Utilities", "outcome", 81.64],
+  ["2026-05-21 07:01", "Entertainment", "outcome", 24.43],
+  ["2026-05-21 16:16", "Utilities", "outcome", 254.67],
+  ["2026-05-21 18:40", "Entertainment", "outcome", 6.15],
+  ["2026-05-21 22:50", "Shopping", "outcome", 154.02],
+  ["2026-05-22 12:30", "Groceries", "outcome", 82.19],
+  ["2026-05-23 18:00", "Freelance", "income", 502.92],
+  ["2026-05-23 22:15", "Dining Out", "outcome", 86.99],
+  ["2026-05-23 22:42", "Dining Out", "outcome", 17.38],
+  ["2026-05-24 17:51", "Entertainment", "outcome", 44.19],
+  ["2026-05-25 12:06", "Coffee & Drinks", "outcome", 8.13],
+  ["2026-05-27 09:30", "Salary", "income", 3519.36],
+  ["2026-05-27 17:29", "Dining Out", "outcome", 64.01],
+  ["2026-05-28 18:21", "Subscriptions", "outcome", 20.01],
+  ["2026-06-01 20:36", "Groceries", "outcome", 19.9],
+  ["2026-06-02 17:23", "Dining Out", "outcome", 8.37],
+  ["2026-06-02 19:29", "Shopping", "outcome", 102.15],
+  ["2026-06-03 07:43", "Groceries", "outcome", 88.52],
+  ["2026-06-03 13:55", "Utilities", "outcome", 79.13],
+  ["2026-06-04 11:30", "Utilities", "outcome", 30.67],
+  ["2026-06-04 20:36", "Groceries", "outcome", 72.39],
+  ["2026-06-05 16:37", "Entertainment", "outcome", 3.0],
+  ["2026-06-07 13:05", "Coffee & Drinks", "outcome", 9.01],
+  ["2026-06-12 11:46", "Transportation", "outcome", 41.53],
+  ["2026-06-13 11:30", "Groceries", "outcome", 5.5],
+  ["2026-06-13 13:50", "Subscriptions", "outcome", 3.0],
+  ["2026-06-13 15:56", "Coffee & Drinks", "outcome", 17.32],
+  ["2026-06-13 19:38", "Entertainment", "outcome", 11.39],
+  ["2026-06-13 21:17", "Dining Out", "outcome", 57.6],
+  ["2026-06-14 07:00", "Utilities", "outcome", 138.96],
+  ["2026-06-14 12:37", "Healthcare", "outcome", 3.0],
+  ["2026-06-14 14:24", "Entertainment", "outcome", 56.24],
+  ["2026-06-16 11:00", "Dividends", "income", 203.93],
+  ["2026-06-17 13:12", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-06-18 09:34", "Subscriptions", "outcome", 60.05],
+  ["2026-06-18 22:22", "Subscriptions", "outcome", 13.57],
+  ["2026-06-18 22:51", "Subscriptions", "outcome", 16.45],
+  ["2026-06-19 08:52", "Groceries", "outcome", 26.78],
+  ["2026-06-19 21:30", "Dining Out", "outcome", 73.79],
+  ["2026-06-21 08:31", "Groceries", "outcome", 60.7],
+  ["2026-06-21 12:40", "Dining Out", "outcome", 5.3],
+  ["2026-06-21 22:29", "Transportation", "outcome", 16.45],
+  ["2026-06-22 10:54", "Utilities", "outcome", 45.53],
+  ["2026-06-22 12:09", "Dining Out", "outcome", 22.39],
+  ["2026-06-22 15:58", "Transportation", "outcome", 7.11],
+  ["2026-06-23 13:59", "Shopping", "outcome", 227.92],
+  ["2026-06-23 19:28", "Groceries", "outcome", 232.91],
+  ["2026-06-25 09:14", "Coffee & Drinks", "outcome", 4.08],
+  ["2026-06-25 09:18", "Transportation", "outcome", 27.03],
+  ["2026-06-25 14:51", "Entertainment", "outcome", 10.33],
+  ["2026-06-25 20:35", "Groceries", "outcome", 74.43],
+  ["2026-06-26 10:23", "Dining Out", "outcome", 61.84],
+  ["2026-06-26 17:18", "Dining Out", "outcome", 34.17],
+  ["2026-06-26 20:30", "Dining Out", "outcome", 20.04],
+  ["2026-06-27 08:18", "Healthcare", "outcome", 21.74],
+  ["2026-06-27 09:30", "Salary", "income", 3465.45],
+  ["2026-06-27 11:51", "Healthcare", "outcome", 61.3],
+  ["2026-06-27 17:30", "Coffee & Drinks", "outcome", 15.45],
+  ["2026-06-28 22:38", "Dining Out", "outcome", 9.36],
+  ["2026-07-02 07:53", "Dining Out", "outcome", 46.94],
+  ["2026-07-02 13:55", "Groceries", "outcome", 18.08],
+  ["2026-07-02 15:22", "Dining Out", "outcome", 4.76],
+  ["2026-07-02 15:50", "Dining Out", "outcome", 7.14],
+  ["2026-07-02 17:12", "Utilities", "outcome", 15.14],
+  ["2026-07-03 11:20", "Groceries", "outcome", 149.24],
+  ["2026-07-03 19:59", "Transportation", "outcome", 29.23],
+  ["2026-07-04 09:16", "Transportation", "outcome", 12.07],
+  ["2026-07-05 07:17", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-07-05 08:40", "Coffee & Drinks", "outcome", 9.93],
+  ["2026-07-05 15:53", "Utilities", "outcome", 225.26],
+  ["2026-07-06 19:05", "Utilities", "outcome", 53.19],
+  ["2026-07-08 14:11", "Dining Out", "outcome", 40.53],
+  ["2026-07-09 07:06", "Groceries", "outcome", 55.6],
+  ["2026-07-11 18:16", "Entertainment", "outcome", 20.63],
+  ["2026-07-13 07:40", "Shopping", "outcome", 221.01],
+  ["2026-07-13 10:23", "Entertainment", "outcome", 6.78],
+  ["2026-07-14 20:15", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-07-15 11:17", "Coffee & Drinks", "outcome", 4.03],
+  ["2026-07-15 12:23", "Dining Out", "outcome", 64.37],
+  ["2026-07-15 14:51", "Healthcare", "outcome", 87.38],
+  ["2026-07-15 22:07", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-07-15 22:54", "Transportation", "outcome", 52.0],
+  ["2026-07-16 10:20", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-07-16 16:07", "Coffee & Drinks", "outcome", 3.86],
+  ["2026-07-19 13:16", "Groceries", "outcome", 34.08],
+  ["2026-07-19 16:21", "Coffee & Drinks", "outcome", 3.09],
+  ["2026-07-19 20:15", "Cashback", "income", 17.69],
+  ["2026-07-19 21:48", "Entertainment", "outcome", 9.96],
+  ["2026-07-20 07:22", "Groceries", "outcome", 75.96],
+  ["2026-07-20 18:56", "Subscriptions", "outcome", 3.0],
+  ["2026-07-21 10:30", "Entertainment", "outcome", 68.26],
+  ["2026-07-22 16:37", "Entertainment", "outcome", 6.24],
+  ["2026-07-24 11:49", "Subscriptions", "outcome", 3.5],
+  ["2026-07-25 15:27", "Groceries", "outcome", 46.89],
+  ["2026-07-26 08:10", "Subscriptions", "outcome", 18.73],
+  ["2026-07-26 12:16", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-07-26 13:35", "Coffee & Drinks", "outcome", 5.35],
+  ["2026-07-27 09:30", "Salary", "income", 3272.28],
+  ["2026-07-27 14:04", "Subscriptions", "outcome", 16.98],
+  ["2026-07-28 22:37", "Groceries", "outcome", 226.07],
+  ["2026-08-01 14:05", "Healthcare", "outcome", 132.63],
+  ["2026-08-01 20:58", "Transportation", "outcome", 6.45],
+  ["2026-08-03 10:22", "Dining Out", "outcome", 77.99],
+  ["2026-08-04 19:56", "Coffee & Drinks", "outcome", 4.11],
+  ["2026-08-04 22:28", "Entertainment", "outcome", 42.33],
+  ["2026-08-05 14:55", "Coffee & Drinks", "outcome", 19.56],
+  ["2026-08-05 21:00", "Groceries", "outcome", 8.38],
+  ["2026-08-06 18:02", "Transportation", "outcome", 7.36],
+  ["2026-08-06 18:36", "Transportation", "outcome", 8.2],
+  ["2026-08-07 11:39", "Utilities", "outcome", 3.0],
+  ["2026-08-08 11:42", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-08-08 20:15", "Cashback", "income", 32.98],
+  ["2026-08-08 21:06", "Shopping", "outcome", 69.97],
+  ["2026-08-09 10:07", "Coffee & Drinks", "outcome", 3.0],
+  ["2026-08-10 13:00", "Utilities", "outcome", 119.23],
+  ["2026-08-10 15:35", "Subscriptions", "outcome", 7.67],
+  ["2026-08-12 20:02", "Groceries", "outcome", 12.43],
+  ["2026-08-13 12:52", "Coffee & Drinks", "outcome", 14.94],
+  ["2026-08-14 13:17", "Groceries", "outcome", 92.82],
+  ["2026-08-14 18:00", "Freelance", "income", 444.43],
+  ["2026-08-16 15:11", "Utilities", "outcome", 24.14],
+  ["2026-08-17 07:33", "Entertainment", "outcome", 102.86],
+  ["2026-08-17 17:32", "Groceries", "outcome", 67.77],
+  ["2026-08-19 12:08", "Groceries", "outcome", 90.39],
+  ["2026-08-19 21:47", "Coffee & Drinks", "outcome", 11.42],
+  ["2026-08-21 22:05", "Transportation", "outcome", 27.58],
+  ["2026-08-22 13:37", "Utilities", "outcome", 158.73],
+  ["2026-08-23 14:52", "Dining Out", "outcome", 126.12],
+  ["2026-08-23 19:36", "Dining Out", "outcome", 6.85],
+  ["2026-08-25 14:45", "Groceries", "outcome", 10.08],
+  ["2026-08-25 22:08", "Transportation", "outcome", 16.72],
+  ["2026-08-26 16:11", "Groceries", "outcome", 118.99],
+  ["2026-08-27 07:01", "Subscriptions", "outcome", 37.99],
+  ["2026-08-27 09:30", "Salary", "income", 3303.12],
+  ["2026-08-27 12:33", "Groceries", "outcome", 68.65],
+  ["2026-08-27 17:49", "Dining Out", "outcome", 8.02],
+  ["2026-08-27 21:33", "Shopping", "outcome", 24.76],
+  ["2026-08-28 15:15", "Transportation", "outcome", 31.58],
+];
+
+// ============================================================================
+// Family Finance Dashboard PRO — vanilla JS + Chart.js (CDN)
+// ============================================================================
+
+const EXPENSE_CATEGORIES = ["Groceries", "Utilities", "Transportation", "Dining Out", "Entertainment", "Healthcare", "Subscriptions", "Shopping", "Coffee & Drinks"];
+const INCOME_CATEGORIES = ["Salary", "Freelance", "Dividends", "Cashback"];
+const CATEGORY_ICONS = {
+  "Groceries": "🛒", "Salary": "💼", "Coffee & Drinks": "☕", "Dining Out": "🍽️",
+  "Transportation": "🚗", "Shopping": "🛍️", "Utilities": "💡", "Freelance": "💻",
+  "Entertainment": "🎬", "Healthcare": "🏥", "Dividends": "📈", "Subscriptions": "📱", "Cashback": "💰",
+};
+const DEFAULT_BUDGETS = {
+  "Groceries": 600, "Coffee & Drinks": 80, "Dining Out": 350, "Transportation": 200,
+  "Shopping": 400, "Utilities": 400, "Entertainment": 200, "Healthcare": 150, "Subscriptions": 100,
+};
+const DAY_NAMES = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+const MONTH_NAMES = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
+const CHART_PALETTE = ["#00ff88", "#00b8ff", "#ff6b35", "#a855f7", "#ffaa00", "#ff4757", "#34d399", "#60a5fa", "#f472b6", "#fbbf24", "#2dd4bf", "#c084fc", "#f87171"];
+const LS_KEY = "ffdpro_transactions_v1";
+const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno" };
+
+const PRESETS = [
+  { icon: "🏋️", name: "Abbonamento Palestra", amount: 45, type: "expense", frequency: "monthly", duration: 12 },
+  { icon: "🎬", name: "Netflix", amount: 15, type: "expense", frequency: "monthly", duration: 12 },
+  { icon: "🚗", name: "Nuova Auto", amount: 8000, type: "expense", frequency: "once", duration: 1 },
+  { icon: "✈️", name: "Vacanza", amount: 1500, type: "expense", frequency: "once", duration: 1 },
+  { icon: "📈", name: "Aumento Stipendio", amount: 300, type: "income", frequency: "monthly", duration: 12 },
+  { icon: "💻", name: "Lavoro Freelance", amount: 400, type: "income", frequency: "monthly", duration: 12 },
+  { icon: "💰", name: "Risparmio Automatico", amount: 200, type: "saving", frequency: "monthly", duration: 12 },
+  { icon: "🛟", name: "Fondo Emergenza", amount: 150, type: "saving", frequency: "monthly", duration: 12 },
+];
+
+const state = {
+  transactions: [],
+  filters: { period: "month", category: "all", type: "all" },
+  simulations: [],
+  charts: {},
+  txSort: { field: "date", dir: "desc" },
+  txFilters: { category: "all", type: "all", search: "" },
+  activeTab: "overview",
+};
+let simIdSeq = 1;
+
+// ---------------------------------------------------------------- formatting
+function fmtCurrency(v, decimals = 0) {
+  const sign = v < 0 ? "-" : "";
+  return sign + "€" + Math.abs(v).toLocaleString("it-IT", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+function fmtPercent(v, decimals = 1) { return (v * 100).toFixed(decimals) + "%"; }
+function pad2(n) { return String(n).padStart(2, "0"); }
+function fmtDateFull(d) { return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`; }
+function fmtTime(d) { return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function fmtDateTimeShort(d) { return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)} ${fmtTime(d)}`; }
+function monthKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1); }
+function monthLabel(key) { const [y, m] = key.split("-").map(Number); return MONTH_NAMES[m - 1] + " " + String(y).slice(2); }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function catIcon(cat) { return CATEGORY_ICONS[cat] || "💳"; }
+function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+
+// ---------------------------------------------------------------- CSV parsing
+function normalizeNumber(raw) {
+  let s = raw.replace(/[€\s]/g, "");
+  const hasComma = s.includes(","), hasDot = s.includes(".");
+  if (hasComma && hasDot) s = s.replace(/\./g, "").replace(",", ".");
+  else if (hasComma && !hasDot) s = s.replace(",", ".");
+  return s;
+}
+function normalizeType(raw) {
+  const low = raw.trim().toLowerCase();
+  if (low.startsWith("in") || low.includes("entrata")) return "income";
+  if (low.startsWith("out") || low.startsWith("exp") || low.includes("uscita")) return "outcome";
+  return low;
+}
+function parseDateFlexible(raw) {
+  const s = raw.trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) { const d = new Date(s.replace(" ", "T")); if (!isNaN(d)) return d; }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (m) {
+    let [, dd, mm, yyyy, hh, min, ss] = m;
+    if (yyyy.length === 2) yyyy = "20" + yyyy;
+    return new Date(+yyyy, +mm - 1, +dd, +(hh || 0), +(min || 0), +(ss || 0));
+  }
+  const d2 = new Date(s);
+  return isNaN(d2) ? null : d2;
+}
+function splitCSVLine(line, delim) {
+  const out = []; let cur = "", inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { if (inQ && line[i + 1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+    else if (c === delim && !inQ) { out.push(cur); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  if (lines.length < 2) throw new Error("Il file è vuoto o non contiene righe di dati.");
+  const firstLine = lines[0];
+  const delim = firstLine.split(",").length >= firstLine.split(";").length ? "," : ";";
+  const header = splitCSVLine(firstLine, delim).map((h) => h.trim().toLowerCase());
+  const idx = {
+    date: header.findIndex((h) => h.includes("datetime") || h.includes("data") || h.includes("date")),
+    cat: header.findIndex((h) => h.includes("categ")),
+    val: header.findIndex((h) => h.includes("value") || h.includes("valor") || h.includes("amount") || h.includes("importo")),
+    type: header.findIndex((h) => h.includes("type") || h.includes("tipo")),
+  };
+  if (idx.date < 0 || idx.cat < 0 || idx.val < 0 || idx.type < 0) {
+    throw new Error("Colonne obbligatorie mancanti. Servono: datetime, category, value, type.");
+  }
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const parts = splitCSVLine(lines[i], delim);
+    if (parts.length <= Math.max(idx.date, idx.cat, idx.val, idx.type)) continue;
+    const d = parseDateFlexible(parts[idx.date]);
+    const v = parseFloat(normalizeNumber(parts[idx.val]));
+    const cat = parts[idx.cat].trim();
+    const type = normalizeType(parts[idx.type]);
+    if (!d || isNaN(v) || !cat) continue;
+    rows.push({ date: d, category: cat, type, value: Math.abs(v) });
+  }
+  if (!rows.length) throw new Error("Nessuna riga valida trovata nel file.");
+  return rows;
+}
+
+// ---------------------------------------------------------------- persistence
+function persistTransactions() {
+  const raw = state.transactions.map((t) => [t.date.toISOString(), t.category, t.type, t.value]);
+  try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
+}
+function loadPersisted() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const arr = JSON.parse(raw);
+    return arr.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
+  } catch (e) { return null; }
+}
+
+// ---------------------------------------------------------------- data helpers
+function latestDate() {
+  return state.transactions.reduce((mx, t) => (t.date > mx ? t.date : mx), new Date(0));
+}
+function getAllCategories() {
+  const set = new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES]);
+  for (const t of state.transactions) set.add(t.category);
+  return Array.from(set);
+}
+function sumBy(txs, type) { return txs.filter((t) => t.type === type).reduce((s, t) => s + t.value, 0); }
+function monthsCoveredCount(txs) { const set = new Set(txs.map((t) => monthKey(t.date))); return Math.max(1, set.size); }
+
+function getPeriodRange() {
+  const anchor = latestDate();
+  const period = state.filters.period;
+  if (period === "all" || state.transactions.length === 0) return [null, null];
+  if (period === "week") {
+    const start = new Date(anchor); start.setDate(start.getDate() - 6); start.setHours(0, 0, 0, 0);
+    const end = new Date(anchor); end.setHours(23, 59, 59, 999);
+    return [start, end];
+  }
+  if (period === "month") {
+    const start = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+    const end = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999);
+    return [start, end];
+  }
+  if (period === "quarter") {
+    const qStartMonth = Math.floor(anchor.getMonth() / 3) * 3;
+    const start = new Date(anchor.getFullYear(), qStartMonth, 1);
+    const end = new Date(anchor.getFullYear(), qStartMonth + 3, 0, 23, 59, 59, 999);
+    return [start, end];
+  }
+  if (period === "year") {
+    return [new Date(anchor.getFullYear(), 0, 1), new Date(anchor.getFullYear(), 11, 31, 23, 59, 59, 999)];
+  }
+  return [null, null];
+}
+function getCategoryTypeFiltered() {
+  return state.transactions.filter((t) =>
+    (state.filters.category === "all" || t.category === state.filters.category) &&
+    (state.filters.type === "all" || t.type === state.filters.type)
+  );
+}
+function getPeriodFiltered() {
+  const [start, end] = getPeriodRange();
+  return getCategoryTypeFiltered().filter((t) => (!start || t.date >= start) && (!end || t.date <= end));
+}
+function periodLabel() { return PERIOD_LABELS[state.filters.period] || "Tutto"; }
+
+function computeMonthlySeries(txs) {
+  const map = new Map();
+  for (const t of txs) {
+    const k = monthKey(t.date);
+    if (!map.has(k)) map.set(k, { key: k, label: monthLabel(k), income: 0, outcome: 0 });
+    const m = map.get(k);
+    if (t.type === "income") m.income += t.value; else m.outcome += t.value;
+  }
+  const arr = Array.from(map.values()).sort((a, b) => a.key.localeCompare(b.key));
+  let cum = 0;
+  for (const m of arr) { m.net = m.income - m.outcome; cum += m.net; m.cumulative = cum; }
+  return arr;
+}
+function computeBudgetBreakdown(periodTxs) {
+  const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
+  return EXPENSE_CATEGORIES.map((cat) => {
+    const speso = periodTxs.filter((t) => t.type === "outcome" && t.category === cat).reduce((s, t) => s + t.value, 0);
+    const budget = (DEFAULT_BUDGETS[cat] || 0) * monthsN;
+    const percent = budget > 0 ? speso / budget : null;
+    return { category: cat, speso, budget, percent };
+  });
+}
+function computeInsights(periodTxs, budgetBreakdown, withActions) {
+  const insights = [];
+  const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
+  const savingsRate = income > 0 ? (income - outcome) / income : 0;
+  for (const b of budgetBreakdown) {
+    if (b.percent === null) continue;
+    if (b.percent > 1) {
+      insights.push({ level: "danger", icon: "⚠️", title: `Budget superato: ${b.category}`,
+        text: `Speso ${fmtCurrency(b.speso)} su ${fmtCurrency(b.budget)} (${fmtPercent(b.percent)}).`,
+        action: withActions ? `Riduci le uscite in ${b.category} di circa ${fmtCurrency(b.speso - b.budget)} per rientrare nel budget.` : null });
+    } else if (b.percent > 0.8) {
+      insights.push({ level: "warning", icon: "⏳", title: `Vicino al limite: ${b.category}`,
+        text: `Usato il ${fmtPercent(b.percent)} del budget.`,
+        action: withActions ? `Monitora le prossime spese in ${b.category} per non sforare.` : null });
+    }
+  }
+  if (income > 0 && savingsRate > 0.2) {
+    insights.push({ level: "success", icon: "✅", title: "Ottimo tasso di risparmio",
+      text: `Stai risparmiando il ${fmtPercent(savingsRate)} delle tue entrate.`,
+      action: withActions ? "Valuta di investire il surplus o rafforzare il fondo emergenza." : null });
+  }
+  const byDay = new Map();
+  for (const t of periodTxs) { if (t.type !== "outcome") continue; const k = t.date.toDateString(); byDay.set(k, (byDay.get(k) || 0) + t.value); }
+  let peakDay = null, peakVal = 0;
+  for (const [k, v] of byDay) if (v > peakVal) { peakVal = v; peakDay = k; }
+  if (peakDay) {
+    insights.push({ level: "info", icon: "📅", title: "Picco di spesa giornaliero",
+      text: `Il ${fmtDateFull(new Date(peakDay))} hai speso ${fmtCurrency(peakVal)} in un solo giorno.`, action: null });
+  }
+  const coffee = periodTxs.filter((t) => t.category === "Coffee & Drinks" && t.type === "outcome");
+  if (coffee.length >= 3) {
+    const total = coffee.reduce((s, t) => s + t.value, 0);
+    const monthlyAvg = total / monthsCoveredCount(periodTxs);
+    insights.push({ level: "info", icon: "☕", title: "Proiezione annuale Coffee & Drinks",
+      text: `Di questo passo spenderesti circa ${fmtCurrency(monthlyAvg * 12)} l'anno in questa categoria.`,
+      action: withActions ? "Dimezzare questa spesa libererebbe budget per altri obiettivi." : null });
+  }
+  if (!insights.length) insights.push({ level: "success", icon: "✅", title: "Tutto in ordine", text: "Nessuna anomalia rilevata nel periodo selezionato.", action: null });
+  return insights;
+}
+function computeForecastNextMonth() {
+  const series = computeMonthlySeries(getCategoryTypeFiltered());
+  if (!series.length) return 0;
+  const lastN = series.slice(-3);
+  const avgNet = lastN.reduce((s, m) => s + m.net, 0) / lastN.length;
+  return series[series.length - 1].cumulative + avgNet;
+}
+
+// ---------------------------------------------------------------- chart helpers
+function chartTheme() {
+  Chart.defaults.color = "#8891a3";
+  Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
+  Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+}
+function renderChart(id, config) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return null;
+  if (state.charts[id]) state.charts[id].destroy();
+  state.charts[id] = new Chart(canvas.getContext("2d"), config);
+  return state.charts[id];
+}
+function currencyTick() { return { callback: (v) => fmtCurrency(v) }; }
+
+// ---------------------------------------------------------------- Overview tab
+function renderOverview() {
+  const periodTxs = getPeriodFiltered();
+  const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
+  const net = income - outcome;
+  const savingsRate = income > 0 ? net / income : 0;
+  const forecast = computeForecastNextMonth();
+
+  const cards = [
+    { label: "Saldo Netto", value: fmtCurrency(net), cls: net >= 0 ? "pos" : "neg", sub: periodLabel() },
+    { label: "Entrate", value: fmtCurrency(income), cls: "pos", sub: `${periodTxs.filter((t) => t.type === "income").length} transazioni` },
+    { label: "Uscite", value: fmtCurrency(outcome), cls: "neg", sub: `${periodTxs.filter((t) => t.type === "outcome").length} transazioni` },
+    { label: "Obiettivo", value: fmtPercent(savingsRate), cls: savingsRate >= 0.2 ? "pos" : "warn", sub: "Target: 20% di risparmio" },
+    { label: "Previsione", value: fmtCurrency(forecast), cls: "acc", sub: "Saldo stimato prossimo mese" },
+  ];
+  const grid = document.getElementById("overviewMetrics");
+  grid.innerHTML = "";
+  for (const c of cards) {
+    const card = el("div", "metric-card");
+    card.appendChild(el("div", "metric-label", c.label));
+    card.appendChild(el("div", "metric-value " + c.cls, c.value));
+    card.appendChild(el("div", "metric-sub", c.sub));
+    grid.appendChild(card);
+  }
+
+  document.getElementById("pieRangeTag").textContent = periodLabel();
+
+  const monthlySeries = computeMonthlySeries(getCategoryTypeFiltered());
+  renderChart("chartCashflow", {
+    data: {
+      labels: monthlySeries.map((m) => m.label),
+      datasets: [
+        { type: "bar", label: "Entrate", data: monthlySeries.map((m) => m.income), backgroundColor: "#00ff88", borderRadius: 4, order: 2 },
+        { type: "bar", label: "Uscite", data: monthlySeries.map((m) => m.outcome), backgroundColor: "#ff4757", borderRadius: 4, order: 2 },
+        { type: "line", label: "Saldo Cumulativo", data: monthlySeries.map((m) => m.cumulative), borderColor: "#00b8ff", backgroundColor: "rgba(0,184,255,0.12)", yAxisID: "y1", tension: 0.3, pointRadius: 3, order: 1 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, ticks: currencyTick(), grid: { color: "rgba(255,255,255,0.05)" } },
+        y1: { position: "right", ticks: currencyTick(), grid: { drawOnChartArea: false } },
+      },
+      plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } },
+    },
+  });
+
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const pieRows = budgetBreakdown.map((b) => ({ category: b.category, speso: periodTxs.filter((t) => t.type === "outcome" && t.category === b.category).reduce((s, t) => s + t.value, 0) })).filter((r) => r.speso > 0);
+  const extraCats = getAllCategories().filter((c) => !EXPENSE_CATEGORIES.includes(c));
+  for (const c of extraCats) {
+    const speso = periodTxs.filter((t) => t.type === "outcome" && t.category === c).reduce((s, t) => s + t.value, 0);
+    if (speso > 0) pieRows.push({ category: c, speso });
+  }
+  pieRows.sort((a, b) => b.speso - a.speso);
+  renderChart("chartCategoryPie", {
+    type: "doughnut",
+    data: { labels: pieRows.map((r) => `${catIcon(r.category)} ${r.category}`), datasets: [{ data: pieRows.map((r) => r.speso), backgroundColor: CHART_PALETTE, borderColor: "#111827", borderWidth: 2 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: "60%",
+      plugins: { legend: { position: window.innerWidth < 720 ? "bottom" : "right" }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtCurrency(c.parsed)}` } } },
+    },
+  });
+  if (!pieRows.length) {
+    const canvas = document.getElementById("chartCategoryPie");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  const weekly = new Array(7).fill(0);
+  for (const t of periodTxs) { if (t.type !== "outcome") continue; const dow = (t.date.getDay() + 6) % 7; weekly[dow] += t.value; }
+  renderChart("chartWeekly", {
+    type: "bar",
+    data: { labels: DAY_NAMES, datasets: [{ label: "Uscite", data: weekly, backgroundColor: "#ff6b35", borderRadius: 5 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: currencyTick() } } },
+  });
+
+  const budgetList = document.getElementById("budgetList");
+  budgetList.innerHTML = "";
+  for (const b of budgetBreakdown) {
+    const row = el("div", "budget-row");
+    row.appendChild(el("div", "budget-cat", `${catIcon(b.category)} ${b.category}`));
+    row.appendChild(el("div", "budget-amounts" + (b.percent > 1 ? " over" : ""), `${fmtCurrency(b.speso)} / ${fmtCurrency(b.budget)}`));
+    const track = el("div", "track");
+    const pct = clamp(b.percent || 0, 0, 1.4);
+    const fill = el("div", "track-fill");
+    fill.style.width = (pct / 1.4) * 100 + "%";
+    fill.style.background = b.percent > 1 ? "linear-gradient(90deg,#00ff88,#ff4757)" : "linear-gradient(90deg,#0aa860,#00ff88)";
+    track.appendChild(fill);
+    track.appendChild(el("div", "track-pct", fmtPercent(b.percent || 0)));
+    row.appendChild(track);
+    budgetList.appendChild(row);
+  }
+
+  const insightsBox = document.getElementById("overviewInsights");
+  renderInsightList(insightsBox, computeInsights(periodTxs, budgetBreakdown, false));
+
+  const recentBox = document.getElementById("recentTxList");
+  recentBox.innerHTML = "";
+  const recent = periodTxs.slice().sort((a, b) => b.date - a.date).slice(0, 8);
+  if (!recent.length) recentBox.appendChild(el("div", "sim-empty", "Nessuna transazione nel periodo selezionato."));
+  for (const t of recent) recentBox.appendChild(buildTxRow(t));
+}
+function renderInsightList(box, insights) {
+  box.innerHTML = "";
+  for (const ins of insights) {
+    const item = el("div", "insight " + ins.level);
+    item.appendChild(el("div", "ic", ins.icon));
+    const txt = el("div", "txt");
+    txt.appendChild(el("strong", null, ins.title));
+    txt.appendChild(document.createTextNode(ins.text));
+    if (ins.action) txt.appendChild(el("span", "action", "💡 " + ins.action));
+    item.appendChild(txt);
+    box.appendChild(item);
+  }
+}
+function buildTxRow(t) {
+  const row = el("div", "tx-row");
+  row.appendChild(el("div", "tx-icon", catIcon(t.category)));
+  const mid = el("div", "tx-mid");
+  mid.appendChild(el("div", "tx-cat", t.category));
+  mid.appendChild(el("div", "tx-date", fmtDateTimeShort(t.date)));
+  row.appendChild(mid);
+  row.appendChild(el("div", "tx-amt " + (t.type === "income" ? "pos" : "neg"), (t.type === "income" ? "+" : "-") + fmtCurrency(t.value, 2)));
+  row.addEventListener("click", () => openTxModal(t));
+  return row;
+}
+
+// ---------------------------------------------------------------- Simulator tab
+function getMonthsForward(n) {
+  const last = latestDate();
+  const arr = [];
+  for (let i = 1; i <= n; i++) {
+    const d = new Date(last.getFullYear(), last.getMonth() + i, 1);
+    arr.push({ index: i, label: MONTH_NAMES[d.getMonth()] + " " + String(d.getFullYear()).slice(2) });
+  }
+  return arr;
+}
+function populateSimStartMonths() {
+  const sel = document.getElementById("simStartMonth");
+  sel.innerHTML = "";
+  for (const m of getMonthsForward(12)) {
+    const opt = document.createElement("option");
+    opt.value = m.index; opt.textContent = `Mese ${m.index} (${m.label})`;
+    sel.appendChild(opt);
+  }
+}
+function signedAmount(sim, amount) { return sim.type === "expense" ? -amount : amount; }
+function simMonthlyContribution(sim, monthIndex) {
+  if (sim.frequency === "once") return monthIndex === sim.startMonth ? signedAmount(sim, sim.amount) : 0;
+  const within = monthIndex >= sim.startMonth && monthIndex < sim.startMonth + sim.duration;
+  if (!within) return 0;
+  let monthlyEquiv = sim.amount;
+  if (sim.frequency === "weekly") monthlyEquiv = sim.amount * 4.33;
+  else if (sim.frequency === "yearly") monthlyEquiv = sim.amount / 12;
+  return signedAmount(sim, monthlyEquiv);
+}
+function buildProjection() {
+  const months = getMonthsForward(12);
+  const series = computeMonthlySeries(state.transactions);
+  const last3 = series.slice(-3);
+  const baseIncome = last3.length ? last3.reduce((s, m) => s + m.income, 0) / last3.length : 0;
+  const baseOutcome = last3.length ? last3.reduce((s, m) => s + m.outcome, 0) / last3.length : 0;
+  const startBalance = series.length ? series[series.length - 1].cumulative : 0;
+  let cumWithout = startBalance, cumWith = startBalance;
+  const rows = months.map((m) => {
+    let delta = 0;
+    for (const sim of state.simulations) delta += simMonthlyContribution(sim, m.index);
+    const baseNet = baseIncome - baseOutcome;
+    cumWithout += baseNet;
+    cumWith += baseNet + delta;
+    return {
+      label: m.label,
+      income: baseIncome + Math.max(0, delta),
+      outcome: baseOutcome + Math.max(0, -delta),
+      baseNet, delta, totalNet: baseNet + delta, cumWithout, cumWith,
+    };
+  });
+  return { rows, startBalance, baseIncome, baseOutcome };
+}
+function renderSimulator() {
+  const { rows, startBalance } = buildProjection();
+  const last = rows[rows.length - 1];
+  const cards = [
+    { label: "Saldo Attuale", value: fmtCurrency(startBalance), cls: startBalance >= 0 ? "pos" : "neg", sub: "Patrimonio netto ad oggi" },
+    { label: "Proiezione 12 Mesi", value: fmtCurrency(last.cumWith), cls: "acc", sub: "Con simulazioni attive" },
+    { label: "Impatto Simulazioni", value: fmtCurrency(last.cumWith - last.cumWithout), cls: last.cumWith >= last.cumWithout ? "pos" : "neg", sub: "Delta a 12 mesi" },
+    { label: "Simulazioni Attive", value: String(state.simulations.length), cls: "", sub: "Scenari configurati" },
+  ];
+  const grid = document.getElementById("simMetrics");
+  grid.innerHTML = "";
+  for (const c of cards) {
+    const card = el("div", "metric-card");
+    card.appendChild(el("div", "metric-label", c.label));
+    card.appendChild(el("div", "metric-value " + c.cls, c.value));
+    card.appendChild(el("div", "metric-sub", c.sub));
+    grid.appendChild(card);
+  }
+
+  const list = document.getElementById("simList");
+  list.innerHTML = "";
+  if (!state.simulations.length) {
+    list.appendChild(el("div", "sim-empty", "Nessuna simulazione attiva. Aggiungine una dal modulo o da un preset rapido."));
+  } else {
+    const freqLabel = { monthly: "mensile", weekly: "settimanale", yearly: "annuale", once: "una tantum" };
+    const typeLabel = { expense: "Spesa", income: "Entrata", saving: "Risparmio" };
+    for (const sim of state.simulations) {
+      const item = el("div", "sim-item");
+      const info = el("div");
+      info.appendChild(el("div", "si-name", sim.name));
+      info.appendChild(el("div", "si-meta", `${typeLabel[sim.type]} · ${freqLabel[sim.frequency]}${sim.frequency !== "once" ? " · " + sim.duration + " mesi" : ""} · dal mese ${sim.startMonth}`));
+      item.appendChild(info);
+      item.appendChild(el("div", "si-amt " + (sim.type === "expense" ? "neg" : "pos"), (sim.type === "expense" ? "-" : "+") + fmtCurrency(sim.amount)));
+      const rm = el("button", "si-remove", "✕");
+      rm.type = "button";
+      rm.addEventListener("click", () => { state.simulations = state.simulations.filter((s) => s.id !== sim.id); renderSimulator(); });
+      item.appendChild(rm);
+      list.appendChild(item);
+    }
+  }
+
+  renderChart("chartSimProjection", {
+    type: "line",
+    data: {
+      labels: rows.map((r) => r.label),
+      datasets: [
+        { label: "Senza simulazioni", data: rows.map((r) => r.cumWithout), borderColor: "#6b7280", borderDash: [5, 4], tension: 0.25, pointRadius: 2 },
+        { label: "Con simulazioni", data: rows.map((r) => r.cumWith), borderColor: "#a855f7", backgroundColor: "rgba(168,85,247,0.12)", fill: true, tension: 0.25, pointRadius: 2 },
+      ],
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: currencyTick() } }, plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } } },
+  });
+
+  renderChart("chartSimFlow", {
+    type: "bar",
+    data: { labels: rows.map((r) => r.label), datasets: [
+      { label: "Entrate", data: rows.map((r) => r.income), backgroundColor: "#00ff88", borderRadius: 4 },
+      { label: "Uscite", data: rows.map((r) => r.outcome), backgroundColor: "#ff4757", borderRadius: 4 },
+    ] },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: currencyTick() } } },
+  });
+
+  const tbody = document.querySelector("#simTable tbody");
+  tbody.innerHTML = "";
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.label}</td><td class="tabular">${fmtCurrency(r.income)}</td><td class="tabular">${fmtCurrency(r.outcome)}</td>
+      <td class="tabular">${fmtCurrency(r.baseNet)}</td>
+      <td class="tabular" style="color:${r.delta >= 0 ? "var(--primary)" : "var(--danger)"}">${r.delta >= 0 ? "+" : ""}${fmtCurrency(r.delta)}</td>
+      <td class="tabular">${fmtCurrency(r.totalNet)}</td><td class="tabular">${fmtCurrency(r.cumWith)}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+function addSimulation(sim) {
+  state.simulations.push({ id: simIdSeq++, startMonth: 1, ...sim });
+  renderSimulator();
+}
+function renderPresets() {
+  const grid = document.getElementById("presetGrid");
+  grid.innerHTML = "";
+  for (const p of PRESETS) {
+    const btn = el("button", "preset-btn");
+    btn.type = "button";
+    btn.innerHTML = `<span class="pi">${p.icon}</span>${p.name}`;
+    btn.addEventListener("click", () => addSimulation({ name: p.name, amount: p.amount, type: p.type, frequency: p.frequency, duration: p.duration }));
+    grid.appendChild(btn);
+  }
+}
+
+// ---------------------------------------------------------------- Analytics tab
+function renderAnalytics() {
+  const periodTxs = getPeriodFiltered();
+  const fullTxs = getCategoryTypeFiltered();
+
+  const outcomeTx = periodTxs.filter((t) => t.type === "outcome");
+  const days = new Set(periodTxs.map((t) => t.date.toDateString())).size || 1;
+  const dailyAvg = outcomeTx.reduce((s, t) => s + t.value, 0) / days;
+  const maxExpense = outcomeTx.reduce((mx, t) => (t.value > mx ? t.value : mx), 0);
+  const numCats = new Set(periodTxs.map((t) => t.category)).size;
+
+  const stats = [
+    { label: "Media Giornaliera (uscite)", value: fmtCurrency(dailyAvg, 2) },
+    { label: "Totale Transazioni", value: String(periodTxs.length) },
+    { label: "Spesa Massima", value: fmtCurrency(maxExpense, 2) },
+    { label: "Categorie Attive", value: String(numCats) },
+  ];
+  const strip = document.getElementById("analyticsStats");
+  strip.innerHTML = "";
+  for (const s of stats) {
+    const box = el("div", "stat-box");
+    box.appendChild(el("div", "sv", s.value));
+    box.appendChild(el("div", "sl", s.label));
+    strip.appendChild(box);
+  }
+
+  const hourly = new Array(24).fill(0);
+  for (const t of fullTxs) { if (t.type === "outcome") hourly[t.date.getHours()] += t.value; }
+  renderChart("chartHourly", {
+    type: "bar",
+    data: { labels: hourly.map((_, h) => h + "h"), datasets: [{ label: "Uscite", data: hourly, backgroundColor: "#00b8ff", borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: currencyTick() } } },
+  });
+
+  const catTotals = {};
+  for (const t of fullTxs) { if (t.type !== "outcome") continue; catTotals[t.category] = (catTotals[t.category] || 0) + t.value; }
+  const catArr = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+  renderChart("chartCategoryCompare", {
+    type: "bar",
+    data: { labels: catArr.map(([c]) => `${catIcon(c)} ${c}`), datasets: [{ label: "Uscite totali", data: catArr.map(([, v]) => v), backgroundColor: CHART_PALETTE, borderRadius: 4 }] },
+    options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: currencyTick() } } },
+  });
+
+  const monthlySeries = computeMonthlySeries(fullTxs);
+  renderChart("chartSavingsTrend", {
+    type: "line",
+    data: { labels: monthlySeries.map((m) => m.label), datasets: [{ label: "Saldo Cumulativo", data: monthlySeries.map((m) => m.cumulative), borderColor: "#00ff88", backgroundColor: "rgba(0,255,136,0.12)", fill: true, tension: 0.3, pointRadius: 3 }] },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: currencyTick() } }, plugins: { tooltip: { callbacks: { label: (c) => fmtCurrency(c.parsed.y) } } } },
+  });
+
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  renderInsightList(document.getElementById("analyticsInsights"), computeInsights(periodTxs, budgetBreakdown, true));
+}
+
+// ---------------------------------------------------------------- Transactions tab
+function getTxFiltered() {
+  let txs = state.transactions.filter((t) => {
+    if (state.txFilters.category !== "all" && t.category !== state.txFilters.category) return false;
+    if (state.txFilters.type !== "all" && t.type !== state.txFilters.type) return false;
+    if (state.txFilters.search) { const q = state.txFilters.search.toLowerCase(); if (!t.category.toLowerCase().includes(q)) return false; }
+    return true;
+  });
+  const { field, dir } = state.txSort;
+  txs = txs.slice().sort((a, b) => {
+    let av = field === "date" ? a.date : field === "value" ? a.value : a[field];
+    let bv = field === "date" ? b.date : field === "value" ? b.value : b[field];
+    if (av < bv) return dir === "asc" ? -1 : 1;
+    if (av > bv) return dir === "asc" ? 1 : -1;
+    return 0;
+  });
+  return txs;
+}
+function renderTransactions() {
+  const tbody = document.querySelector("#txTable tbody");
+  tbody.innerHTML = "";
+  const rows = getTxFiltered();
+  document.getElementById("txCount").textContent = `${rows.length} transazioni`;
+  if (!rows.length) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" class="table-empty">Nessuna transazione corrisponde ai filtri.</td>`;
+    tbody.appendChild(tr);
+  }
+  for (const t of rows) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="tabular">${fmtDateTimeShort(t.date)}</td><td>${catIcon(t.category)} ${t.category}</td>
+      <td><span class="badge ${t.type}">${t.type === "income" ? "Entrata" : "Uscita"}</span></td>
+      <td class="tabular" style="text-align:right; font-weight:700; color:${t.type === "income" ? "var(--primary)" : "var(--danger)"}">${t.type === "income" ? "+" : "-"}${fmtCurrency(t.value, 2)}</td>`;
+    tr.addEventListener("click", () => openTxModal(t));
+    tbody.appendChild(tr);
+  }
+  document.querySelectorAll("#txTable th.sortable .arrow").forEach((a) => (a.textContent = ""));
+  const activeTh = document.querySelector(`#txTable th[data-sort="${state.txSort.field}"] .arrow`);
+  if (activeTh) activeTh.textContent = state.txSort.dir === "asc" ? "▴" : "▾";
+}
+
+// ---------------------------------------------------------------- modal
+function openTxModal(t) {
+  document.getElementById("mxIcon").textContent = catIcon(t.category);
+  document.getElementById("mxAmount").textContent = (t.type === "income" ? "+" : "-") + fmtCurrency(t.value, 2);
+  document.getElementById("mxAmount").style.color = t.type === "income" ? "var(--primary)" : "var(--danger)";
+  document.getElementById("mxCat").textContent = t.category;
+  document.getElementById("mxDate").textContent = fmtDateFull(t.date);
+  document.getElementById("mxTime").textContent = fmtTime(t.date);
+  document.getElementById("mxType").textContent = t.type === "income" ? "Entrata" : "Uscita";
+  document.getElementById("mxId").textContent = t.id;
+  document.getElementById("txModal").classList.remove("hidden");
+}
+function closeTxModal() { document.getElementById("txModal").classList.add("hidden"); }
+
+// ---------------------------------------------------------------- tabs & filters wiring
+function renderTab(name) {
+  if (name === "overview") renderOverview();
+  else if (name === "simulator") renderSimulator();
+  else if (name === "analytics") renderAnalytics();
+  else if (name === "transactions") renderTransactions();
+}
+function switchTab(name) {
+  state.activeTab = name;
+  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === "tab-" + name));
+  requestAnimationFrame(() => renderTab(name));
+}
+function populateCategoryFilters() {
+  const cats = getAllCategories();
+  for (const selId of ["filterCategory", "txFilterCategory"]) {
+    const sel = document.getElementById(selId);
+    const current = sel.value;
+    sel.innerHTML = '<option value="all">Tutte</option>';
+    for (const c of cats) {
+      const opt = document.createElement("option");
+      opt.value = c; opt.textContent = `${catIcon(c)} ${c}`;
+      sel.appendChild(opt);
+    }
+    if (cats.includes(current)) sel.value = current;
+  }
+}
+
+// ---------------------------------------------------------------- data load / app boot
+function loadTransactions(rows) {
+  state.transactions = rows.map((r, i) => ({ ...r, id: "TXN-" + String(i + 1).padStart(6, "0") }));
+  state.simulations = [];
+  persistTransactions();
+  populateCategoryFilters();
+  populateSimStartMonths();
+  renderPresets();
+  document.getElementById("welcomeScreen").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  const maxDate = latestDate();
+  document.getElementById("footerInfo").textContent = `Fonte dati: ${state.transactions.length} transazioni · ultimo aggiornamento ${fmtDateFull(maxDate)}`;
+  updateFilterSummary();
+  switchTab(state.activeTab);
+}
+function updateFilterSummary() {
+  const n = getPeriodFiltered().length;
+  document.getElementById("filterSummary").textContent = `${n} transazioni nel filtro`;
+}
+function showWelcomeError(msg) {
+  const box = document.getElementById("welcomeError");
+  box.textContent = msg;
+  box.classList.remove("hidden");
+}
+function hideWelcomeError() { document.getElementById("welcomeError").classList.add("hidden"); }
+function handleFile(file) {
+  hideWelcomeError();
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const rows = parseCSV(reader.result);
+      loadTransactions(rows);
+    } catch (err) {
+      showWelcomeError("Errore nell'importazione: " + err.message);
+    }
+  };
+  reader.onerror = () => showWelcomeError("Impossibile leggere il file.");
+  reader.readAsText(file, "UTF-8");
+}
+function loadSampleData() {
+  const rows = SAMPLE_TRANSACTIONS_PRO.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
+  loadTransactions(rows);
+}
+function resetToWelcome() {
+  localStorage.removeItem(LS_KEY);
+  state.transactions = [];
+  state.simulations = [];
+  Object.values(state.charts).forEach((c) => c && c.destroy());
+  state.charts = {};
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("welcomeScreen").classList.remove("hidden");
+  document.getElementById("fileInput").value = "";
+  hideWelcomeError();
+}
+
+// ---------------------------------------------------------------- init
+function init() {
+  chartTheme();
+
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  dropzone.addEventListener("click", () => fileInput.click());
+  document.getElementById("btnBrowse").addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+  dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("dragover"); });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault(); dropzone.classList.remove("dragover");
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  document.getElementById("btnSample").addEventListener("click", loadSampleData);
+  document.getElementById("btnNewCsv").addEventListener("click", resetToWelcome);
+
+  document.querySelectorAll(".tab-btn").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+
+  document.getElementById("filterPeriod").addEventListener("change", (e) => { state.filters.period = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterType").addEventListener("change", (e) => { state.filters.type = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
+
+  document.getElementById("txFilterCategory").addEventListener("change", (e) => { state.txFilters.category = e.target.value; renderTransactions(); });
+  document.getElementById("txFilterType").addEventListener("change", (e) => { state.txFilters.type = e.target.value; renderTransactions(); });
+  document.getElementById("txSearch").addEventListener("input", (e) => { state.txFilters.search = e.target.value; renderTransactions(); });
+  document.querySelectorAll("#txTable th.sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      const field = th.dataset.sort;
+      if (state.txSort.field === field) state.txSort.dir = state.txSort.dir === "asc" ? "desc" : "asc";
+      else { state.txSort.field = field; state.txSort.dir = "desc"; }
+      renderTransactions();
+    });
+  });
+
+  document.getElementById("btnAddSim").addEventListener("click", () => {
+    const name = document.getElementById("simName").value.trim() || "Simulazione";
+    const amount = parseFloat(document.getElementById("simAmount").value);
+    if (isNaN(amount) || amount <= 0) { alert("Inserisci un importo valido."); return; }
+    const type = document.getElementById("simType").value;
+    const frequency = document.getElementById("simFrequency").value;
+    const duration = clamp(parseInt(document.getElementById("simDuration").value, 10) || 12, 1, 12);
+    const startMonth = parseInt(document.getElementById("simStartMonth").value, 10) || 1;
+    state.simulations.push({ id: simIdSeq++, name, amount, type, frequency, duration, startMonth });
+    document.getElementById("simName").value = "";
+    document.getElementById("simAmount").value = "";
+    renderSimulator();
+  });
+  document.getElementById("btnClearSims").addEventListener("click", () => { state.simulations = []; renderSimulator(); });
+
+  document.getElementById("btnCloseModal").addEventListener("click", closeTxModal);
+  document.getElementById("txModal").addEventListener("click", (e) => { if (e.target.id === "txModal") closeTxModal(); });
+
+  function tickClock() {
+    document.getElementById("liveClock").textContent = new Date().toLocaleString("it-IT", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  window.addEventListener("resize", () => renderTab(state.activeTab));
+
+  const persisted = loadPersisted();
+  if (persisted && persisted.length) loadTransactions(persisted);
+}
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+
+</script>
 </body>
 </html>
