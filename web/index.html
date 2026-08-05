@@ -211,6 +211,7 @@ button, input, select { font-family: inherit; }
 .filter-field select:focus, .filter-field input:focus { outline: 1.5px solid var(--secondary); }
 .custom-range-row { display: flex; gap: 6px; }
 .custom-range-row input { min-width: 0; flex: 1; }
+.custom-range-warning { display: block; margin-top: 4px; font-size: 10.5px; color: var(--danger); font-weight: 700; }
 
 /* ===================== app shell: sidebar layout ===================== */
 .app-shell { display: flex; align-items: flex-start; }
@@ -587,8 +588,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="welcome-format">
       <strong>Formato richiesto (intestazione obbligatoria):</strong><br>
       datetime,category,value,type<br>
-      2025-01-15 09:30,Groceries,127.50,outcome<br>
-      2025-01-15 14:00,Salary,3500.00,income<br>
+      2025-01-15 09:30,Spesa Alimentare,127.50,outcome<br>
+      2025-01-15 14:00,Stipendio,3500.00,income<br>
       <br>
       <strong>Categoria sconosciuta?</strong> Sostituisci <em>category</em> con una colonna <em>description</em>
       (l'estratto conto dell'esercente): la categoria verrà indovinata da un dizionario di parole chiave,
@@ -636,6 +637,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <input type="date" id="filterCustomStart" aria-label="Data inizio">
         <input type="date" id="filterCustomEnd" aria-label="Data fine">
       </div>
+      <span id="customRangeWarning" class="custom-range-warning hidden" role="alert">⚠️ "Al" deve essere successiva a "Dal"</span>
     </div>
     <div class="filter-field">
       <label for="filterCategory">Categoria</label>
@@ -932,17 +934,17 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="stat-strip" id="analyticsStats"></div>
     <div class="grid-2">
       <div class="panel">
-        <h3>Orari di Spesa</h3>
+        <h3>Orari di Spesa <span class="panel-tag" id="hourlyRangeTag"></span></h3>
         <div class="chart-box"><canvas id="chartHourly"></canvas></div>
       </div>
       <div class="panel">
-        <h3>Confronto Categorie</h3>
+        <h3>Confronto Categorie <span class="panel-tag" id="categoryCompareRangeTag"></span></h3>
         <div class="chart-box tall"><canvas id="chartCategoryCompare"></canvas></div>
       </div>
     </div>
     <div class="grid-2">
       <div class="panel" style="grid-column: 1 / -1;">
-        <h3>Trend Risparmio Cumulativo</h3>
+        <h3>Trend Risparmio Cumulativo <span class="panel-tag">tutto lo storico</span></h3>
         <div class="chart-box"><canvas id="chartSavingsTrend"></canvas></div>
       </div>
     </div>
@@ -1052,6 +1054,22 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveBudgets" class="btn btn-primary btn-sm" type="button">Salva Budget</button>
       </div>
 
+      <h4>🎯 Obiettivo di risparmio</h4>
+      <p class="modal-lead">Percentuale di entrate che punti a risparmiare ogni periodo: determina quando la card "Obiettivo" nella Overview è verde o gialla.</p>
+      <div class="rule-add-row">
+        <input type="number" id="savingsGoalInput" min="0" max="100" step="1" style="max-width:120px;">
+        <span class="muted">%</span>
+        <button id="btnSaveSavingsGoal" class="btn btn-primary btn-sm" type="button">Salva Obiettivo</button>
+      </div>
+
+      <h4>🔀 Rinomina o unisci categoria</h4>
+      <p class="modal-lead">Rinomina una categoria esistente, oppure scrivi il nome esatto di un'altra categoria già presente per unirle: si applica a transazioni, budget e regole del dizionario.</p>
+      <div class="rule-add-row">
+        <select id="categoryRenameFrom"></select>
+        <input type="text" id="categoryRenameTo" placeholder="Nuovo nome, es. Spesa Alimentare">
+        <button id="btnRenameCategory" class="btn btn-primary btn-sm" type="button">Applica</button>
+      </div>
+
       <h4>🔮 Dizionario categorie (matching automatico)</h4>
       <p class="modal-lead">Quando importi un CSV con una colonna descrizione/esercente ma senza categoria, il testo viene confrontato con queste parole chiave (case-insensitive) per assegnare automaticamente una categoria.</p>
       <div class="rule-search-row">
@@ -1089,681 +1107,681 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
 <script>
 const SAMPLE_TRANSACTIONS_PRO = [
-  ["2025-07-01 22:53", "Healthcare", "outcome", 52.47],
-  ["2025-07-02 13:31", "Groceries", "outcome", 81.18],
-  ["2025-07-02 13:49", "Dining Out", "outcome", 6.8],
-  ["2025-07-03 12:09", "Entertainment", "outcome", 6.21],
-  ["2025-07-03 13:28", "Shopping", "outcome", 3.0],
-  ["2025-07-04 09:36", "Groceries", "outcome", 149.75],
-  ["2025-07-04 10:54", "Coffee & Drinks", "outcome", 5.05],
-  ["2025-07-04 16:35", "Groceries", "outcome", 140.98],
-  ["2025-07-05 10:47", "Coffee & Drinks", "outcome", 10.06],
-  ["2025-07-06 10:21", "Shopping", "outcome", 32.03],
-  ["2025-07-08 08:35", "Groceries", "outcome", 5.56],
-  ["2025-07-08 08:36", "Groceries", "outcome", 17.58],
-  ["2025-07-08 12:44", "Utilities", "outcome", 116.94],
-  ["2025-07-09 11:52", "Entertainment", "outcome", 12.42],
-  ["2025-07-10 11:47", "Dining Out", "outcome", 53.59],
-  ["2025-07-10 21:18", "Dining Out", "outcome", 12.96],
-  ["2025-07-11 11:59", "Transportation", "outcome", 27.0],
-  ["2025-07-11 15:30", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-07-13 08:12", "Shopping", "outcome", 151.28],
-  ["2025-07-13 14:09", "Entertainment", "outcome", 31.38],
-  ["2025-07-14 11:34", "Groceries", "outcome", 15.51],
-  ["2025-07-14 12:48", "Transportation", "outcome", 18.76],
-  ["2025-07-14 15:45", "Entertainment", "outcome", 17.57],
-  ["2025-07-14 18:43", "Entertainment", "outcome", 7.08],
-  ["2025-07-15 18:10", "Dining Out", "outcome", 35.15],
-  ["2025-07-15 18:19", "Utilities", "outcome", 174.72],
-  ["2025-07-16 16:05", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-07-16 20:02", "Transportation", "outcome", 70.17],
-  ["2025-07-16 21:30", "Coffee & Drinks", "outcome", 4.81],
-  ["2025-07-18 17:21", "Transportation", "outcome", 16.69],
-  ["2025-07-18 18:39", "Subscriptions", "outcome", 10.38],
-  ["2025-07-19 13:23", "Groceries", "outcome", 34.59],
-  ["2025-07-19 17:08", "Subscriptions", "outcome", 9.71],
-  ["2025-07-19 19:03", "Groceries", "outcome", 9.61],
-  ["2025-07-20 08:06", "Shopping", "outcome", 199.01],
-  ["2025-07-20 10:31", "Dining Out", "outcome", 85.14],
-  ["2025-07-20 18:30", "Coffee & Drinks", "outcome", 4.13],
-  ["2025-07-21 15:22", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-07-22 09:48", "Transportation", "outcome", 23.15],
-  ["2025-07-22 18:01", "Dining Out", "outcome", 4.95],
-  ["2025-07-23 08:29", "Subscriptions", "outcome", 51.15],
-  ["2025-07-23 18:00", "Freelance", "income", 271.73],
-  ["2025-07-23 18:38", "Transportation", "outcome", 3.15],
-  ["2025-07-23 19:56", "Dining Out", "outcome", 3.0],
-  ["2025-07-25 14:05", "Utilities", "outcome", 83.6],
-  ["2025-07-27 09:30", "Salary", "income", 3329.53],
-  ["2025-07-27 12:06", "Groceries", "outcome", 4.28],
-  ["2025-07-28 11:18", "Groceries", "outcome", 9.78],
-  ["2025-08-01 10:33", "Dining Out", "outcome", 8.57],
-  ["2025-08-01 11:11", "Subscriptions", "outcome", 10.73],
-  ["2025-08-02 18:57", "Healthcare", "outcome", 96.21],
-  ["2025-08-03 18:00", "Freelance", "income", 342.35],
-  ["2025-08-04 11:45", "Coffee & Drinks", "outcome", 9.53],
-  ["2025-08-04 19:28", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-08-05 07:55", "Subscriptions", "outcome", 18.52],
-  ["2025-08-06 20:50", "Transportation", "outcome", 114.65],
-  ["2025-08-07 16:50", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-08-07 17:13", "Utilities", "outcome", 66.07],
-  ["2025-08-08 13:51", "Groceries", "outcome", 108.17],
-  ["2025-08-08 15:59", "Coffee & Drinks", "outcome", 12.37],
-  ["2025-08-08 17:40", "Groceries", "outcome", 47.54],
-  ["2025-08-08 19:47", "Groceries", "outcome", 30.09],
-  ["2025-08-08 20:04", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-08-09 13:18", "Entertainment", "outcome", 37.59],
-  ["2025-08-09 13:44", "Groceries", "outcome", 32.81],
-  ["2025-08-09 21:32", "Coffee & Drinks", "outcome", 10.59],
-  ["2025-08-11 09:42", "Coffee & Drinks", "outcome", 14.74],
-  ["2025-08-12 11:35", "Dining Out", "outcome", 57.69],
-  ["2025-08-13 09:46", "Transportation", "outcome", 17.96],
-  ["2025-08-15 11:26", "Coffee & Drinks", "outcome", 3.91],
-  ["2025-08-15 12:38", "Subscriptions", "outcome", 3.0],
-  ["2025-08-16 07:30", "Utilities", "outcome", 225.2],
-  ["2025-08-17 11:34", "Subscriptions", "outcome", 32.08],
-  ["2025-08-17 14:48", "Entertainment", "outcome", 109.56],
-  ["2025-08-17 22:22", "Groceries", "outcome", 65.04],
-  ["2025-08-18 08:20", "Shopping", "outcome", 110.96],
-  ["2025-08-18 11:01", "Dining Out", "outcome", 16.53],
-  ["2025-08-18 13:53", "Coffee & Drinks", "outcome", 4.79],
-  ["2025-08-18 22:32", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-08-19 17:16", "Entertainment", "outcome", 30.96],
-  ["2025-08-20 13:44", "Coffee & Drinks", "outcome", 7.89],
-  ["2025-08-20 18:28", "Groceries", "outcome", 3.08],
-  ["2025-08-20 22:42", "Dining Out", "outcome", 3.63],
-  ["2025-08-21 17:05", "Transportation", "outcome", 27.69],
-  ["2025-08-21 18:09", "Coffee & Drinks", "outcome", 6.51],
-  ["2025-08-24 07:01", "Groceries", "outcome", 60.19],
-  ["2025-08-24 11:27", "Dining Out", "outcome", 45.35],
-  ["2025-08-26 13:30", "Transportation", "outcome", 16.88],
-  ["2025-08-26 14:12", "Groceries", "outcome", 84.99],
-  ["2025-08-26 15:30", "Groceries", "outcome", 45.6],
-  ["2025-08-26 18:23", "Groceries", "outcome", 44.85],
-  ["2025-08-26 19:29", "Transportation", "outcome", 21.93],
-  ["2025-08-27 09:30", "Salary", "income", 3531.54],
-  ["2025-09-01 15:23", "Shopping", "outcome", 74.41],
-  ["2025-09-01 16:19", "Coffee & Drinks", "outcome", 6.02],
-  ["2025-09-01 17:35", "Transportation", "outcome", 23.45],
-  ["2025-09-02 11:00", "Subscriptions", "outcome", 31.88],
-  ["2025-09-02 12:27", "Utilities", "outcome", 26.92],
-  ["2025-09-02 21:11", "Shopping", "outcome", 144.99],
-  ["2025-09-03 10:58", "Groceries", "outcome", 8.99],
-  ["2025-09-03 15:01", "Utilities", "outcome", 144.78],
-  ["2025-09-03 15:27", "Subscriptions", "outcome", 5.24],
-  ["2025-09-04 09:16", "Groceries", "outcome", 18.26],
-  ["2025-09-05 08:33", "Transportation", "outcome", 141.78],
-  ["2025-09-06 08:05", "Subscriptions", "outcome", 21.22],
-  ["2025-09-06 15:28", "Shopping", "outcome", 22.74],
-  ["2025-09-09 08:57", "Groceries", "outcome", 8.42],
-  ["2025-09-09 09:09", "Coffee & Drinks", "outcome", 18.5],
-  ["2025-09-09 09:38", "Utilities", "outcome", 90.15],
-  ["2025-09-10 11:02", "Coffee & Drinks", "outcome", 42.83],
-  ["2025-09-10 13:14", "Healthcare", "outcome", 31.94],
-  ["2025-09-10 16:33", "Dining Out", "outcome", 43.82],
-  ["2025-09-11 11:00", "Dividends", "income", 143.72],
-  ["2025-09-11 13:53", "Healthcare", "outcome", 14.95],
-  ["2025-09-11 16:32", "Groceries", "outcome", 118.54],
-  ["2025-09-11 22:09", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-09-12 07:16", "Dining Out", "outcome", 7.45],
-  ["2025-09-13 08:25", "Coffee & Drinks", "outcome", 4.02],
-  ["2025-09-14 15:25", "Groceries", "outcome", 3.0],
-  ["2025-09-14 15:39", "Transportation", "outcome", 27.52],
-  ["2025-09-15 12:17", "Dining Out", "outcome", 171.11],
-  ["2025-09-16 14:59", "Entertainment", "outcome", 12.06],
-  ["2025-09-16 19:32", "Healthcare", "outcome", 35.69],
-  ["2025-09-17 07:05", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-09-17 18:00", "Freelance", "income", 348.81],
-  ["2025-09-18 13:32", "Entertainment", "outcome", 33.12],
-  ["2025-09-19 11:42", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-09-21 09:51", "Utilities", "outcome", 39.07],
-  ["2025-09-21 14:05", "Coffee & Drinks", "outcome", 4.35],
-  ["2025-09-22 19:55", "Subscriptions", "outcome", 33.39],
-  ["2025-09-22 20:15", "Cashback", "income", 30.48],
-  ["2025-09-23 07:24", "Groceries", "outcome", 44.46],
-  ["2025-09-23 19:48", "Coffee & Drinks", "outcome", 8.61],
-  ["2025-09-25 11:52", "Groceries", "outcome", 258.22],
-  ["2025-09-25 12:17", "Groceries", "outcome", 18.04],
-  ["2025-09-25 13:18", "Dining Out", "outcome", 19.53],
-  ["2025-09-26 14:56", "Groceries", "outcome", 4.5],
-  ["2025-09-27 09:30", "Salary", "income", 3301.24],
-  ["2025-09-27 20:46", "Coffee & Drinks", "outcome", 3.18],
-  ["2025-10-01 22:03", "Transportation", "outcome", 41.13],
-  ["2025-10-02 07:40", "Groceries", "outcome", 212.68],
-  ["2025-10-02 13:04", "Utilities", "outcome", 77.25],
-  ["2025-10-03 22:01", "Dining Out", "outcome", 60.21],
-  ["2025-10-04 13:43", "Transportation", "outcome", 42.65],
-  ["2025-10-04 18:14", "Entertainment", "outcome", 156.82],
-  ["2025-10-05 14:17", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-10-05 15:56", "Entertainment", "outcome", 3.0],
-  ["2025-10-05 18:06", "Groceries", "outcome", 18.71],
-  ["2025-10-06 07:31", "Healthcare", "outcome", 35.35],
-  ["2025-10-07 07:57", "Shopping", "outcome", 21.23],
-  ["2025-10-09 07:29", "Groceries", "outcome", 6.26],
-  ["2025-10-10 21:04", "Dining Out", "outcome", 45.86],
-  ["2025-10-12 09:25", "Shopping", "outcome", 28.45],
-  ["2025-10-13 09:30", "Utilities", "outcome", 132.96],
-  ["2025-10-13 13:58", "Dining Out", "outcome", 3.0],
-  ["2025-10-13 17:07", "Subscriptions", "outcome", 21.28],
-  ["2025-10-13 21:35", "Groceries", "outcome", 119.38],
-  ["2025-10-14 07:51", "Coffee & Drinks", "outcome", 3.73],
-  ["2025-10-14 17:12", "Coffee & Drinks", "outcome", 9.6],
-  ["2025-10-15 22:54", "Utilities", "outcome", 73.18],
-  ["2025-10-16 15:43", "Transportation", "outcome", 8.18],
-  ["2025-10-16 16:45", "Transportation", "outcome", 28.42],
-  ["2025-10-17 09:42", "Groceries", "outcome", 13.05],
-  ["2025-10-17 09:47", "Groceries", "outcome", 5.12],
-  ["2025-10-17 16:29", "Transportation", "outcome", 41.59],
-  ["2025-10-18 14:31", "Groceries", "outcome", 59.36],
-  ["2025-10-22 16:49", "Utilities", "outcome", 33.78],
-  ["2025-10-22 21:25", "Healthcare", "outcome", 54.35],
-  ["2025-10-24 15:23", "Entertainment", "outcome", 12.86],
-  ["2025-10-24 16:16", "Shopping", "outcome", 127.16],
-  ["2025-10-24 22:16", "Groceries", "outcome", 34.77],
-  ["2025-10-25 18:50", "Coffee & Drinks", "outcome", 4.74],
-  ["2025-10-25 19:58", "Coffee & Drinks", "outcome", 31.66],
-  ["2025-10-26 09:47", "Groceries", "outcome", 66.87],
-  ["2025-10-26 09:54", "Groceries", "outcome", 64.36],
-  ["2025-10-27 09:30", "Salary", "income", 3480.42],
-  ["2025-10-27 16:40", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-10-27 17:00", "Subscriptions", "outcome", 29.85],
-  ["2025-10-27 21:17", "Dining Out", "outcome", 85.81],
-  ["2025-11-01 16:47", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-11-01 20:24", "Utilities", "outcome", 130.0],
-  ["2025-11-03 20:15", "Cashback", "income", 9.34],
-  ["2025-11-05 13:15", "Groceries", "outcome", 52.55],
-  ["2025-11-06 12:04", "Groceries", "outcome", 38.49],
-  ["2025-11-07 22:35", "Groceries", "outcome", 38.65],
-  ["2025-11-08 07:00", "Shopping", "outcome", 33.11],
-  ["2025-11-08 10:14", "Dining Out", "outcome", 68.72],
-  ["2025-11-08 21:58", "Groceries", "outcome", 151.84],
-  ["2025-11-09 14:24", "Transportation", "outcome", 5.4],
-  ["2025-11-09 14:42", "Coffee & Drinks", "outcome", 10.25],
-  ["2025-11-09 18:08", "Transportation", "outcome", 8.67],
-  ["2025-11-10 16:16", "Groceries", "outcome", 82.65],
-  ["2025-11-11 20:23", "Coffee & Drinks", "outcome", 8.08],
-  ["2025-11-11 21:27", "Groceries", "outcome", 25.31],
-  ["2025-11-12 15:51", "Utilities", "outcome", 93.46],
-  ["2025-11-13 21:27", "Transportation", "outcome", 87.03],
-  ["2025-11-13 21:28", "Dining Out", "outcome", 98.43],
-  ["2025-11-14 18:14", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-11-16 07:04", "Dining Out", "outcome", 86.64],
-  ["2025-11-16 08:44", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-11-16 13:19", "Coffee & Drinks", "outcome", 3.7],
-  ["2025-11-16 19:07", "Groceries", "outcome", 42.18],
-  ["2025-11-16 20:05", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-11-17 20:44", "Subscriptions", "outcome", 50.15],
-  ["2025-11-18 08:00", "Entertainment", "outcome", 3.6],
-  ["2025-11-18 16:29", "Shopping", "outcome", 52.21],
-  ["2025-11-19 08:41", "Healthcare", "outcome", 129.52],
-  ["2025-11-19 13:56", "Utilities", "outcome", 69.25],
-  ["2025-11-21 14:19", "Groceries", "outcome", 145.6],
-  ["2025-11-22 13:05", "Transportation", "outcome", 38.57],
-  ["2025-11-22 19:12", "Coffee & Drinks", "outcome", 8.14],
-  ["2025-11-24 15:25", "Groceries", "outcome", 19.2],
-  ["2025-11-24 21:05", "Entertainment", "outcome", 58.01],
-  ["2025-11-25 10:06", "Subscriptions", "outcome", 29.9],
-  ["2025-11-25 13:14", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-11-26 22:37", "Dining Out", "outcome", 37.0],
-  ["2025-11-27 09:30", "Salary", "income", 3550.29],
-  ["2025-11-28 09:13", "Coffee & Drinks", "outcome", 8.62],
-  ["2025-12-01 09:17", "Utilities", "outcome", 25.05],
-  ["2025-12-03 08:16", "Dining Out", "outcome", 3.1],
-  ["2025-12-03 08:30", "Shopping", "outcome", 32.41],
-  ["2025-12-03 18:26", "Utilities", "outcome", 77.62],
-  ["2025-12-04 09:59", "Groceries", "outcome", 16.03],
-  ["2025-12-05 20:03", "Groceries", "outcome", 92.53],
-  ["2025-12-06 17:12", "Groceries", "outcome", 16.36],
-  ["2025-12-07 09:57", "Dining Out", "outcome", 7.36],
-  ["2025-12-08 11:26", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-12-08 20:15", "Cashback", "income", 21.1],
-  ["2025-12-09 15:23", "Coffee & Drinks", "outcome", 3.0],
-  ["2025-12-09 17:39", "Dining Out", "outcome", 28.86],
-  ["2025-12-11 17:29", "Subscriptions", "outcome", 47.64],
-  ["2025-12-12 09:32", "Subscriptions", "outcome", 30.81],
-  ["2025-12-12 18:00", "Freelance", "income", 299.05],
-  ["2025-12-13 08:29", "Dining Out", "outcome", 13.52],
-  ["2025-12-13 15:58", "Entertainment", "outcome", 3.49],
-  ["2025-12-13 18:21", "Utilities", "outcome", 9.76],
-  ["2025-12-13 18:49", "Transportation", "outcome", 114.84],
-  ["2025-12-13 21:57", "Groceries", "outcome", 114.1],
-  ["2025-12-15 12:06", "Utilities", "outcome", 193.54],
-  ["2025-12-15 14:47", "Coffee & Drinks", "outcome", 15.79],
-  ["2025-12-16 12:00", "Healthcare", "outcome", 10.64],
-  ["2025-12-16 21:49", "Entertainment", "outcome", 9.34],
-  ["2025-12-18 10:49", "Coffee & Drinks", "outcome", 21.89],
-  ["2025-12-18 17:10", "Shopping", "outcome", 98.63],
-  ["2025-12-19 11:00", "Dividends", "income", 159.32],
-  ["2025-12-20 09:01", "Entertainment", "outcome", 13.71],
-  ["2025-12-20 17:23", "Dining Out", "outcome", 21.51],
-  ["2025-12-21 20:15", "Dining Out", "outcome", 21.5],
-  ["2025-12-23 08:11", "Groceries", "outcome", 42.07],
-  ["2025-12-23 17:46", "Groceries", "outcome", 350.99],
-  ["2025-12-23 21:11", "Coffee & Drinks", "outcome", 7.88],
-  ["2025-12-26 16:52", "Healthcare", "outcome", 69.55],
-  ["2025-12-26 19:02", "Dining Out", "outcome", 14.02],
-  ["2025-12-26 20:05", "Transportation", "outcome", 49.36],
-  ["2025-12-27 09:30", "Salary", "income", 3386.05],
-  ["2025-12-27 14:06", "Entertainment", "outcome", 19.55],
-  ["2025-12-27 16:18", "Coffee & Drinks", "outcome", 45.86],
-  ["2025-12-27 16:52", "Transportation", "outcome", 40.46],
-  ["2026-01-02 13:38", "Groceries", "outcome", 116.2],
-  ["2026-01-02 18:21", "Utilities", "outcome", 121.15],
-  ["2026-01-03 10:24", "Shopping", "outcome", 69.95],
-  ["2026-01-03 12:40", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-01-04 07:30", "Groceries", "outcome", 59.97],
-  ["2026-01-05 08:13", "Utilities", "outcome", 38.89],
-  ["2026-01-05 20:15", "Cashback", "income", 15.6],
-  ["2026-01-06 19:44", "Dining Out", "outcome", 3.0],
-  ["2026-01-07 07:52", "Transportation", "outcome", 125.87],
-  ["2026-01-07 08:25", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-01-07 19:46", "Entertainment", "outcome", 27.95],
-  ["2026-01-08 13:02", "Coffee & Drinks", "outcome", 5.4],
-  ["2026-01-09 20:18", "Dining Out", "outcome", 81.93],
-  ["2026-01-10 14:07", "Groceries", "outcome", 190.16],
-  ["2026-01-11 20:43", "Transportation", "outcome", 10.97],
-  ["2026-01-12 10:09", "Coffee & Drinks", "outcome", 4.67],
-  ["2026-01-12 12:39", "Transportation", "outcome", 73.15],
-  ["2026-01-12 16:10", "Shopping", "outcome", 45.71],
-  ["2026-01-13 13:00", "Entertainment", "outcome", 51.62],
-  ["2026-01-13 13:53", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-01-13 18:29", "Healthcare", "outcome", 35.9],
-  ["2026-01-14 07:55", "Entertainment", "outcome", 41.7],
-  ["2026-01-14 12:27", "Entertainment", "outcome", 6.25],
-  ["2026-01-15 18:02", "Groceries", "outcome", 70.26],
-  ["2026-01-16 12:36", "Coffee & Drinks", "outcome", 18.14],
-  ["2026-01-17 12:24", "Coffee & Drinks", "outcome", 12.43],
-  ["2026-01-17 12:59", "Shopping", "outcome", 150.57],
-  ["2026-01-17 18:00", "Freelance", "income", 361.34],
-  ["2026-01-18 09:41", "Dining Out", "outcome", 12.24],
-  ["2026-01-18 11:40", "Dining Out", "outcome", 61.19],
-  ["2026-01-18 11:41", "Subscriptions", "outcome", 3.0],
-  ["2026-01-21 18:13", "Utilities", "outcome", 54.96],
-  ["2026-01-21 21:02", "Groceries", "outcome", 146.12],
-  ["2026-01-25 07:06", "Utilities", "outcome", 75.52],
-  ["2026-01-25 18:41", "Entertainment", "outcome", 5.98],
-  ["2026-01-26 14:39", "Coffee & Drinks", "outcome", 15.97],
-  ["2026-01-26 19:05", "Subscriptions", "outcome", 82.87],
-  ["2026-01-26 19:42", "Dining Out", "outcome", 5.11],
-  ["2026-01-27 09:30", "Salary", "income", 3301.62],
-  ["2026-01-27 13:59", "Groceries", "outcome", 4.77],
-  ["2026-01-27 14:53", "Groceries", "outcome", 44.04],
-  ["2026-02-01 08:14", "Healthcare", "outcome", 13.39],
-  ["2026-02-01 08:41", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-02-02 07:25", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-02-02 07:36", "Subscriptions", "outcome", 8.41],
-  ["2026-02-02 10:00", "Coffee & Drinks", "outcome", 7.3],
-  ["2026-02-02 11:31", "Subscriptions", "outcome", 14.73],
-  ["2026-02-02 19:41", "Utilities", "outcome", 209.25],
-  ["2026-02-03 21:32", "Groceries", "outcome", 61.12],
-  ["2026-02-04 09:08", "Groceries", "outcome", 22.66],
-  ["2026-02-05 18:21", "Entertainment", "outcome", 48.45],
-  ["2026-02-06 07:00", "Groceries", "outcome", 118.04],
-  ["2026-02-06 07:02", "Coffee & Drinks", "outcome", 8.32],
-  ["2026-02-06 14:10", "Coffee & Drinks", "outcome", 4.03],
-  ["2026-02-06 19:10", "Dining Out", "outcome", 60.58],
-  ["2026-02-06 22:25", "Groceries", "outcome", 31.5],
-  ["2026-02-08 08:01", "Subscriptions", "outcome", 3.0],
-  ["2026-02-08 21:48", "Groceries", "outcome", 28.05],
-  ["2026-02-09 14:20", "Dining Out", "outcome", 4.05],
-  ["2026-02-10 11:13", "Shopping", "outcome", 102.61],
-  ["2026-02-11 19:10", "Dining Out", "outcome", 15.85],
-  ["2026-02-12 08:12", "Dining Out", "outcome", 30.99],
-  ["2026-02-12 16:06", "Subscriptions", "outcome", 15.15],
-  ["2026-02-12 20:23", "Groceries", "outcome", 68.88],
-  ["2026-02-12 22:10", "Shopping", "outcome", 145.7],
-  ["2026-02-13 18:36", "Entertainment", "outcome", 3.98],
-  ["2026-02-16 13:37", "Dining Out", "outcome", 38.28],
-  ["2026-02-16 16:51", "Transportation", "outcome", 34.45],
-  ["2026-02-17 08:02", "Groceries", "outcome", 33.59],
-  ["2026-02-17 22:15", "Coffee & Drinks", "outcome", 7.02],
-  ["2026-02-18 19:47", "Entertainment", "outcome", 16.75],
-  ["2026-02-20 21:53", "Groceries", "outcome", 10.31],
-  ["2026-02-20 22:29", "Groceries", "outcome", 27.92],
-  ["2026-02-21 11:05", "Groceries", "outcome", 71.5],
-  ["2026-02-21 15:43", "Dining Out", "outcome", 67.71],
-  ["2026-02-21 17:46", "Healthcare", "outcome", 36.3],
-  ["2026-02-21 21:38", "Coffee & Drinks", "outcome", 4.85],
-  ["2026-02-22 20:15", "Cashback", "income", 30.63],
-  ["2026-02-25 08:40", "Dining Out", "outcome", 27.58],
-  ["2026-02-25 09:28", "Entertainment", "outcome", 18.81],
-  ["2026-02-26 11:01", "Utilities", "outcome", 108.88],
-  ["2026-02-26 12:43", "Transportation", "outcome", 140.15],
-  ["2026-02-26 14:04", "Transportation", "outcome", 3.25],
-  ["2026-02-26 15:07", "Dining Out", "outcome", 21.57],
-  ["2026-02-26 18:16", "Entertainment", "outcome", 72.16],
-  ["2026-02-27 09:30", "Salary", "income", 3553.55],
-  ["2026-02-27 15:19", "Healthcare", "outcome", 3.0],
-  ["2026-02-27 18:38", "Coffee & Drinks", "outcome", 3.14],
-  ["2026-02-28 09:39", "Utilities", "outcome", 90.97],
-  ["2026-03-01 19:54", "Groceries", "outcome", 28.1],
-  ["2026-03-01 20:46", "Transportation", "outcome", 21.48],
-  ["2026-03-02 07:07", "Dining Out", "outcome", 25.18],
-  ["2026-03-02 11:44", "Dining Out", "outcome", 3.0],
-  ["2026-03-02 15:40", "Groceries", "outcome", 17.62],
-  ["2026-03-03 08:04", "Dining Out", "outcome", 30.94],
-  ["2026-03-03 16:10", "Coffee & Drinks", "outcome", 12.64],
-  ["2026-03-04 08:02", "Entertainment", "outcome", 7.26],
-  ["2026-03-04 11:06", "Healthcare", "outcome", 101.52],
-  ["2026-03-04 12:22", "Dining Out", "outcome", 32.29],
-  ["2026-03-05 07:01", "Dining Out", "outcome", 25.48],
-  ["2026-03-07 16:48", "Coffee & Drinks", "outcome", 11.15],
-  ["2026-03-08 08:07", "Groceries", "outcome", 235.29],
-  ["2026-03-08 10:16", "Groceries", "outcome", 5.28],
-  ["2026-03-08 13:13", "Entertainment", "outcome", 67.27],
-  ["2026-03-09 14:53", "Utilities", "outcome", 338.28],
-  ["2026-03-10 08:45", "Subscriptions", "outcome", 13.67],
-  ["2026-03-11 14:24", "Transportation", "outcome", 58.6],
-  ["2026-03-11 15:45", "Groceries", "outcome", 39.16],
-  ["2026-03-11 22:54", "Subscriptions", "outcome", 33.97],
-  ["2026-03-12 22:06", "Coffee & Drinks", "outcome", 9.2],
-  ["2026-03-13 11:00", "Dividends", "income", 102.76],
-  ["2026-03-14 07:33", "Coffee & Drinks", "outcome", 7.6],
-  ["2026-03-14 21:05", "Groceries", "outcome", 73.11],
-  ["2026-03-16 12:31", "Coffee & Drinks", "outcome", 8.04],
-  ["2026-03-17 07:10", "Utilities", "outcome", 31.6],
-  ["2026-03-18 20:43", "Groceries", "outcome", 44.03],
-  ["2026-03-20 20:15", "Cashback", "income", 25.35],
-  ["2026-03-21 08:44", "Dining Out", "outcome", 29.92],
-  ["2026-03-21 16:30", "Healthcare", "outcome", 13.37],
-  ["2026-03-22 09:56", "Entertainment", "outcome", 31.87],
-  ["2026-03-24 21:11", "Groceries", "outcome", 72.8],
-  ["2026-03-25 08:00", "Coffee & Drinks", "outcome", 9.73],
-  ["2026-03-25 18:58", "Subscriptions", "outcome", 4.7],
-  ["2026-03-26 13:18", "Healthcare", "outcome", 38.01],
-  ["2026-03-26 15:18", "Groceries", "outcome", 64.12],
-  ["2026-03-26 20:01", "Shopping", "outcome", 163.55],
-  ["2026-03-27 07:54", "Transportation", "outcome", 24.02],
-  ["2026-03-27 09:30", "Salary", "income", 3445.06],
-  ["2026-03-28 19:06", "Entertainment", "outcome", 53.5],
-  ["2026-03-28 22:30", "Transportation", "outcome", 75.16],
-  ["2026-04-01 11:16", "Dining Out", "outcome", 53.99],
-  ["2026-04-01 20:33", "Healthcare", "outcome", 28.85],
-  ["2026-04-02 07:04", "Coffee & Drinks", "outcome", 5.66],
-  ["2026-04-02 07:25", "Dining Out", "outcome", 4.68],
-  ["2026-04-04 21:34", "Shopping", "outcome", 165.03],
-  ["2026-04-05 14:46", "Transportation", "outcome", 17.05],
-  ["2026-04-05 21:42", "Utilities", "outcome", 29.49],
-  ["2026-04-06 10:29", "Entertainment", "outcome", 3.0],
-  ["2026-04-07 12:08", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-04-07 16:16", "Groceries", "outcome", 3.0],
-  ["2026-04-07 19:29", "Dining Out", "outcome", 3.0],
-  ["2026-04-07 22:32", "Shopping", "outcome", 152.81],
-  ["2026-04-08 13:17", "Transportation", "outcome", 18.35],
-  ["2026-04-08 16:29", "Dining Out", "outcome", 3.0],
-  ["2026-04-08 17:12", "Transportation", "outcome", 16.72],
-  ["2026-04-08 19:29", "Coffee & Drinks", "outcome", 5.75],
-  ["2026-04-09 10:14", "Coffee & Drinks", "outcome", 5.05],
-  ["2026-04-09 13:06", "Dining Out", "outcome", 22.51],
-  ["2026-04-09 13:10", "Subscriptions", "outcome", 46.34],
-  ["2026-04-09 19:25", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-04-10 11:46", "Transportation", "outcome", 48.91],
-  ["2026-04-10 19:33", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-04-11 18:06", "Groceries", "outcome", 33.31],
-  ["2026-04-11 18:10", "Transportation", "outcome", 44.54],
-  ["2026-04-12 08:16", "Coffee & Drinks", "outcome", 3.8],
-  ["2026-04-13 19:57", "Groceries", "outcome", 131.13],
-  ["2026-04-14 12:24", "Groceries", "outcome", 31.06],
-  ["2026-04-14 14:50", "Entertainment", "outcome", 19.51],
-  ["2026-04-14 17:16", "Entertainment", "outcome", 28.39],
-  ["2026-04-14 20:40", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-04-14 22:29", "Healthcare", "outcome", 19.01],
-  ["2026-04-16 10:02", "Subscriptions", "outcome", 29.47],
-  ["2026-04-18 17:10", "Utilities", "outcome", 195.6],
-  ["2026-04-19 17:33", "Utilities", "outcome", 94.92],
-  ["2026-04-19 20:15", "Cashback", "income", 33.48],
-  ["2026-04-20 19:00", "Dining Out", "outcome", 51.14],
-  ["2026-04-21 07:23", "Groceries", "outcome", 86.9],
-  ["2026-04-21 10:17", "Dining Out", "outcome", 3.0],
-  ["2026-04-21 10:57", "Entertainment", "outcome", 5.04],
-  ["2026-04-21 14:43", "Entertainment", "outcome", 104.01],
-  ["2026-04-22 12:57", "Healthcare", "outcome", 28.16],
-  ["2026-04-23 10:40", "Groceries", "outcome", 84.01],
-  ["2026-04-23 18:37", "Coffee & Drinks", "outcome", 3.46],
-  ["2026-04-24 09:27", "Groceries", "outcome", 140.12],
-  ["2026-04-24 14:58", "Dining Out", "outcome", 3.0],
-  ["2026-04-25 08:22", "Utilities", "outcome", 97.53],
-  ["2026-04-25 09:51", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-04-27 09:30", "Salary", "income", 3437.02],
-  ["2026-04-28 20:44", "Dining Out", "outcome", 15.47],
-  ["2026-05-01 13:04", "Utilities", "outcome", 6.17],
-  ["2026-05-01 15:22", "Groceries", "outcome", 15.55],
-  ["2026-05-02 13:45", "Healthcare", "outcome", 126.0],
-  ["2026-05-02 13:52", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-05-02 21:40", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-05-03 17:50", "Groceries", "outcome", 86.28],
-  ["2026-05-03 21:42", "Transportation", "outcome", 45.86],
-  ["2026-05-04 10:16", "Transportation", "outcome", 39.4],
-  ["2026-05-04 22:31", "Entertainment", "outcome", 3.21],
-  ["2026-05-05 09:13", "Coffee & Drinks", "outcome", 3.31],
-  ["2026-05-05 14:11", "Utilities", "outcome", 69.49],
-  ["2026-05-05 20:15", "Cashback", "income", 17.53],
-  ["2026-05-08 16:20", "Groceries", "outcome", 34.9],
-  ["2026-05-10 10:00", "Coffee & Drinks", "outcome", 9.76],
-  ["2026-05-10 19:03", "Groceries", "outcome", 9.78],
-  ["2026-05-11 15:55", "Shopping", "outcome", 43.08],
-  ["2026-05-12 11:59", "Groceries", "outcome", 164.94],
-  ["2026-05-12 22:25", "Shopping", "outcome", 11.42],
-  ["2026-05-13 08:25", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-05-13 15:27", "Groceries", "outcome", 72.32],
-  ["2026-05-16 08:50", "Coffee & Drinks", "outcome", 10.15],
-  ["2026-05-16 12:34", "Dining Out", "outcome", 3.0],
-  ["2026-05-16 13:18", "Subscriptions", "outcome", 39.08],
-  ["2026-05-16 13:33", "Transportation", "outcome", 24.18],
-  ["2026-05-16 22:27", "Groceries", "outcome", 65.49],
-  ["2026-05-17 18:13", "Shopping", "outcome", 8.14],
-  ["2026-05-17 19:39", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-05-18 16:12", "Transportation", "outcome", 35.52],
-  ["2026-05-20 07:10", "Dining Out", "outcome", 13.39],
-  ["2026-05-20 08:43", "Entertainment", "outcome", 3.58],
-  ["2026-05-20 09:42", "Groceries", "outcome", 46.32],
-  ["2026-05-20 09:43", "Transportation", "outcome", 38.2],
-  ["2026-05-20 10:37", "Utilities", "outcome", 81.64],
-  ["2026-05-21 07:01", "Entertainment", "outcome", 24.43],
-  ["2026-05-21 16:16", "Utilities", "outcome", 254.67],
-  ["2026-05-21 18:40", "Entertainment", "outcome", 6.15],
-  ["2026-05-21 22:50", "Shopping", "outcome", 154.02],
-  ["2026-05-22 12:30", "Groceries", "outcome", 82.19],
-  ["2026-05-23 18:00", "Freelance", "income", 502.92],
-  ["2026-05-23 22:15", "Dining Out", "outcome", 86.99],
-  ["2026-05-23 22:42", "Dining Out", "outcome", 17.38],
-  ["2026-05-24 17:51", "Entertainment", "outcome", 44.19],
-  ["2026-05-25 12:06", "Coffee & Drinks", "outcome", 8.13],
-  ["2026-05-27 09:30", "Salary", "income", 3519.36],
-  ["2026-05-27 17:29", "Dining Out", "outcome", 64.01],
-  ["2026-05-28 18:21", "Subscriptions", "outcome", 20.01],
-  ["2026-06-01 20:36", "Groceries", "outcome", 19.9],
-  ["2026-06-02 17:23", "Dining Out", "outcome", 8.37],
-  ["2026-06-02 19:29", "Shopping", "outcome", 102.15],
-  ["2026-06-03 07:43", "Groceries", "outcome", 88.52],
-  ["2026-06-03 13:55", "Utilities", "outcome", 79.13],
-  ["2026-06-04 11:30", "Utilities", "outcome", 30.67],
-  ["2026-06-04 20:36", "Groceries", "outcome", 72.39],
-  ["2026-06-05 16:37", "Entertainment", "outcome", 3.0],
-  ["2026-06-07 13:05", "Coffee & Drinks", "outcome", 9.01],
-  ["2026-06-12 11:46", "Transportation", "outcome", 41.53],
-  ["2026-06-13 11:30", "Groceries", "outcome", 5.5],
-  ["2026-06-13 13:50", "Subscriptions", "outcome", 3.0],
-  ["2026-06-13 15:56", "Coffee & Drinks", "outcome", 17.32],
-  ["2026-06-13 19:38", "Entertainment", "outcome", 11.39],
-  ["2026-06-13 21:17", "Dining Out", "outcome", 57.6],
-  ["2026-06-14 07:00", "Utilities", "outcome", 138.96],
-  ["2026-06-14 12:37", "Healthcare", "outcome", 3.0],
-  ["2026-06-14 14:24", "Entertainment", "outcome", 56.24],
-  ["2026-06-16 11:00", "Dividends", "income", 203.93],
-  ["2026-06-17 13:12", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-06-18 09:34", "Subscriptions", "outcome", 60.05],
-  ["2026-06-18 22:22", "Subscriptions", "outcome", 13.57],
-  ["2026-06-18 22:51", "Subscriptions", "outcome", 16.45],
-  ["2026-06-19 08:52", "Groceries", "outcome", 26.78],
-  ["2026-06-19 21:30", "Dining Out", "outcome", 73.79],
-  ["2026-06-21 08:31", "Groceries", "outcome", 60.7],
-  ["2026-06-21 12:40", "Dining Out", "outcome", 5.3],
-  ["2026-06-21 22:29", "Transportation", "outcome", 16.45],
-  ["2026-06-22 10:54", "Utilities", "outcome", 45.53],
-  ["2026-06-22 12:09", "Dining Out", "outcome", 22.39],
-  ["2026-06-22 15:58", "Transportation", "outcome", 7.11],
-  ["2026-06-23 13:59", "Shopping", "outcome", 227.92],
-  ["2026-06-23 19:28", "Groceries", "outcome", 232.91],
-  ["2026-06-25 09:14", "Coffee & Drinks", "outcome", 4.08],
-  ["2026-06-25 09:18", "Transportation", "outcome", 27.03],
-  ["2026-06-25 14:51", "Entertainment", "outcome", 10.33],
-  ["2026-06-25 20:35", "Groceries", "outcome", 74.43],
-  ["2026-06-26 10:23", "Dining Out", "outcome", 61.84],
-  ["2026-06-26 17:18", "Dining Out", "outcome", 34.17],
-  ["2026-06-26 20:30", "Dining Out", "outcome", 20.04],
-  ["2026-06-27 08:18", "Healthcare", "outcome", 21.74],
-  ["2026-06-27 09:30", "Salary", "income", 3465.45],
-  ["2026-06-27 11:51", "Healthcare", "outcome", 61.3],
-  ["2026-06-27 17:30", "Coffee & Drinks", "outcome", 15.45],
-  ["2026-06-28 22:38", "Dining Out", "outcome", 9.36],
-  ["2026-07-02 07:53", "Dining Out", "outcome", 46.94],
-  ["2026-07-02 13:55", "Groceries", "outcome", 18.08],
-  ["2026-07-02 15:22", "Dining Out", "outcome", 4.76],
-  ["2026-07-02 15:50", "Dining Out", "outcome", 7.14],
-  ["2026-07-02 17:12", "Utilities", "outcome", 15.14],
-  ["2026-07-03 11:20", "Groceries", "outcome", 149.24],
-  ["2026-07-03 19:59", "Transportation", "outcome", 29.23],
-  ["2026-07-04 09:16", "Transportation", "outcome", 12.07],
-  ["2026-07-05 07:17", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-07-05 08:40", "Coffee & Drinks", "outcome", 9.93],
-  ["2026-07-05 15:53", "Utilities", "outcome", 225.26],
-  ["2026-07-06 19:05", "Utilities", "outcome", 53.19],
-  ["2026-07-08 14:11", "Dining Out", "outcome", 40.53],
-  ["2026-07-09 07:06", "Groceries", "outcome", 55.6],
-  ["2026-07-11 18:16", "Entertainment", "outcome", 20.63],
-  ["2026-07-13 07:40", "Shopping", "outcome", 221.01],
-  ["2026-07-13 10:23", "Entertainment", "outcome", 6.78],
-  ["2026-07-14 20:15", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-07-15 11:17", "Coffee & Drinks", "outcome", 4.03],
-  ["2026-07-15 12:23", "Dining Out", "outcome", 64.37],
-  ["2026-07-15 14:51", "Healthcare", "outcome", 87.38],
-  ["2026-07-15 22:07", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-07-15 22:54", "Transportation", "outcome", 52.0],
-  ["2026-07-16 10:20", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-07-16 16:07", "Coffee & Drinks", "outcome", 3.86],
-  ["2026-07-19 13:16", "Groceries", "outcome", 34.08],
-  ["2026-07-19 16:21", "Coffee & Drinks", "outcome", 3.09],
-  ["2026-07-19 20:15", "Cashback", "income", 17.69],
-  ["2026-07-19 21:48", "Entertainment", "outcome", 9.96],
-  ["2026-07-20 07:22", "Groceries", "outcome", 75.96],
-  ["2026-07-20 18:56", "Subscriptions", "outcome", 3.0],
-  ["2026-07-21 10:30", "Entertainment", "outcome", 68.26],
-  ["2026-07-22 16:37", "Entertainment", "outcome", 6.24],
-  ["2026-07-24 11:49", "Subscriptions", "outcome", 3.5],
-  ["2026-07-25 15:27", "Groceries", "outcome", 46.89],
-  ["2026-07-26 08:10", "Subscriptions", "outcome", 18.73],
-  ["2026-07-26 12:16", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-07-26 13:35", "Coffee & Drinks", "outcome", 5.35],
-  ["2026-07-27 09:30", "Salary", "income", 3272.28],
-  ["2026-07-27 14:04", "Subscriptions", "outcome", 16.98],
-  ["2026-07-28 22:37", "Groceries", "outcome", 226.07],
-  ["2026-08-01 14:05", "Healthcare", "outcome", 132.63],
-  ["2026-08-01 20:58", "Transportation", "outcome", 6.45],
-  ["2026-08-03 10:22", "Dining Out", "outcome", 77.99],
-  ["2026-08-04 19:56", "Coffee & Drinks", "outcome", 4.11],
-  ["2026-08-04 22:28", "Entertainment", "outcome", 42.33],
-  ["2026-08-05 14:55", "Coffee & Drinks", "outcome", 19.56],
-  ["2026-08-05 21:00", "Groceries", "outcome", 8.38],
-  ["2026-08-06 18:02", "Transportation", "outcome", 7.36],
-  ["2026-08-06 18:36", "Transportation", "outcome", 8.2],
-  ["2026-08-07 11:39", "Utilities", "outcome", 3.0],
-  ["2026-08-08 11:42", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-08-08 20:15", "Cashback", "income", 32.98],
-  ["2026-08-08 21:06", "Shopping", "outcome", 69.97],
-  ["2026-08-09 10:07", "Coffee & Drinks", "outcome", 3.0],
-  ["2026-08-10 13:00", "Utilities", "outcome", 119.23],
-  ["2026-08-10 15:35", "Subscriptions", "outcome", 7.67],
-  ["2026-08-12 20:02", "Groceries", "outcome", 12.43],
-  ["2026-08-13 12:52", "Coffee & Drinks", "outcome", 14.94],
-  ["2026-08-14 13:17", "Groceries", "outcome", 92.82],
-  ["2026-08-14 18:00", "Freelance", "income", 444.43],
-  ["2026-08-16 15:11", "Utilities", "outcome", 24.14],
-  ["2026-08-17 07:33", "Entertainment", "outcome", 102.86],
-  ["2026-08-17 17:32", "Groceries", "outcome", 67.77],
-  ["2026-08-19 12:08", "Groceries", "outcome", 90.39],
-  ["2026-08-19 21:47", "Coffee & Drinks", "outcome", 11.42],
-  ["2026-08-21 22:05", "Transportation", "outcome", 27.58],
-  ["2026-08-22 13:37", "Utilities", "outcome", 158.73],
-  ["2026-08-23 14:52", "Dining Out", "outcome", 126.12],
-  ["2026-08-23 19:36", "Dining Out", "outcome", 6.85],
-  ["2026-08-25 14:45", "Groceries", "outcome", 10.08],
-  ["2026-08-25 22:08", "Transportation", "outcome", 16.72],
-  ["2026-08-26 16:11", "Groceries", "outcome", 118.99],
-  ["2026-08-27 07:01", "Subscriptions", "outcome", 37.99],
-  ["2026-08-27 09:30", "Salary", "income", 3303.12],
-  ["2026-08-27 12:33", "Groceries", "outcome", 68.65],
-  ["2026-08-27 17:49", "Dining Out", "outcome", 8.02],
-  ["2026-08-27 21:33", "Shopping", "outcome", 24.76],
-  ["2026-08-28 15:15", "Transportation", "outcome", 31.58],
+  ["2025-07-01 22:53", "Salute", "outcome", 52.47],
+  ["2025-07-02 13:31", "Spesa Alimentare", "outcome", 81.18],
+  ["2025-07-02 13:49", "Ristoranti", "outcome", 6.8],
+  ["2025-07-03 12:09", "Intrattenimento", "outcome", 6.21],
+  ["2025-07-03 13:28", "Acquisti", "outcome", 3.0],
+  ["2025-07-04 09:36", "Spesa Alimentare", "outcome", 149.75],
+  ["2025-07-04 10:54", "Bar e Caffè", "outcome", 5.05],
+  ["2025-07-04 16:35", "Spesa Alimentare", "outcome", 140.98],
+  ["2025-07-05 10:47", "Bar e Caffè", "outcome", 10.06],
+  ["2025-07-06 10:21", "Acquisti", "outcome", 32.03],
+  ["2025-07-08 08:35", "Spesa Alimentare", "outcome", 5.56],
+  ["2025-07-08 08:36", "Spesa Alimentare", "outcome", 17.58],
+  ["2025-07-08 12:44", "Utenze", "outcome", 116.94],
+  ["2025-07-09 11:52", "Intrattenimento", "outcome", 12.42],
+  ["2025-07-10 11:47", "Ristoranti", "outcome", 53.59],
+  ["2025-07-10 21:18", "Ristoranti", "outcome", 12.96],
+  ["2025-07-11 11:59", "Trasporti", "outcome", 27.0],
+  ["2025-07-11 15:30", "Bar e Caffè", "outcome", 3.0],
+  ["2025-07-13 08:12", "Acquisti", "outcome", 151.28],
+  ["2025-07-13 14:09", "Intrattenimento", "outcome", 31.38],
+  ["2025-07-14 11:34", "Spesa Alimentare", "outcome", 15.51],
+  ["2025-07-14 12:48", "Trasporti", "outcome", 18.76],
+  ["2025-07-14 15:45", "Intrattenimento", "outcome", 17.57],
+  ["2025-07-14 18:43", "Intrattenimento", "outcome", 7.08],
+  ["2025-07-15 18:10", "Ristoranti", "outcome", 35.15],
+  ["2025-07-15 18:19", "Utenze", "outcome", 174.72],
+  ["2025-07-16 16:05", "Bar e Caffè", "outcome", 3.0],
+  ["2025-07-16 20:02", "Trasporti", "outcome", 70.17],
+  ["2025-07-16 21:30", "Bar e Caffè", "outcome", 4.81],
+  ["2025-07-18 17:21", "Trasporti", "outcome", 16.69],
+  ["2025-07-18 18:39", "Abbonamenti", "outcome", 10.38],
+  ["2025-07-19 13:23", "Spesa Alimentare", "outcome", 34.59],
+  ["2025-07-19 17:08", "Abbonamenti", "outcome", 9.71],
+  ["2025-07-19 19:03", "Spesa Alimentare", "outcome", 9.61],
+  ["2025-07-20 08:06", "Acquisti", "outcome", 199.01],
+  ["2025-07-20 10:31", "Ristoranti", "outcome", 85.14],
+  ["2025-07-20 18:30", "Bar e Caffè", "outcome", 4.13],
+  ["2025-07-21 15:22", "Bar e Caffè", "outcome", 3.0],
+  ["2025-07-22 09:48", "Trasporti", "outcome", 23.15],
+  ["2025-07-22 18:01", "Ristoranti", "outcome", 4.95],
+  ["2025-07-23 08:29", "Abbonamenti", "outcome", 51.15],
+  ["2025-07-23 18:00", "Lavoro Autonomo", "income", 271.73],
+  ["2025-07-23 18:38", "Trasporti", "outcome", 3.15],
+  ["2025-07-23 19:56", "Ristoranti", "outcome", 3.0],
+  ["2025-07-25 14:05", "Utenze", "outcome", 83.6],
+  ["2025-07-27 09:30", "Stipendio", "income", 3329.53],
+  ["2025-07-27 12:06", "Spesa Alimentare", "outcome", 4.28],
+  ["2025-07-28 11:18", "Spesa Alimentare", "outcome", 9.78],
+  ["2025-08-01 10:33", "Ristoranti", "outcome", 8.57],
+  ["2025-08-01 11:11", "Abbonamenti", "outcome", 10.73],
+  ["2025-08-02 18:57", "Salute", "outcome", 96.21],
+  ["2025-08-03 18:00", "Lavoro Autonomo", "income", 342.35],
+  ["2025-08-04 11:45", "Bar e Caffè", "outcome", 9.53],
+  ["2025-08-04 19:28", "Bar e Caffè", "outcome", 3.0],
+  ["2025-08-05 07:55", "Abbonamenti", "outcome", 18.52],
+  ["2025-08-06 20:50", "Trasporti", "outcome", 114.65],
+  ["2025-08-07 16:50", "Bar e Caffè", "outcome", 3.0],
+  ["2025-08-07 17:13", "Utenze", "outcome", 66.07],
+  ["2025-08-08 13:51", "Spesa Alimentare", "outcome", 108.17],
+  ["2025-08-08 15:59", "Bar e Caffè", "outcome", 12.37],
+  ["2025-08-08 17:40", "Spesa Alimentare", "outcome", 47.54],
+  ["2025-08-08 19:47", "Spesa Alimentare", "outcome", 30.09],
+  ["2025-08-08 20:04", "Bar e Caffè", "outcome", 3.0],
+  ["2025-08-09 13:18", "Intrattenimento", "outcome", 37.59],
+  ["2025-08-09 13:44", "Spesa Alimentare", "outcome", 32.81],
+  ["2025-08-09 21:32", "Bar e Caffè", "outcome", 10.59],
+  ["2025-08-11 09:42", "Bar e Caffè", "outcome", 14.74],
+  ["2025-08-12 11:35", "Ristoranti", "outcome", 57.69],
+  ["2025-08-13 09:46", "Trasporti", "outcome", 17.96],
+  ["2025-08-15 11:26", "Bar e Caffè", "outcome", 3.91],
+  ["2025-08-15 12:38", "Abbonamenti", "outcome", 3.0],
+  ["2025-08-16 07:30", "Utenze", "outcome", 225.2],
+  ["2025-08-17 11:34", "Abbonamenti", "outcome", 32.08],
+  ["2025-08-17 14:48", "Intrattenimento", "outcome", 109.56],
+  ["2025-08-17 22:22", "Spesa Alimentare", "outcome", 65.04],
+  ["2025-08-18 08:20", "Acquisti", "outcome", 110.96],
+  ["2025-08-18 11:01", "Ristoranti", "outcome", 16.53],
+  ["2025-08-18 13:53", "Bar e Caffè", "outcome", 4.79],
+  ["2025-08-18 22:32", "Bar e Caffè", "outcome", 3.0],
+  ["2025-08-19 17:16", "Intrattenimento", "outcome", 30.96],
+  ["2025-08-20 13:44", "Bar e Caffè", "outcome", 7.89],
+  ["2025-08-20 18:28", "Spesa Alimentare", "outcome", 3.08],
+  ["2025-08-20 22:42", "Ristoranti", "outcome", 3.63],
+  ["2025-08-21 17:05", "Trasporti", "outcome", 27.69],
+  ["2025-08-21 18:09", "Bar e Caffè", "outcome", 6.51],
+  ["2025-08-24 07:01", "Spesa Alimentare", "outcome", 60.19],
+  ["2025-08-24 11:27", "Ristoranti", "outcome", 45.35],
+  ["2025-08-26 13:30", "Trasporti", "outcome", 16.88],
+  ["2025-08-26 14:12", "Spesa Alimentare", "outcome", 84.99],
+  ["2025-08-26 15:30", "Spesa Alimentare", "outcome", 45.6],
+  ["2025-08-26 18:23", "Spesa Alimentare", "outcome", 44.85],
+  ["2025-08-26 19:29", "Trasporti", "outcome", 21.93],
+  ["2025-08-27 09:30", "Stipendio", "income", 3531.54],
+  ["2025-09-01 15:23", "Acquisti", "outcome", 74.41],
+  ["2025-09-01 16:19", "Bar e Caffè", "outcome", 6.02],
+  ["2025-09-01 17:35", "Trasporti", "outcome", 23.45],
+  ["2025-09-02 11:00", "Abbonamenti", "outcome", 31.88],
+  ["2025-09-02 12:27", "Utenze", "outcome", 26.92],
+  ["2025-09-02 21:11", "Acquisti", "outcome", 144.99],
+  ["2025-09-03 10:58", "Spesa Alimentare", "outcome", 8.99],
+  ["2025-09-03 15:01", "Utenze", "outcome", 144.78],
+  ["2025-09-03 15:27", "Abbonamenti", "outcome", 5.24],
+  ["2025-09-04 09:16", "Spesa Alimentare", "outcome", 18.26],
+  ["2025-09-05 08:33", "Trasporti", "outcome", 141.78],
+  ["2025-09-06 08:05", "Abbonamenti", "outcome", 21.22],
+  ["2025-09-06 15:28", "Acquisti", "outcome", 22.74],
+  ["2025-09-09 08:57", "Spesa Alimentare", "outcome", 8.42],
+  ["2025-09-09 09:09", "Bar e Caffè", "outcome", 18.5],
+  ["2025-09-09 09:38", "Utenze", "outcome", 90.15],
+  ["2025-09-10 11:02", "Bar e Caffè", "outcome", 42.83],
+  ["2025-09-10 13:14", "Salute", "outcome", 31.94],
+  ["2025-09-10 16:33", "Ristoranti", "outcome", 43.82],
+  ["2025-09-11 11:00", "Dividendi", "income", 143.72],
+  ["2025-09-11 13:53", "Salute", "outcome", 14.95],
+  ["2025-09-11 16:32", "Spesa Alimentare", "outcome", 118.54],
+  ["2025-09-11 22:09", "Bar e Caffè", "outcome", 3.0],
+  ["2025-09-12 07:16", "Ristoranti", "outcome", 7.45],
+  ["2025-09-13 08:25", "Bar e Caffè", "outcome", 4.02],
+  ["2025-09-14 15:25", "Spesa Alimentare", "outcome", 3.0],
+  ["2025-09-14 15:39", "Trasporti", "outcome", 27.52],
+  ["2025-09-15 12:17", "Ristoranti", "outcome", 171.11],
+  ["2025-09-16 14:59", "Intrattenimento", "outcome", 12.06],
+  ["2025-09-16 19:32", "Salute", "outcome", 35.69],
+  ["2025-09-17 07:05", "Bar e Caffè", "outcome", 3.0],
+  ["2025-09-17 18:00", "Lavoro Autonomo", "income", 348.81],
+  ["2025-09-18 13:32", "Intrattenimento", "outcome", 33.12],
+  ["2025-09-19 11:42", "Bar e Caffè", "outcome", 3.0],
+  ["2025-09-21 09:51", "Utenze", "outcome", 39.07],
+  ["2025-09-21 14:05", "Bar e Caffè", "outcome", 4.35],
+  ["2025-09-22 19:55", "Abbonamenti", "outcome", 33.39],
+  ["2025-09-22 20:15", "Rimborsi", "income", 30.48],
+  ["2025-09-23 07:24", "Spesa Alimentare", "outcome", 44.46],
+  ["2025-09-23 19:48", "Bar e Caffè", "outcome", 8.61],
+  ["2025-09-25 11:52", "Spesa Alimentare", "outcome", 258.22],
+  ["2025-09-25 12:17", "Spesa Alimentare", "outcome", 18.04],
+  ["2025-09-25 13:18", "Ristoranti", "outcome", 19.53],
+  ["2025-09-26 14:56", "Spesa Alimentare", "outcome", 4.5],
+  ["2025-09-27 09:30", "Stipendio", "income", 3301.24],
+  ["2025-09-27 20:46", "Bar e Caffè", "outcome", 3.18],
+  ["2025-10-01 22:03", "Trasporti", "outcome", 41.13],
+  ["2025-10-02 07:40", "Spesa Alimentare", "outcome", 212.68],
+  ["2025-10-02 13:04", "Utenze", "outcome", 77.25],
+  ["2025-10-03 22:01", "Ristoranti", "outcome", 60.21],
+  ["2025-10-04 13:43", "Trasporti", "outcome", 42.65],
+  ["2025-10-04 18:14", "Intrattenimento", "outcome", 156.82],
+  ["2025-10-05 14:17", "Bar e Caffè", "outcome", 3.0],
+  ["2025-10-05 15:56", "Intrattenimento", "outcome", 3.0],
+  ["2025-10-05 18:06", "Spesa Alimentare", "outcome", 18.71],
+  ["2025-10-06 07:31", "Salute", "outcome", 35.35],
+  ["2025-10-07 07:57", "Acquisti", "outcome", 21.23],
+  ["2025-10-09 07:29", "Spesa Alimentare", "outcome", 6.26],
+  ["2025-10-10 21:04", "Ristoranti", "outcome", 45.86],
+  ["2025-10-12 09:25", "Acquisti", "outcome", 28.45],
+  ["2025-10-13 09:30", "Utenze", "outcome", 132.96],
+  ["2025-10-13 13:58", "Ristoranti", "outcome", 3.0],
+  ["2025-10-13 17:07", "Abbonamenti", "outcome", 21.28],
+  ["2025-10-13 21:35", "Spesa Alimentare", "outcome", 119.38],
+  ["2025-10-14 07:51", "Bar e Caffè", "outcome", 3.73],
+  ["2025-10-14 17:12", "Bar e Caffè", "outcome", 9.6],
+  ["2025-10-15 22:54", "Utenze", "outcome", 73.18],
+  ["2025-10-16 15:43", "Trasporti", "outcome", 8.18],
+  ["2025-10-16 16:45", "Trasporti", "outcome", 28.42],
+  ["2025-10-17 09:42", "Spesa Alimentare", "outcome", 13.05],
+  ["2025-10-17 09:47", "Spesa Alimentare", "outcome", 5.12],
+  ["2025-10-17 16:29", "Trasporti", "outcome", 41.59],
+  ["2025-10-18 14:31", "Spesa Alimentare", "outcome", 59.36],
+  ["2025-10-22 16:49", "Utenze", "outcome", 33.78],
+  ["2025-10-22 21:25", "Salute", "outcome", 54.35],
+  ["2025-10-24 15:23", "Intrattenimento", "outcome", 12.86],
+  ["2025-10-24 16:16", "Acquisti", "outcome", 127.16],
+  ["2025-10-24 22:16", "Spesa Alimentare", "outcome", 34.77],
+  ["2025-10-25 18:50", "Bar e Caffè", "outcome", 4.74],
+  ["2025-10-25 19:58", "Bar e Caffè", "outcome", 31.66],
+  ["2025-10-26 09:47", "Spesa Alimentare", "outcome", 66.87],
+  ["2025-10-26 09:54", "Spesa Alimentare", "outcome", 64.36],
+  ["2025-10-27 09:30", "Stipendio", "income", 3480.42],
+  ["2025-10-27 16:40", "Bar e Caffè", "outcome", 3.0],
+  ["2025-10-27 17:00", "Abbonamenti", "outcome", 29.85],
+  ["2025-10-27 21:17", "Ristoranti", "outcome", 85.81],
+  ["2025-11-01 16:47", "Bar e Caffè", "outcome", 3.0],
+  ["2025-11-01 20:24", "Utenze", "outcome", 130.0],
+  ["2025-11-03 20:15", "Rimborsi", "income", 9.34],
+  ["2025-11-05 13:15", "Spesa Alimentare", "outcome", 52.55],
+  ["2025-11-06 12:04", "Spesa Alimentare", "outcome", 38.49],
+  ["2025-11-07 22:35", "Spesa Alimentare", "outcome", 38.65],
+  ["2025-11-08 07:00", "Acquisti", "outcome", 33.11],
+  ["2025-11-08 10:14", "Ristoranti", "outcome", 68.72],
+  ["2025-11-08 21:58", "Spesa Alimentare", "outcome", 151.84],
+  ["2025-11-09 14:24", "Trasporti", "outcome", 5.4],
+  ["2025-11-09 14:42", "Bar e Caffè", "outcome", 10.25],
+  ["2025-11-09 18:08", "Trasporti", "outcome", 8.67],
+  ["2025-11-10 16:16", "Spesa Alimentare", "outcome", 82.65],
+  ["2025-11-11 20:23", "Bar e Caffè", "outcome", 8.08],
+  ["2025-11-11 21:27", "Spesa Alimentare", "outcome", 25.31],
+  ["2025-11-12 15:51", "Utenze", "outcome", 93.46],
+  ["2025-11-13 21:27", "Trasporti", "outcome", 87.03],
+  ["2025-11-13 21:28", "Ristoranti", "outcome", 98.43],
+  ["2025-11-14 18:14", "Bar e Caffè", "outcome", 3.0],
+  ["2025-11-16 07:04", "Ristoranti", "outcome", 86.64],
+  ["2025-11-16 08:44", "Bar e Caffè", "outcome", 3.0],
+  ["2025-11-16 13:19", "Bar e Caffè", "outcome", 3.7],
+  ["2025-11-16 19:07", "Spesa Alimentare", "outcome", 42.18],
+  ["2025-11-16 20:05", "Bar e Caffè", "outcome", 3.0],
+  ["2025-11-17 20:44", "Abbonamenti", "outcome", 50.15],
+  ["2025-11-18 08:00", "Intrattenimento", "outcome", 3.6],
+  ["2025-11-18 16:29", "Acquisti", "outcome", 52.21],
+  ["2025-11-19 08:41", "Salute", "outcome", 129.52],
+  ["2025-11-19 13:56", "Utenze", "outcome", 69.25],
+  ["2025-11-21 14:19", "Spesa Alimentare", "outcome", 145.6],
+  ["2025-11-22 13:05", "Trasporti", "outcome", 38.57],
+  ["2025-11-22 19:12", "Bar e Caffè", "outcome", 8.14],
+  ["2025-11-24 15:25", "Spesa Alimentare", "outcome", 19.2],
+  ["2025-11-24 21:05", "Intrattenimento", "outcome", 58.01],
+  ["2025-11-25 10:06", "Abbonamenti", "outcome", 29.9],
+  ["2025-11-25 13:14", "Bar e Caffè", "outcome", 3.0],
+  ["2025-11-26 22:37", "Ristoranti", "outcome", 37.0],
+  ["2025-11-27 09:30", "Stipendio", "income", 3550.29],
+  ["2025-11-28 09:13", "Bar e Caffè", "outcome", 8.62],
+  ["2025-12-01 09:17", "Utenze", "outcome", 25.05],
+  ["2025-12-03 08:16", "Ristoranti", "outcome", 3.1],
+  ["2025-12-03 08:30", "Acquisti", "outcome", 32.41],
+  ["2025-12-03 18:26", "Utenze", "outcome", 77.62],
+  ["2025-12-04 09:59", "Spesa Alimentare", "outcome", 16.03],
+  ["2025-12-05 20:03", "Spesa Alimentare", "outcome", 92.53],
+  ["2025-12-06 17:12", "Spesa Alimentare", "outcome", 16.36],
+  ["2025-12-07 09:57", "Ristoranti", "outcome", 7.36],
+  ["2025-12-08 11:26", "Bar e Caffè", "outcome", 3.0],
+  ["2025-12-08 20:15", "Rimborsi", "income", 21.1],
+  ["2025-12-09 15:23", "Bar e Caffè", "outcome", 3.0],
+  ["2025-12-09 17:39", "Ristoranti", "outcome", 28.86],
+  ["2025-12-11 17:29", "Abbonamenti", "outcome", 47.64],
+  ["2025-12-12 09:32", "Abbonamenti", "outcome", 30.81],
+  ["2025-12-12 18:00", "Lavoro Autonomo", "income", 299.05],
+  ["2025-12-13 08:29", "Ristoranti", "outcome", 13.52],
+  ["2025-12-13 15:58", "Intrattenimento", "outcome", 3.49],
+  ["2025-12-13 18:21", "Utenze", "outcome", 9.76],
+  ["2025-12-13 18:49", "Trasporti", "outcome", 114.84],
+  ["2025-12-13 21:57", "Spesa Alimentare", "outcome", 114.1],
+  ["2025-12-15 12:06", "Utenze", "outcome", 193.54],
+  ["2025-12-15 14:47", "Bar e Caffè", "outcome", 15.79],
+  ["2025-12-16 12:00", "Salute", "outcome", 10.64],
+  ["2025-12-16 21:49", "Intrattenimento", "outcome", 9.34],
+  ["2025-12-18 10:49", "Bar e Caffè", "outcome", 21.89],
+  ["2025-12-18 17:10", "Acquisti", "outcome", 98.63],
+  ["2025-12-19 11:00", "Dividendi", "income", 159.32],
+  ["2025-12-20 09:01", "Intrattenimento", "outcome", 13.71],
+  ["2025-12-20 17:23", "Ristoranti", "outcome", 21.51],
+  ["2025-12-21 20:15", "Ristoranti", "outcome", 21.5],
+  ["2025-12-23 08:11", "Spesa Alimentare", "outcome", 42.07],
+  ["2025-12-23 17:46", "Spesa Alimentare", "outcome", 350.99],
+  ["2025-12-23 21:11", "Bar e Caffè", "outcome", 7.88],
+  ["2025-12-26 16:52", "Salute", "outcome", 69.55],
+  ["2025-12-26 19:02", "Ristoranti", "outcome", 14.02],
+  ["2025-12-26 20:05", "Trasporti", "outcome", 49.36],
+  ["2025-12-27 09:30", "Stipendio", "income", 3386.05],
+  ["2025-12-27 14:06", "Intrattenimento", "outcome", 19.55],
+  ["2025-12-27 16:18", "Bar e Caffè", "outcome", 45.86],
+  ["2025-12-27 16:52", "Trasporti", "outcome", 40.46],
+  ["2026-01-02 13:38", "Spesa Alimentare", "outcome", 116.2],
+  ["2026-01-02 18:21", "Utenze", "outcome", 121.15],
+  ["2026-01-03 10:24", "Acquisti", "outcome", 69.95],
+  ["2026-01-03 12:40", "Bar e Caffè", "outcome", 3.0],
+  ["2026-01-04 07:30", "Spesa Alimentare", "outcome", 59.97],
+  ["2026-01-05 08:13", "Utenze", "outcome", 38.89],
+  ["2026-01-05 20:15", "Rimborsi", "income", 15.6],
+  ["2026-01-06 19:44", "Ristoranti", "outcome", 3.0],
+  ["2026-01-07 07:52", "Trasporti", "outcome", 125.87],
+  ["2026-01-07 08:25", "Bar e Caffè", "outcome", 3.0],
+  ["2026-01-07 19:46", "Intrattenimento", "outcome", 27.95],
+  ["2026-01-08 13:02", "Bar e Caffè", "outcome", 5.4],
+  ["2026-01-09 20:18", "Ristoranti", "outcome", 81.93],
+  ["2026-01-10 14:07", "Spesa Alimentare", "outcome", 190.16],
+  ["2026-01-11 20:43", "Trasporti", "outcome", 10.97],
+  ["2026-01-12 10:09", "Bar e Caffè", "outcome", 4.67],
+  ["2026-01-12 12:39", "Trasporti", "outcome", 73.15],
+  ["2026-01-12 16:10", "Acquisti", "outcome", 45.71],
+  ["2026-01-13 13:00", "Intrattenimento", "outcome", 51.62],
+  ["2026-01-13 13:53", "Bar e Caffè", "outcome", 3.0],
+  ["2026-01-13 18:29", "Salute", "outcome", 35.9],
+  ["2026-01-14 07:55", "Intrattenimento", "outcome", 41.7],
+  ["2026-01-14 12:27", "Intrattenimento", "outcome", 6.25],
+  ["2026-01-15 18:02", "Spesa Alimentare", "outcome", 70.26],
+  ["2026-01-16 12:36", "Bar e Caffè", "outcome", 18.14],
+  ["2026-01-17 12:24", "Bar e Caffè", "outcome", 12.43],
+  ["2026-01-17 12:59", "Acquisti", "outcome", 150.57],
+  ["2026-01-17 18:00", "Lavoro Autonomo", "income", 361.34],
+  ["2026-01-18 09:41", "Ristoranti", "outcome", 12.24],
+  ["2026-01-18 11:40", "Ristoranti", "outcome", 61.19],
+  ["2026-01-18 11:41", "Abbonamenti", "outcome", 3.0],
+  ["2026-01-21 18:13", "Utenze", "outcome", 54.96],
+  ["2026-01-21 21:02", "Spesa Alimentare", "outcome", 146.12],
+  ["2026-01-25 07:06", "Utenze", "outcome", 75.52],
+  ["2026-01-25 18:41", "Intrattenimento", "outcome", 5.98],
+  ["2026-01-26 14:39", "Bar e Caffè", "outcome", 15.97],
+  ["2026-01-26 19:05", "Abbonamenti", "outcome", 82.87],
+  ["2026-01-26 19:42", "Ristoranti", "outcome", 5.11],
+  ["2026-01-27 09:30", "Stipendio", "income", 3301.62],
+  ["2026-01-27 13:59", "Spesa Alimentare", "outcome", 4.77],
+  ["2026-01-27 14:53", "Spesa Alimentare", "outcome", 44.04],
+  ["2026-02-01 08:14", "Salute", "outcome", 13.39],
+  ["2026-02-01 08:41", "Bar e Caffè", "outcome", 3.0],
+  ["2026-02-02 07:25", "Bar e Caffè", "outcome", 3.0],
+  ["2026-02-02 07:36", "Abbonamenti", "outcome", 8.41],
+  ["2026-02-02 10:00", "Bar e Caffè", "outcome", 7.3],
+  ["2026-02-02 11:31", "Abbonamenti", "outcome", 14.73],
+  ["2026-02-02 19:41", "Utenze", "outcome", 209.25],
+  ["2026-02-03 21:32", "Spesa Alimentare", "outcome", 61.12],
+  ["2026-02-04 09:08", "Spesa Alimentare", "outcome", 22.66],
+  ["2026-02-05 18:21", "Intrattenimento", "outcome", 48.45],
+  ["2026-02-06 07:00", "Spesa Alimentare", "outcome", 118.04],
+  ["2026-02-06 07:02", "Bar e Caffè", "outcome", 8.32],
+  ["2026-02-06 14:10", "Bar e Caffè", "outcome", 4.03],
+  ["2026-02-06 19:10", "Ristoranti", "outcome", 60.58],
+  ["2026-02-06 22:25", "Spesa Alimentare", "outcome", 31.5],
+  ["2026-02-08 08:01", "Abbonamenti", "outcome", 3.0],
+  ["2026-02-08 21:48", "Spesa Alimentare", "outcome", 28.05],
+  ["2026-02-09 14:20", "Ristoranti", "outcome", 4.05],
+  ["2026-02-10 11:13", "Acquisti", "outcome", 102.61],
+  ["2026-02-11 19:10", "Ristoranti", "outcome", 15.85],
+  ["2026-02-12 08:12", "Ristoranti", "outcome", 30.99],
+  ["2026-02-12 16:06", "Abbonamenti", "outcome", 15.15],
+  ["2026-02-12 20:23", "Spesa Alimentare", "outcome", 68.88],
+  ["2026-02-12 22:10", "Acquisti", "outcome", 145.7],
+  ["2026-02-13 18:36", "Intrattenimento", "outcome", 3.98],
+  ["2026-02-16 13:37", "Ristoranti", "outcome", 38.28],
+  ["2026-02-16 16:51", "Trasporti", "outcome", 34.45],
+  ["2026-02-17 08:02", "Spesa Alimentare", "outcome", 33.59],
+  ["2026-02-17 22:15", "Bar e Caffè", "outcome", 7.02],
+  ["2026-02-18 19:47", "Intrattenimento", "outcome", 16.75],
+  ["2026-02-20 21:53", "Spesa Alimentare", "outcome", 10.31],
+  ["2026-02-20 22:29", "Spesa Alimentare", "outcome", 27.92],
+  ["2026-02-21 11:05", "Spesa Alimentare", "outcome", 71.5],
+  ["2026-02-21 15:43", "Ristoranti", "outcome", 67.71],
+  ["2026-02-21 17:46", "Salute", "outcome", 36.3],
+  ["2026-02-21 21:38", "Bar e Caffè", "outcome", 4.85],
+  ["2026-02-22 20:15", "Rimborsi", "income", 30.63],
+  ["2026-02-25 08:40", "Ristoranti", "outcome", 27.58],
+  ["2026-02-25 09:28", "Intrattenimento", "outcome", 18.81],
+  ["2026-02-26 11:01", "Utenze", "outcome", 108.88],
+  ["2026-02-26 12:43", "Trasporti", "outcome", 140.15],
+  ["2026-02-26 14:04", "Trasporti", "outcome", 3.25],
+  ["2026-02-26 15:07", "Ristoranti", "outcome", 21.57],
+  ["2026-02-26 18:16", "Intrattenimento", "outcome", 72.16],
+  ["2026-02-27 09:30", "Stipendio", "income", 3553.55],
+  ["2026-02-27 15:19", "Salute", "outcome", 3.0],
+  ["2026-02-27 18:38", "Bar e Caffè", "outcome", 3.14],
+  ["2026-02-28 09:39", "Utenze", "outcome", 90.97],
+  ["2026-03-01 19:54", "Spesa Alimentare", "outcome", 28.1],
+  ["2026-03-01 20:46", "Trasporti", "outcome", 21.48],
+  ["2026-03-02 07:07", "Ristoranti", "outcome", 25.18],
+  ["2026-03-02 11:44", "Ristoranti", "outcome", 3.0],
+  ["2026-03-02 15:40", "Spesa Alimentare", "outcome", 17.62],
+  ["2026-03-03 08:04", "Ristoranti", "outcome", 30.94],
+  ["2026-03-03 16:10", "Bar e Caffè", "outcome", 12.64],
+  ["2026-03-04 08:02", "Intrattenimento", "outcome", 7.26],
+  ["2026-03-04 11:06", "Salute", "outcome", 101.52],
+  ["2026-03-04 12:22", "Ristoranti", "outcome", 32.29],
+  ["2026-03-05 07:01", "Ristoranti", "outcome", 25.48],
+  ["2026-03-07 16:48", "Bar e Caffè", "outcome", 11.15],
+  ["2026-03-08 08:07", "Spesa Alimentare", "outcome", 235.29],
+  ["2026-03-08 10:16", "Spesa Alimentare", "outcome", 5.28],
+  ["2026-03-08 13:13", "Intrattenimento", "outcome", 67.27],
+  ["2026-03-09 14:53", "Utenze", "outcome", 338.28],
+  ["2026-03-10 08:45", "Abbonamenti", "outcome", 13.67],
+  ["2026-03-11 14:24", "Trasporti", "outcome", 58.6],
+  ["2026-03-11 15:45", "Spesa Alimentare", "outcome", 39.16],
+  ["2026-03-11 22:54", "Abbonamenti", "outcome", 33.97],
+  ["2026-03-12 22:06", "Bar e Caffè", "outcome", 9.2],
+  ["2026-03-13 11:00", "Dividendi", "income", 102.76],
+  ["2026-03-14 07:33", "Bar e Caffè", "outcome", 7.6],
+  ["2026-03-14 21:05", "Spesa Alimentare", "outcome", 73.11],
+  ["2026-03-16 12:31", "Bar e Caffè", "outcome", 8.04],
+  ["2026-03-17 07:10", "Utenze", "outcome", 31.6],
+  ["2026-03-18 20:43", "Spesa Alimentare", "outcome", 44.03],
+  ["2026-03-20 20:15", "Rimborsi", "income", 25.35],
+  ["2026-03-21 08:44", "Ristoranti", "outcome", 29.92],
+  ["2026-03-21 16:30", "Salute", "outcome", 13.37],
+  ["2026-03-22 09:56", "Intrattenimento", "outcome", 31.87],
+  ["2026-03-24 21:11", "Spesa Alimentare", "outcome", 72.8],
+  ["2026-03-25 08:00", "Bar e Caffè", "outcome", 9.73],
+  ["2026-03-25 18:58", "Abbonamenti", "outcome", 4.7],
+  ["2026-03-26 13:18", "Salute", "outcome", 38.01],
+  ["2026-03-26 15:18", "Spesa Alimentare", "outcome", 64.12],
+  ["2026-03-26 20:01", "Acquisti", "outcome", 163.55],
+  ["2026-03-27 07:54", "Trasporti", "outcome", 24.02],
+  ["2026-03-27 09:30", "Stipendio", "income", 3445.06],
+  ["2026-03-28 19:06", "Intrattenimento", "outcome", 53.5],
+  ["2026-03-28 22:30", "Trasporti", "outcome", 75.16],
+  ["2026-04-01 11:16", "Ristoranti", "outcome", 53.99],
+  ["2026-04-01 20:33", "Salute", "outcome", 28.85],
+  ["2026-04-02 07:04", "Bar e Caffè", "outcome", 5.66],
+  ["2026-04-02 07:25", "Ristoranti", "outcome", 4.68],
+  ["2026-04-04 21:34", "Acquisti", "outcome", 165.03],
+  ["2026-04-05 14:46", "Trasporti", "outcome", 17.05],
+  ["2026-04-05 21:42", "Utenze", "outcome", 29.49],
+  ["2026-04-06 10:29", "Intrattenimento", "outcome", 3.0],
+  ["2026-04-07 12:08", "Bar e Caffè", "outcome", 3.0],
+  ["2026-04-07 16:16", "Spesa Alimentare", "outcome", 3.0],
+  ["2026-04-07 19:29", "Ristoranti", "outcome", 3.0],
+  ["2026-04-07 22:32", "Acquisti", "outcome", 152.81],
+  ["2026-04-08 13:17", "Trasporti", "outcome", 18.35],
+  ["2026-04-08 16:29", "Ristoranti", "outcome", 3.0],
+  ["2026-04-08 17:12", "Trasporti", "outcome", 16.72],
+  ["2026-04-08 19:29", "Bar e Caffè", "outcome", 5.75],
+  ["2026-04-09 10:14", "Bar e Caffè", "outcome", 5.05],
+  ["2026-04-09 13:06", "Ristoranti", "outcome", 22.51],
+  ["2026-04-09 13:10", "Abbonamenti", "outcome", 46.34],
+  ["2026-04-09 19:25", "Bar e Caffè", "outcome", 3.0],
+  ["2026-04-10 11:46", "Trasporti", "outcome", 48.91],
+  ["2026-04-10 19:33", "Bar e Caffè", "outcome", 3.0],
+  ["2026-04-11 18:06", "Spesa Alimentare", "outcome", 33.31],
+  ["2026-04-11 18:10", "Trasporti", "outcome", 44.54],
+  ["2026-04-12 08:16", "Bar e Caffè", "outcome", 3.8],
+  ["2026-04-13 19:57", "Spesa Alimentare", "outcome", 131.13],
+  ["2026-04-14 12:24", "Spesa Alimentare", "outcome", 31.06],
+  ["2026-04-14 14:50", "Intrattenimento", "outcome", 19.51],
+  ["2026-04-14 17:16", "Intrattenimento", "outcome", 28.39],
+  ["2026-04-14 20:40", "Bar e Caffè", "outcome", 3.0],
+  ["2026-04-14 22:29", "Salute", "outcome", 19.01],
+  ["2026-04-16 10:02", "Abbonamenti", "outcome", 29.47],
+  ["2026-04-18 17:10", "Utenze", "outcome", 195.6],
+  ["2026-04-19 17:33", "Utenze", "outcome", 94.92],
+  ["2026-04-19 20:15", "Rimborsi", "income", 33.48],
+  ["2026-04-20 19:00", "Ristoranti", "outcome", 51.14],
+  ["2026-04-21 07:23", "Spesa Alimentare", "outcome", 86.9],
+  ["2026-04-21 10:17", "Ristoranti", "outcome", 3.0],
+  ["2026-04-21 10:57", "Intrattenimento", "outcome", 5.04],
+  ["2026-04-21 14:43", "Intrattenimento", "outcome", 104.01],
+  ["2026-04-22 12:57", "Salute", "outcome", 28.16],
+  ["2026-04-23 10:40", "Spesa Alimentare", "outcome", 84.01],
+  ["2026-04-23 18:37", "Bar e Caffè", "outcome", 3.46],
+  ["2026-04-24 09:27", "Spesa Alimentare", "outcome", 140.12],
+  ["2026-04-24 14:58", "Ristoranti", "outcome", 3.0],
+  ["2026-04-25 08:22", "Utenze", "outcome", 97.53],
+  ["2026-04-25 09:51", "Bar e Caffè", "outcome", 3.0],
+  ["2026-04-27 09:30", "Stipendio", "income", 3437.02],
+  ["2026-04-28 20:44", "Ristoranti", "outcome", 15.47],
+  ["2026-05-01 13:04", "Utenze", "outcome", 6.17],
+  ["2026-05-01 15:22", "Spesa Alimentare", "outcome", 15.55],
+  ["2026-05-02 13:45", "Salute", "outcome", 126.0],
+  ["2026-05-02 13:52", "Bar e Caffè", "outcome", 3.0],
+  ["2026-05-02 21:40", "Bar e Caffè", "outcome", 3.0],
+  ["2026-05-03 17:50", "Spesa Alimentare", "outcome", 86.28],
+  ["2026-05-03 21:42", "Trasporti", "outcome", 45.86],
+  ["2026-05-04 10:16", "Trasporti", "outcome", 39.4],
+  ["2026-05-04 22:31", "Intrattenimento", "outcome", 3.21],
+  ["2026-05-05 09:13", "Bar e Caffè", "outcome", 3.31],
+  ["2026-05-05 14:11", "Utenze", "outcome", 69.49],
+  ["2026-05-05 20:15", "Rimborsi", "income", 17.53],
+  ["2026-05-08 16:20", "Spesa Alimentare", "outcome", 34.9],
+  ["2026-05-10 10:00", "Bar e Caffè", "outcome", 9.76],
+  ["2026-05-10 19:03", "Spesa Alimentare", "outcome", 9.78],
+  ["2026-05-11 15:55", "Acquisti", "outcome", 43.08],
+  ["2026-05-12 11:59", "Spesa Alimentare", "outcome", 164.94],
+  ["2026-05-12 22:25", "Acquisti", "outcome", 11.42],
+  ["2026-05-13 08:25", "Bar e Caffè", "outcome", 3.0],
+  ["2026-05-13 15:27", "Spesa Alimentare", "outcome", 72.32],
+  ["2026-05-16 08:50", "Bar e Caffè", "outcome", 10.15],
+  ["2026-05-16 12:34", "Ristoranti", "outcome", 3.0],
+  ["2026-05-16 13:18", "Abbonamenti", "outcome", 39.08],
+  ["2026-05-16 13:33", "Trasporti", "outcome", 24.18],
+  ["2026-05-16 22:27", "Spesa Alimentare", "outcome", 65.49],
+  ["2026-05-17 18:13", "Acquisti", "outcome", 8.14],
+  ["2026-05-17 19:39", "Bar e Caffè", "outcome", 3.0],
+  ["2026-05-18 16:12", "Trasporti", "outcome", 35.52],
+  ["2026-05-20 07:10", "Ristoranti", "outcome", 13.39],
+  ["2026-05-20 08:43", "Intrattenimento", "outcome", 3.58],
+  ["2026-05-20 09:42", "Spesa Alimentare", "outcome", 46.32],
+  ["2026-05-20 09:43", "Trasporti", "outcome", 38.2],
+  ["2026-05-20 10:37", "Utenze", "outcome", 81.64],
+  ["2026-05-21 07:01", "Intrattenimento", "outcome", 24.43],
+  ["2026-05-21 16:16", "Utenze", "outcome", 254.67],
+  ["2026-05-21 18:40", "Intrattenimento", "outcome", 6.15],
+  ["2026-05-21 22:50", "Acquisti", "outcome", 154.02],
+  ["2026-05-22 12:30", "Spesa Alimentare", "outcome", 82.19],
+  ["2026-05-23 18:00", "Lavoro Autonomo", "income", 502.92],
+  ["2026-05-23 22:15", "Ristoranti", "outcome", 86.99],
+  ["2026-05-23 22:42", "Ristoranti", "outcome", 17.38],
+  ["2026-05-24 17:51", "Intrattenimento", "outcome", 44.19],
+  ["2026-05-25 12:06", "Bar e Caffè", "outcome", 8.13],
+  ["2026-05-27 09:30", "Stipendio", "income", 3519.36],
+  ["2026-05-27 17:29", "Ristoranti", "outcome", 64.01],
+  ["2026-05-28 18:21", "Abbonamenti", "outcome", 20.01],
+  ["2026-06-01 20:36", "Spesa Alimentare", "outcome", 19.9],
+  ["2026-06-02 17:23", "Ristoranti", "outcome", 8.37],
+  ["2026-06-02 19:29", "Acquisti", "outcome", 102.15],
+  ["2026-06-03 07:43", "Spesa Alimentare", "outcome", 88.52],
+  ["2026-06-03 13:55", "Utenze", "outcome", 79.13],
+  ["2026-06-04 11:30", "Utenze", "outcome", 30.67],
+  ["2026-06-04 20:36", "Spesa Alimentare", "outcome", 72.39],
+  ["2026-06-05 16:37", "Intrattenimento", "outcome", 3.0],
+  ["2026-06-07 13:05", "Bar e Caffè", "outcome", 9.01],
+  ["2026-06-12 11:46", "Trasporti", "outcome", 41.53],
+  ["2026-06-13 11:30", "Spesa Alimentare", "outcome", 5.5],
+  ["2026-06-13 13:50", "Abbonamenti", "outcome", 3.0],
+  ["2026-06-13 15:56", "Bar e Caffè", "outcome", 17.32],
+  ["2026-06-13 19:38", "Intrattenimento", "outcome", 11.39],
+  ["2026-06-13 21:17", "Ristoranti", "outcome", 57.6],
+  ["2026-06-14 07:00", "Utenze", "outcome", 138.96],
+  ["2026-06-14 12:37", "Salute", "outcome", 3.0],
+  ["2026-06-14 14:24", "Intrattenimento", "outcome", 56.24],
+  ["2026-06-16 11:00", "Dividendi", "income", 203.93],
+  ["2026-06-17 13:12", "Bar e Caffè", "outcome", 3.0],
+  ["2026-06-18 09:34", "Abbonamenti", "outcome", 60.05],
+  ["2026-06-18 22:22", "Abbonamenti", "outcome", 13.57],
+  ["2026-06-18 22:51", "Abbonamenti", "outcome", 16.45],
+  ["2026-06-19 08:52", "Spesa Alimentare", "outcome", 26.78],
+  ["2026-06-19 21:30", "Ristoranti", "outcome", 73.79],
+  ["2026-06-21 08:31", "Spesa Alimentare", "outcome", 60.7],
+  ["2026-06-21 12:40", "Ristoranti", "outcome", 5.3],
+  ["2026-06-21 22:29", "Trasporti", "outcome", 16.45],
+  ["2026-06-22 10:54", "Utenze", "outcome", 45.53],
+  ["2026-06-22 12:09", "Ristoranti", "outcome", 22.39],
+  ["2026-06-22 15:58", "Trasporti", "outcome", 7.11],
+  ["2026-06-23 13:59", "Acquisti", "outcome", 227.92],
+  ["2026-06-23 19:28", "Spesa Alimentare", "outcome", 232.91],
+  ["2026-06-25 09:14", "Bar e Caffè", "outcome", 4.08],
+  ["2026-06-25 09:18", "Trasporti", "outcome", 27.03],
+  ["2026-06-25 14:51", "Intrattenimento", "outcome", 10.33],
+  ["2026-06-25 20:35", "Spesa Alimentare", "outcome", 74.43],
+  ["2026-06-26 10:23", "Ristoranti", "outcome", 61.84],
+  ["2026-06-26 17:18", "Ristoranti", "outcome", 34.17],
+  ["2026-06-26 20:30", "Ristoranti", "outcome", 20.04],
+  ["2026-06-27 08:18", "Salute", "outcome", 21.74],
+  ["2026-06-27 09:30", "Stipendio", "income", 3465.45],
+  ["2026-06-27 11:51", "Salute", "outcome", 61.3],
+  ["2026-06-27 17:30", "Bar e Caffè", "outcome", 15.45],
+  ["2026-06-28 22:38", "Ristoranti", "outcome", 9.36],
+  ["2026-07-02 07:53", "Ristoranti", "outcome", 46.94],
+  ["2026-07-02 13:55", "Spesa Alimentare", "outcome", 18.08],
+  ["2026-07-02 15:22", "Ristoranti", "outcome", 4.76],
+  ["2026-07-02 15:50", "Ristoranti", "outcome", 7.14],
+  ["2026-07-02 17:12", "Utenze", "outcome", 15.14],
+  ["2026-07-03 11:20", "Spesa Alimentare", "outcome", 149.24],
+  ["2026-07-03 19:59", "Trasporti", "outcome", 29.23],
+  ["2026-07-04 09:16", "Trasporti", "outcome", 12.07],
+  ["2026-07-05 07:17", "Bar e Caffè", "outcome", 3.0],
+  ["2026-07-05 08:40", "Bar e Caffè", "outcome", 9.93],
+  ["2026-07-05 15:53", "Utenze", "outcome", 225.26],
+  ["2026-07-06 19:05", "Utenze", "outcome", 53.19],
+  ["2026-07-08 14:11", "Ristoranti", "outcome", 40.53],
+  ["2026-07-09 07:06", "Spesa Alimentare", "outcome", 55.6],
+  ["2026-07-11 18:16", "Intrattenimento", "outcome", 20.63],
+  ["2026-07-13 07:40", "Acquisti", "outcome", 221.01],
+  ["2026-07-13 10:23", "Intrattenimento", "outcome", 6.78],
+  ["2026-07-14 20:15", "Bar e Caffè", "outcome", 3.0],
+  ["2026-07-15 11:17", "Bar e Caffè", "outcome", 4.03],
+  ["2026-07-15 12:23", "Ristoranti", "outcome", 64.37],
+  ["2026-07-15 14:51", "Salute", "outcome", 87.38],
+  ["2026-07-15 22:07", "Bar e Caffè", "outcome", 3.0],
+  ["2026-07-15 22:54", "Trasporti", "outcome", 52.0],
+  ["2026-07-16 10:20", "Bar e Caffè", "outcome", 3.0],
+  ["2026-07-16 16:07", "Bar e Caffè", "outcome", 3.86],
+  ["2026-07-19 13:16", "Spesa Alimentare", "outcome", 34.08],
+  ["2026-07-19 16:21", "Bar e Caffè", "outcome", 3.09],
+  ["2026-07-19 20:15", "Rimborsi", "income", 17.69],
+  ["2026-07-19 21:48", "Intrattenimento", "outcome", 9.96],
+  ["2026-07-20 07:22", "Spesa Alimentare", "outcome", 75.96],
+  ["2026-07-20 18:56", "Abbonamenti", "outcome", 3.0],
+  ["2026-07-21 10:30", "Intrattenimento", "outcome", 68.26],
+  ["2026-07-22 16:37", "Intrattenimento", "outcome", 6.24],
+  ["2026-07-24 11:49", "Abbonamenti", "outcome", 3.5],
+  ["2026-07-25 15:27", "Spesa Alimentare", "outcome", 46.89],
+  ["2026-07-26 08:10", "Abbonamenti", "outcome", 18.73],
+  ["2026-07-26 12:16", "Bar e Caffè", "outcome", 3.0],
+  ["2026-07-26 13:35", "Bar e Caffè", "outcome", 5.35],
+  ["2026-07-27 09:30", "Stipendio", "income", 3272.28],
+  ["2026-07-27 14:04", "Abbonamenti", "outcome", 16.98],
+  ["2026-07-28 22:37", "Spesa Alimentare", "outcome", 226.07],
+  ["2026-08-01 14:05", "Salute", "outcome", 132.63],
+  ["2026-08-01 20:58", "Trasporti", "outcome", 6.45],
+  ["2026-08-03 10:22", "Ristoranti", "outcome", 77.99],
+  ["2026-08-04 19:56", "Bar e Caffè", "outcome", 4.11],
+  ["2026-08-04 22:28", "Intrattenimento", "outcome", 42.33],
+  ["2026-08-05 14:55", "Bar e Caffè", "outcome", 19.56],
+  ["2026-08-05 21:00", "Spesa Alimentare", "outcome", 8.38],
+  ["2026-08-06 18:02", "Trasporti", "outcome", 7.36],
+  ["2026-08-06 18:36", "Trasporti", "outcome", 8.2],
+  ["2026-08-07 11:39", "Utenze", "outcome", 3.0],
+  ["2026-08-08 11:42", "Bar e Caffè", "outcome", 3.0],
+  ["2026-08-08 20:15", "Rimborsi", "income", 32.98],
+  ["2026-08-08 21:06", "Acquisti", "outcome", 69.97],
+  ["2026-08-09 10:07", "Bar e Caffè", "outcome", 3.0],
+  ["2026-08-10 13:00", "Utenze", "outcome", 119.23],
+  ["2026-08-10 15:35", "Abbonamenti", "outcome", 7.67],
+  ["2026-08-12 20:02", "Spesa Alimentare", "outcome", 12.43],
+  ["2026-08-13 12:52", "Bar e Caffè", "outcome", 14.94],
+  ["2026-08-14 13:17", "Spesa Alimentare", "outcome", 92.82],
+  ["2026-08-14 18:00", "Lavoro Autonomo", "income", 444.43],
+  ["2026-08-16 15:11", "Utenze", "outcome", 24.14],
+  ["2026-08-17 07:33", "Intrattenimento", "outcome", 102.86],
+  ["2026-08-17 17:32", "Spesa Alimentare", "outcome", 67.77],
+  ["2026-08-19 12:08", "Spesa Alimentare", "outcome", 90.39],
+  ["2026-08-19 21:47", "Bar e Caffè", "outcome", 11.42],
+  ["2026-08-21 22:05", "Trasporti", "outcome", 27.58],
+  ["2026-08-22 13:37", "Utenze", "outcome", 158.73],
+  ["2026-08-23 14:52", "Ristoranti", "outcome", 126.12],
+  ["2026-08-23 19:36", "Ristoranti", "outcome", 6.85],
+  ["2026-08-25 14:45", "Spesa Alimentare", "outcome", 10.08],
+  ["2026-08-25 22:08", "Trasporti", "outcome", 16.72],
+  ["2026-08-26 16:11", "Spesa Alimentare", "outcome", 118.99],
+  ["2026-08-27 07:01", "Abbonamenti", "outcome", 37.99],
+  ["2026-08-27 09:30", "Stipendio", "income", 3303.12],
+  ["2026-08-27 12:33", "Spesa Alimentare", "outcome", 68.65],
+  ["2026-08-27 17:49", "Ristoranti", "outcome", 8.02],
+  ["2026-08-27 21:33", "Acquisti", "outcome", 24.76],
+  ["2026-08-28 15:15", "Trasporti", "outcome", 31.58],
 ];
 
 // ============================================================================
 // Family Finance Dashboard PRO — vanilla JS + Chart.js (CDN)
 // ============================================================================
 
-const EXPENSE_CATEGORIES = ["Groceries", "Utilities", "Transportation", "Dining Out", "Entertainment", "Healthcare", "Subscriptions", "Shopping", "Coffee & Drinks"];
-const INCOME_CATEGORIES = ["Salary", "Freelance", "Dividends", "Cashback"];
+const EXPENSE_CATEGORIES = ["Spesa Alimentare", "Utenze", "Trasporti", "Ristoranti", "Intrattenimento", "Salute", "Abbonamenti", "Acquisti", "Bar e Caffè"];
+const INCOME_CATEGORIES = ["Stipendio", "Lavoro Autonomo", "Dividendi", "Rimborsi"];
 const NEEDS_CATEGORY = "Da categorizzare";
 const CATEGORY_ICONS = {
-  "Groceries": "🛒", "Salary": "💼", "Coffee & Drinks": "☕", "Dining Out": "🍽️",
-  "Transportation": "🚗", "Shopping": "🛍️", "Utilities": "💡", "Freelance": "💻",
-  "Entertainment": "🎬", "Healthcare": "🏥", "Dividends": "📈", "Subscriptions": "📱", "Cashback": "💰",
+  "Spesa Alimentare": "🛒", "Stipendio": "💼", "Bar e Caffè": "☕", "Ristoranti": "🍽️",
+  "Trasporti": "🚗", "Acquisti": "🛍️", "Utenze": "💡", "Lavoro Autonomo": "💻",
+  "Intrattenimento": "🎬", "Salute": "🏥", "Dividendi": "📈", "Abbonamenti": "📱", "Rimborsi": "💰",
   [NEEDS_CATEGORY]: "❓",
 };
 const DEFAULT_BUDGETS = {
-  "Groceries": 600, "Coffee & Drinks": 80, "Dining Out": 350, "Transportation": 200,
-  "Shopping": 400, "Utilities": 400, "Entertainment": 200, "Healthcare": 150, "Subscriptions": 100,
+  "Spesa Alimentare": 600, "Bar e Caffè": 80, "Ristoranti": 350, "Trasporti": 200,
+  "Acquisti": 400, "Utenze": 400, "Intrattenimento": 200, "Salute": 150, "Abbonamenti": 100,
 };
 // Regole di default per il matching esercente -> categoria (parola chiave, case/accent-insensitive, sottostringa).
 const DEFAULT_MERCHANT_RULES = [
-  { keyword: "ESSELUNGA", category: "Groceries" }, { keyword: "COOP", category: "Groceries" },
-  { keyword: "CONAD", category: "Groceries" }, { keyword: "CARREFOUR", category: "Groceries" },
-  { keyword: "LIDL", category: "Groceries" }, { keyword: "EUROSPIN", category: "Groceries" },
-  { keyword: "IPERCOOP", category: "Groceries" }, { keyword: "PAM", category: "Groceries" },
-  { keyword: "SUPERMERCATO", category: "Groceries" }, { keyword: "ALIMENTARI", category: "Groceries" },
-  { keyword: "GROCERY", category: "Groceries" }, { keyword: "WHOLE FOODS", category: "Groceries" },
-  { keyword: "TRADER JOE", category: "Groceries" },
-  { keyword: "ESSO", category: "Transportation" }, { keyword: "AGIP", category: "Transportation" },
-  { keyword: "ENI STATION", category: "Transportation" }, { keyword: "Q8", category: "Transportation" },
-  { keyword: "TAMOIL", category: "Transportation" }, { keyword: "IP CARBURANTI", category: "Transportation" },
-  { keyword: "SHELL", category: "Transportation" }, { keyword: "BENZINA", category: "Transportation" },
-  { keyword: "AUTOSTRADE", category: "Transportation" }, { keyword: "TELEPASS", category: "Transportation" },
-  { keyword: "ATM MILANO", category: "Transportation" }, { keyword: "TRENITALIA", category: "Transportation" },
-  { keyword: "ITALO", category: "Transportation" }, { keyword: "UBER", category: "Transportation" },
-  { keyword: "TAXI", category: "Transportation" }, { keyword: "PARKING", category: "Transportation" },
-  { keyword: "PARCHEGGIO", category: "Transportation" },
-  { keyword: "FARMACIA", category: "Healthcare" }, { keyword: "PHARMACY", category: "Healthcare" },
-  { keyword: "BOOTS", category: "Healthcare" }, { keyword: "OSPEDALE", category: "Healthcare" },
-  { keyword: "CLINICA", category: "Healthcare" }, { keyword: "DENTIST", category: "Healthcare" },
-  { keyword: "DENTISTA", category: "Healthcare" }, { keyword: "AMBULATORIO", category: "Healthcare" },
-  { keyword: "RESTAURAN", category: "Dining Out" }, { keyword: "RISTORANTE", category: "Dining Out" },
-  { keyword: "PIZZERIA", category: "Dining Out" }, { keyword: "TRATTORIA", category: "Dining Out" },
-  { keyword: "SUSHI", category: "Dining Out" }, { keyword: "MCDONALD", category: "Dining Out" },
-  { keyword: "BURGER", category: "Dining Out" }, { keyword: "KFC", category: "Dining Out" },
-  { keyword: "KEBAB", category: "Dining Out" }, { keyword: "TRATTORIA", category: "Dining Out" },
-  { keyword: "DELIVEROO", category: "Dining Out" }, { keyword: "GLOVO", category: "Dining Out" },
-  { keyword: "JUST EAT", category: "Dining Out" },
-  { keyword: "BAR ", category: "Coffee & Drinks" }, { keyword: "CAFFE", category: "Coffee & Drinks" },
-  { keyword: "CAFFÈ", category: "Coffee & Drinks" }, { keyword: "STARBUCKS", category: "Coffee & Drinks" },
-  { keyword: "COFFEE", category: "Coffee & Drinks" }, { keyword: "PASTICCERIA", category: "Coffee & Drinks" },
-  { keyword: "NETFLIX", category: "Subscriptions" }, { keyword: "SPOTIFY", category: "Subscriptions" },
-  { keyword: "DISNEY+", category: "Subscriptions" }, { keyword: "AMAZON PRIME", category: "Subscriptions" },
-  { keyword: "APPLE.COM", category: "Subscriptions" }, { keyword: "ICLOUD", category: "Subscriptions" },
-  { keyword: "PALESTRA", category: "Entertainment" }, { keyword: "GYM", category: "Entertainment" },
-  { keyword: "CINEMA", category: "Entertainment" }, { keyword: "TEATRO", category: "Entertainment" },
-  { keyword: "MUSEO", category: "Entertainment" }, { keyword: "STEAM", category: "Entertainment" },
-  { keyword: "PLAYSTATION", category: "Entertainment" }, { keyword: "XBOX", category: "Entertainment" },
-  { keyword: "ZARA", category: "Shopping" }, { keyword: "H&M", category: "Shopping" },
-  { keyword: "AMAZON", category: "Shopping" }, { keyword: "IKEA", category: "Shopping" },
-  { keyword: "DECATHLON", category: "Shopping" }, { keyword: "MEDIAWORLD", category: "Shopping" },
-  { keyword: "ZALANDO", category: "Shopping" },
-  { keyword: "ENEL", category: "Utilities" }, { keyword: "ENI GAS", category: "Utilities" },
-  { keyword: "TIM ", category: "Utilities" }, { keyword: "VODAFONE", category: "Utilities" },
-  { keyword: "WINDTRE", category: "Utilities" }, { keyword: "FASTWEB", category: "Utilities" },
-  { keyword: "ACQUA", category: "Utilities" }, { keyword: "CONDOMINIO", category: "Utilities" },
-  { keyword: "STIPENDIO", category: "Salary" }, { keyword: "SALARY", category: "Salary" },
-  { keyword: "PAYROLL", category: "Salary" },
+  { keyword: "ESSELUNGA", category: "Spesa Alimentare" }, { keyword: "COOP", category: "Spesa Alimentare" },
+  { keyword: "CONAD", category: "Spesa Alimentare" }, { keyword: "CARREFOUR", category: "Spesa Alimentare" },
+  { keyword: "LIDL", category: "Spesa Alimentare" }, { keyword: "EUROSPIN", category: "Spesa Alimentare" },
+  { keyword: "IPERCOOP", category: "Spesa Alimentare" }, { keyword: "PAM", category: "Spesa Alimentare" },
+  { keyword: "SUPERMERCATO", category: "Spesa Alimentare" }, { keyword: "ALIMENTARI", category: "Spesa Alimentare" },
+  { keyword: "GROCERY", category: "Spesa Alimentare" }, { keyword: "WHOLE FOODS", category: "Spesa Alimentare" },
+  { keyword: "TRADER JOE", category: "Spesa Alimentare" },
+  { keyword: "ESSO", category: "Trasporti" }, { keyword: "AGIP", category: "Trasporti" },
+  { keyword: "ENI STATION", category: "Trasporti" }, { keyword: "Q8", category: "Trasporti" },
+  { keyword: "TAMOIL", category: "Trasporti" }, { keyword: "IP CARBURANTI", category: "Trasporti" },
+  { keyword: "SHELL", category: "Trasporti" }, { keyword: "BENZINA", category: "Trasporti" },
+  { keyword: "AUTOSTRADE", category: "Trasporti" }, { keyword: "TELEPASS", category: "Trasporti" },
+  { keyword: "ATM MILANO", category: "Trasporti" }, { keyword: "TRENITALIA", category: "Trasporti" },
+  { keyword: "ITALO", category: "Trasporti" }, { keyword: "UBER", category: "Trasporti" },
+  { keyword: "TAXI", category: "Trasporti" }, { keyword: "PARKING", category: "Trasporti" },
+  { keyword: "PARCHEGGIO", category: "Trasporti" },
+  { keyword: "FARMACIA", category: "Salute" }, { keyword: "PHARMACY", category: "Salute" },
+  { keyword: "BOOTS", category: "Salute" }, { keyword: "OSPEDALE", category: "Salute" },
+  { keyword: "CLINICA", category: "Salute" }, { keyword: "DENTIST", category: "Salute" },
+  { keyword: "DENTISTA", category: "Salute" }, { keyword: "AMBULATORIO", category: "Salute" },
+  { keyword: "RESTAURAN", category: "Ristoranti" }, { keyword: "RISTORANTE", category: "Ristoranti" },
+  { keyword: "PIZZERIA", category: "Ristoranti" }, { keyword: "TRATTORIA", category: "Ristoranti" },
+  { keyword: "SUSHI", category: "Ristoranti" }, { keyword: "MCDONALD", category: "Ristoranti" },
+  { keyword: "BURGER", category: "Ristoranti" }, { keyword: "KFC", category: "Ristoranti" },
+  { keyword: "KEBAB", category: "Ristoranti" }, { keyword: "TRATTORIA", category: "Ristoranti" },
+  { keyword: "DELIVEROO", category: "Ristoranti" }, { keyword: "GLOVO", category: "Ristoranti" },
+  { keyword: "JUST EAT", category: "Ristoranti" },
+  { keyword: "BAR ", category: "Bar e Caffè" }, { keyword: "CAFFE", category: "Bar e Caffè" },
+  { keyword: "CAFFÈ", category: "Bar e Caffè" }, { keyword: "STARBUCKS", category: "Bar e Caffè" },
+  { keyword: "COFFEE", category: "Bar e Caffè" }, { keyword: "PASTICCERIA", category: "Bar e Caffè" },
+  { keyword: "NETFLIX", category: "Abbonamenti" }, { keyword: "SPOTIFY", category: "Abbonamenti" },
+  { keyword: "DISNEY+", category: "Abbonamenti" }, { keyword: "AMAZON PRIME", category: "Abbonamenti" },
+  { keyword: "APPLE.COM", category: "Abbonamenti" }, { keyword: "ICLOUD", category: "Abbonamenti" },
+  { keyword: "PALESTRA", category: "Intrattenimento" }, { keyword: "GYM", category: "Intrattenimento" },
+  { keyword: "CINEMA", category: "Intrattenimento" }, { keyword: "TEATRO", category: "Intrattenimento" },
+  { keyword: "MUSEO", category: "Intrattenimento" }, { keyword: "STEAM", category: "Intrattenimento" },
+  { keyword: "PLAYSTATION", category: "Intrattenimento" }, { keyword: "XBOX", category: "Intrattenimento" },
+  { keyword: "ZARA", category: "Acquisti" }, { keyword: "H&M", category: "Acquisti" },
+  { keyword: "AMAZON", category: "Acquisti" }, { keyword: "IKEA", category: "Acquisti" },
+  { keyword: "DECATHLON", category: "Acquisti" }, { keyword: "MEDIAWORLD", category: "Acquisti" },
+  { keyword: "ZALANDO", category: "Acquisti" },
+  { keyword: "ENEL", category: "Utenze" }, { keyword: "ENI GAS", category: "Utenze" },
+  { keyword: "TIM ", category: "Utenze" }, { keyword: "VODAFONE", category: "Utenze" },
+  { keyword: "WINDTRE", category: "Utenze" }, { keyword: "FASTWEB", category: "Utenze" },
+  { keyword: "ACQUA", category: "Utenze" }, { keyword: "CONDOMINIO", category: "Utenze" },
+  { keyword: "STIPENDIO", category: "Stipendio" }, { keyword: "SALARY", category: "Stipendio" },
+  { keyword: "PAYROLL", category: "Stipendio" },
 ];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 const MONTH_NAMES = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
@@ -1771,6 +1789,7 @@ const CHART_PALETTE = ["#4fd1a5", "#4ea8de", "#e08e5b", "#b48ee0", "#e0a838", "#
 const LS_KEY = "ffdpro_transactions_v1";
 const LS_BUDGETS_KEY = "ffdpro_budgets_v1";
 const LS_RULES_KEY = "ffdpro_merchant_rules_v1";
+const LS_SAVINGS_GOAL_KEY = "ffdpro_savings_goal_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
 
 const PRESETS = [
@@ -1797,6 +1816,7 @@ const state = {
   txPageSize: 25,
   activeTab: "overview",
   overviewLayout: "classica",
+  savingsGoal: 0.2,
 };
 let simIdSeq = 1;
 
@@ -1884,13 +1904,14 @@ function parseCSV(text) {
     const rawCat = idx.cat >= 0 ? parts[idx.cat].trim() : "";
     const desc = idx.desc >= 0 ? parts[idx.desc].trim() : "";
     if (!d || isNaN(v) || (!rawCat && !desc)) continue;
-    let category = rawCat, autoCategorized = false;
+    let category = rawCat, autoCategorized = false, matchedKeyword = null;
     if (!category) {
       const guess = guessCategory(desc);
-      category = guess || NEEDS_CATEGORY;
+      category = guess ? guess.category : NEEDS_CATEGORY;
+      matchedKeyword = guess ? guess.keyword : null;
       autoCategorized = true;
     }
-    rows.push({ date: d, category, type, value: Math.abs(v), description: desc || null, autoCategorized });
+    rows.push({ date: d, category, type, value: Math.abs(v), description: desc || null, autoCategorized, matchedKeyword });
   }
   if (!rows.length) throw new Error("Nessuna riga valida trovata nel file.");
   return rows;
@@ -1951,7 +1972,7 @@ function importDictionaryCSV(file) {
 
 // ---------------------------------------------------------------- persistence
 function persistTransactions() {
-  const raw = state.transactions.map((t) => [t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized]);
+  const raw = state.transactions.map((t) => [t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || ""]);
   try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
 }
 function loadPersisted() {
@@ -1959,7 +1980,7 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto]) => ({ date: new Date(iso), category: cat, type, value: val, description: desc || null, autoCategorized: !!auto }));
+    return arr.map(([iso, cat, type, val, desc, auto, kw]) => ({ date: new Date(iso), category: cat, type, value: val, description: desc || null, autoCategorized: !!auto, matchedKeyword: kw || null }));
   } catch (e) { return null; }
 }
 function saveBudgets() {
@@ -1970,6 +1991,16 @@ function loadBudgets() {
     const raw = localStorage.getItem(LS_BUDGETS_KEY);
     state.budgets = raw ? JSON.parse(raw) : { ...DEFAULT_BUDGETS };
   } catch (e) { state.budgets = { ...DEFAULT_BUDGETS }; }
+}
+function saveSavingsGoal(pct) {
+  state.savingsGoal = clamp(pct, 0, 1);
+  try { localStorage.setItem(LS_SAVINGS_GOAL_KEY, String(state.savingsGoal)); } catch (e) { /* ignore */ }
+}
+function loadSavingsGoal() {
+  try {
+    const raw = localStorage.getItem(LS_SAVINGS_GOAL_KEY);
+    state.savingsGoal = raw ? clamp(parseFloat(raw), 0, 1) : 0.2;
+  } catch (e) { state.savingsGoal = 0.2; }
 }
 function ensureBudgetKeysForTransactions() {
   const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome" && t.category !== NEEDS_CATEGORY).map((t) => t.category));
@@ -2004,10 +2035,10 @@ function guessCategory(description) {
   for (const rule of state.merchantRules) {
     const kw = normalizeForMatch(rule.keyword);
     if (kw && norm.includes(kw)) {
-      if (!best || kw.length > best.kwLen) best = { category: rule.category, kwLen: kw.length };
+      if (!best || kw.length > best.kwLen) best = { category: rule.category, keyword: rule.keyword, kwLen: kw.length };
     }
   }
-  return best ? best.category : null;
+  return best ? { category: best.category, keyword: best.keyword } : null;
 }
 
 // ---------------------------------------------------------------- data helpers
@@ -2061,6 +2092,12 @@ function periodRangeLabel() {
   const startTxt = start ? fmtDateFull(start) : "…";
   const endTxt = end ? fmtDateFull(end) : "…";
   return `${label} (${startTxt} → ${endTxt})`;
+}
+function validateCustomRange() {
+  const { customStart, customEnd } = state.filters;
+  const invalid = !!(customStart && customEnd && customStart > customEnd);
+  document.getElementById("customRangeWarning").classList.toggle("hidden", !invalid);
+  return !invalid;
 }
 function getCategoryTypeFiltered() {
   return state.transactions.filter((t) =>
@@ -2152,7 +2189,7 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
         action: withActions ? `Monitora le prossime spese in ${b.category} per non sforare.` : null });
     }
   }
-  if (income > 0 && savingsRate > 0.2) {
+  if (income > 0 && savingsRate > state.savingsGoal) {
     insights.push({ level: "success", icon: "✅", title: "Ottimo tasso di risparmio",
       text: `Stai risparmiando il ${fmtPercent(savingsRate)} delle tue entrate.`,
       action: withActions ? "Valuta di investire il surplus o rafforzare il fondo emergenza." : null });
@@ -2165,11 +2202,11 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
     insights.push({ level: "info", icon: "📅", title: "Picco di spesa giornaliero",
       text: `Il ${fmtDateFull(new Date(peakDay))} hai speso ${fmtCurrency(peakVal)} in un solo giorno.`, action: null });
   }
-  const coffee = periodTxs.filter((t) => t.category === "Coffee & Drinks" && t.type === "outcome");
+  const coffee = periodTxs.filter((t) => t.category === "Bar e Caffè" && t.type === "outcome");
   if (coffee.length >= 3) {
     const total = coffee.reduce((s, t) => s + t.value, 0);
     const monthlyAvg = total / monthsCoveredCount(periodTxs);
-    insights.push({ level: "info", icon: "☕", title: "Proiezione annuale Coffee & Drinks",
+    insights.push({ level: "info", icon: "☕", title: "Proiezione annuale Bar e Caffè",
       text: `Di questo passo spenderesti circa ${fmtCurrency(monthlyAvg * 12)} l'anno in questa categoria.`,
       action: withActions ? "Dimezzare questa spesa libererebbe budget per altri obiettivi." : null });
   }
@@ -2239,7 +2276,7 @@ function computeOverviewData() {
     { label: "Saldo Netto", value: fmtCurrency(net), cls: net >= 0 ? "pos" : "neg", sub: periodLabel(), trend: trendNet },
     { label: "Entrate", value: fmtCurrency(income), cls: "pos", sub: `${periodTxs.filter((t) => t.type === "income").length} transazioni`, trend: trendIncome },
     { label: "Uscite", value: fmtCurrency(outcome), cls: "neg", sub: `${periodTxs.filter((t) => t.type === "outcome").length} transazioni`, trend: trendOutcome },
-    { label: "Obiettivo", value: fmtPercent(savingsRate), cls: savingsRate >= 0.2 ? "pos" : "warn", sub: "Target: 20% di risparmio" },
+    { label: "Obiettivo", value: fmtPercent(savingsRate), cls: savingsRate >= state.savingsGoal ? "pos" : "warn", sub: `Target: ${fmtPercent(state.savingsGoal, 0)} di risparmio` },
     { label: "Previsione", value: fmtCurrency(forecast), cls: "acc", sub: "Saldo stimato prossimo mese" },
   ];
   const monthlySeries = computeMonthlySeries(getCategoryTypeFiltered());
@@ -2277,9 +2314,9 @@ function renderCashflowChart(canvasId, monthlySeries) {
     data: {
       labels: monthlySeries.map((m) => m.label),
       datasets: [
-        { type: "bar", label: "Entrate", data: monthlySeries.map((m) => m.income), backgroundColor: cssVar("--primary"), borderRadius: 4, order: 2 },
-        { type: "bar", label: "Uscite", data: monthlySeries.map((m) => m.outcome), backgroundColor: cssVar("--danger"), borderRadius: 4, order: 2 },
-        { type: "line", label: "Saldo Cumulativo", data: monthlySeries.map((m) => m.cumulative), borderColor: cssVar("--secondary"), backgroundColor: hexToRgba(cssVar("--secondary"), 0.12), yAxisID: "y1", tension: 0.3, pointRadius: 3, order: 1 },
+        { type: "bar", label: "Entrate", data: monthlySeries.map((m) => m.income), backgroundColor: CHART_PALETTE[0], borderRadius: 4, order: 2 },
+        { type: "bar", label: "Uscite", data: monthlySeries.map((m) => m.outcome), backgroundColor: CHART_PALETTE[5], borderRadius: 4, order: 2 },
+        { type: "line", label: "Saldo Cumulativo", data: monthlySeries.map((m) => m.cumulative), borderColor: CHART_PALETTE[1], backgroundColor: hexToRgba(CHART_PALETTE[1], 0.12), yAxisID: "y1", tension: 0.3, pointRadius: 3, order: 1 },
       ],
     },
     options: {
@@ -2309,7 +2346,7 @@ function renderCategoryPieChart(canvasId, emptyMsgId, pieRows) {
 function renderWeeklyChart(canvasId, weekly) {
   renderChart(canvasId, {
     type: "bar",
-    data: { labels: DAY_NAMES, datasets: [{ label: "Uscite", data: weekly, backgroundColor: cssVar("--accent"), borderRadius: 5 }] },
+    data: { labels: DAY_NAMES, datasets: [{ label: "Uscite", data: weekly, backgroundColor: CHART_PALETTE.slice(0, 7), borderRadius: 5 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: currencyTick() } } },
   });
 }
@@ -2415,6 +2452,17 @@ function renderOverviewAccordion(data) {
   renderWeeklyChart("chartWeeklyAccordion", data.weekly);
   renderInsightList(document.getElementById("overviewInsightsAccordion"), data.insights);
   renderRecentTx("recentTxListAccordion", data.recent);
+}
+function expandAccordionForPrint() {
+  if (state.overviewLayout !== "accordion" || !state.transactions.length) return;
+  let expandedAny = false;
+  document.querySelectorAll("#overviewAccordion .acc-body[hidden]").forEach((body) => {
+    body.hidden = false;
+    expandedAny = true;
+    const btn = document.querySelector(`.acc-summary[aria-controls="${body.id}"]`);
+    if (btn) btn.setAttribute("aria-expanded", "true");
+  });
+  if (expandedAny) renderOverviewAccordion(computeOverviewData());
 }
 function renderOverviewNarrativa(data) {
   document.getElementById("narrativaPeriodTag").textContent = periodRangeLabel();
@@ -2681,8 +2729,11 @@ function renderAnalytics() {
     strip.appendChild(box);
   }
 
+  document.getElementById("hourlyRangeTag").textContent = periodRangeLabel();
+  document.getElementById("categoryCompareRangeTag").textContent = periodRangeLabel();
+
   const hourly = new Array(24).fill(0);
-  for (const t of fullTxs) { if (t.type === "outcome") hourly[t.date.getHours()] += t.value; }
+  for (const t of periodTxs) { if (t.type === "outcome") hourly[t.date.getHours()] += t.value; }
   renderChart("chartHourly", {
     type: "bar",
     data: { labels: hourly.map((_, h) => h + "h"), datasets: [{ label: "Uscite", data: hourly, backgroundColor: cssVar("--secondary"), borderRadius: 4 }] },
@@ -2690,7 +2741,7 @@ function renderAnalytics() {
   });
 
   const catTotals = {};
-  for (const t of fullTxs) { if (t.type !== "outcome") continue; catTotals[t.category] = (catTotals[t.category] || 0) + t.value; }
+  for (const t of periodTxs) { if (t.type !== "outcome") continue; catTotals[t.category] = (catTotals[t.category] || 0) + t.value; }
   const catArr = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
   renderChart("chartCategoryCompare", {
     type: "bar",
@@ -2739,20 +2790,12 @@ function csvEscape(v) { const s = String(v); return /[",;\n]/.test(s) ? '"' + s.
 function exportTransactionsCSV() {
   const rows = getTxFiltered();
   if (!rows.length) { alert("Nessuna transazione da esportare con i filtri correnti."); return; }
-  const lines = ["datetime,category,value,type"];
+  const lines = ["datetime,category,value,type,description"];
   for (const t of rows) {
     const iso = `${t.date.getFullYear()}-${pad2(t.date.getMonth() + 1)}-${pad2(t.date.getDate())} ${pad2(t.date.getHours())}:${pad2(t.date.getMinutes())}`;
-    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type].join(","));
+    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type, csvEscape(t.description || "")].join(","));
   }
-  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `transazioni_export_${Date.now()}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  downloadCSV(lines.join("\n"), `transazioni_export_${Date.now()}.csv`);
 }
 function renderTransactions() {
   const tbody = document.querySelector("#txTable tbody");
@@ -2808,8 +2851,23 @@ function renderTransactions() {
 }
 
 // ---------------------------------------------------------------- modal
+let lastFocusedBeforeModal = null;
+function restoreFocusAfterModal() {
+  if (lastFocusedBeforeModal && document.body.contains(lastFocusedBeforeModal)) lastFocusedBeforeModal.focus();
+  lastFocusedBeforeModal = null;
+}
+function trapFocusInModal(modalEl, e) {
+  if (e.key !== "Tab") return;
+  const focusables = Array.from(modalEl.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+    .filter((el) => el.offsetParent !== null);
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
 let modalTx = null;
 function openTxModal(t) {
+  lastFocusedBeforeModal = document.activeElement;
   modalTx = t;
   document.getElementById("mxIcon").textContent = catIcon(t.category);
   document.getElementById("mxAmount").textContent = (t.type === "income" ? "+" : "-") + fmtCurrency(t.value, 2);
@@ -2821,24 +2879,61 @@ function openTxModal(t) {
   document.getElementById("mxId").textContent = t.id;
   const descRow = document.getElementById("mxDescRow");
   if (t.description) {
-    document.getElementById("mxDesc").textContent = t.description + (t.autoCategorized ? " (categoria assegnata automaticamente)" : "");
+    let suffix = "";
+    if (t.autoCategorized && t.matchedKeyword) suffix = ` (categoria assegnata automaticamente per la parola chiave "${t.matchedKeyword}")`;
+    else if (t.autoCategorized) suffix = " (categoria assegnata automaticamente)";
+    document.getElementById("mxDesc").textContent = t.description + suffix;
     descRow.classList.remove("hidden");
   } else {
     descRow.classList.add("hidden");
   }
   document.getElementById("txModal").classList.remove("hidden");
+  requestAnimationFrame(() => document.getElementById("mxCategorySelect").focus());
 }
-function closeTxModal() { document.getElementById("txModal").classList.add("hidden"); modalTx = null; }
+function closeTxModal() {
+  document.getElementById("txModal").classList.add("hidden");
+  modalTx = null;
+  restoreFocusAfterModal();
+}
 function saveTxCategoryFromModal() {
   if (!modalTx) return;
   const newCat = document.getElementById("mxCategorySelect").value;
   if (newCat !== modalTx.category) {
+    const desc = modalTx.description;
+    let propagatedCount = 0;
+    if (desc) {
+      for (const t of state.transactions) {
+        if (t.id !== modalTx.id && t.description === desc && t.category !== newCat) {
+          t.category = newCat;
+          t.autoCategorized = false;
+          t.matchedKeyword = null;
+          propagatedCount++;
+        }
+      }
+    }
     modalTx.category = newCat;
     modalTx.autoCategorized = false;
+    modalTx.matchedKeyword = null;
+    let newRuleKeyword = null;
+    if (desc) {
+      const keyword = desc.split(/\s+/)[0];
+      if (keyword && !state.merchantRules.some((r) => normalizeForMatch(r.keyword) === normalizeForMatch(keyword))) {
+        state.merchantRules.unshift({ keyword, category: newCat });
+        saveMerchantRules();
+        renderRuleEditor();
+        newRuleKeyword = keyword;
+      }
+    }
     ensureBudgetKeysForTransactions();
     persistTransactions();
     populateCategoryFilters();
     renderTab(state.activeTab);
+    if (propagatedCount || newRuleKeyword) {
+      const parts = [];
+      if (propagatedCount) parts.push(`aggiornate altre ${propagatedCount} transazioni con lo stesso esercente`);
+      if (newRuleKeyword) parts.push(`aggiunta la regola "${newRuleKeyword}" → ${newCat} al dizionario`);
+      alert("Categoria salvata: " + parts.join(" e ") + ".");
+    }
   }
   closeTxModal();
 }
@@ -2874,13 +2969,69 @@ function renderBudgetEditor() {
     editor.appendChild(row);
   }
 }
+function populateCategoryRenameSelect() {
+  const sel = document.getElementById("categoryRenameFrom");
+  const current = sel.value;
+  const cats = getAllCategories().filter((c) => c !== NEEDS_CATEGORY).sort((a, b) => a.localeCompare(b));
+  sel.innerHTML = "";
+  for (const c of cats) {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = `${catIcon(c)} ${c}`;
+    sel.appendChild(opt);
+  }
+  if (cats.includes(current)) sel.value = current;
+}
+function renameCategory() {
+  const from = document.getElementById("categoryRenameFrom").value;
+  const to = document.getElementById("categoryRenameTo").value.trim();
+  if (!from) return;
+  if (!to) { alert("Inserisci il nuovo nome della categoria."); return; }
+  if (to === from) { alert("Il nuovo nome è identico a quello attuale."); return; }
+  const merging = getAllCategories().includes(to);
+  const msg = merging
+    ? `Unire "${from}" in "${to}"? Tutte le transazioni, il budget e le regole del dizionario verranno spostati su "${to}" e "${from}" verrà rimossa.`
+    : `Rinominare "${from}" in "${to}"? Verranno aggiornate tutte le transazioni, il budget e le regole del dizionario.`;
+  if (!confirm(msg)) return;
+
+  let txCount = 0;
+  for (const t of state.transactions) { if (t.category === from) { t.category = to; txCount++; } }
+
+  if (from in state.budgets) {
+    const oldBudget = state.budgets[from];
+    delete state.budgets[from];
+    if (!merging || !(to in state.budgets)) state.budgets[to] = oldBudget;
+  }
+
+  let ruleCount = 0;
+  for (const r of state.merchantRules) { if (r.category === from) { r.category = to; ruleCount++; } }
+
+  persistTransactions();
+  saveBudgets();
+  saveMerchantRules();
+  ensureBudgetKeysForTransactions();
+  populateCategoryFilters();
+  populateCategoryRenameSelect();
+  document.getElementById("categoryRenameTo").value = "";
+  renderBudgetEditor();
+  renderRuleEditor();
+  renderTab(state.activeTab);
+  alert(`Fatto: ${txCount} transazioni e ${ruleCount} regole del dizionario aggiornate.`);
+}
 function openSettings() {
+  lastFocusedBeforeModal = document.activeElement;
   renderBudgetEditor();
   renderRuleEditor();
   renderReviewSection();
+  populateCategoryRenameSelect();
+  document.getElementById("savingsGoalInput").value = Math.round(state.savingsGoal * 100);
   document.getElementById("settingsModal").classList.remove("hidden");
+  requestAnimationFrame(() => document.getElementById("closeSettings").focus());
 }
-function closeSettings() { document.getElementById("settingsModal").classList.add("hidden"); cancelRuleEdit(); }
+function closeSettings() {
+  document.getElementById("settingsModal").classList.add("hidden");
+  cancelRuleEdit();
+  restoreFocusAfterModal();
+}
 function saveBudgetsFromModal() {
   const inputs = document.querySelectorAll("#budgetEditor input");
   inputs.forEach((inp) => { state.budgets[inp.dataset.category] = Math.max(0, parseFloat(inp.value) || 0); });
@@ -2990,7 +3141,7 @@ function exportDictionaryCSV() {
   downloadCSV(lines.join("\n"), `dizionario_categorie_${Date.now()}.csv`);
 }
 function downloadDictionarySample() {
-  const sample = "keyword,category\nESSELUNGA,Groceries\nFARMACIA,Healthcare\nJYO JAPANESE RESTAURAN,Dining Out\n";
+  const sample = "keyword,category\nESSELUNGA,Spesa Alimentare\nFARMACIA,Salute\nJYO JAPANESE RESTAURAN,Ristoranti\n";
   downloadCSV(sample, "esempio_dizionario_categorie.csv");
 }
 function downloadCSV(text, filename) {
@@ -3152,6 +3303,9 @@ function showWelcomeError(msg) {
   box.classList.remove("hidden");
 }
 function hideWelcomeError() { document.getElementById("welcomeError").classList.add("hidden"); }
+function warnIfMultipleFiles(fileList) {
+  if (fileList.length > 1) alert(`Hai selezionato ${fileList.length} file: verrà elaborato solo il primo (${fileList[0].name}).`);
+}
 function handleFile(file, mode) {
   const isAppend = mode === "append";
   if (!isAppend) hideWelcomeError();
@@ -3254,27 +3408,29 @@ function init() {
   chartTheme();
   loadBudgets();
   loadMerchantRules();
+  loadSavingsGoal();
 
   const dropzone = document.getElementById("dropzone");
   const fileInput = document.getElementById("fileInput");
   dropzone.addEventListener("click", () => fileInput.click());
   dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } });
   document.getElementById("btnBrowse").addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFile(e.target.files[0], "replace"); });
+  fileInput.addEventListener("change", (e) => { if (e.target.files[0]) { warnIfMultipleFiles(e.target.files); handleFile(e.target.files[0], "replace"); } });
   dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("dragover"); });
   dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
   dropzone.addEventListener("drop", (e) => {
     e.preventDefault(); dropzone.classList.remove("dragover");
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], "replace");
+    if (e.dataTransfer.files[0]) { warnIfMultipleFiles(e.dataTransfer.files); handleFile(e.dataTransfer.files[0], "replace"); }
   });
   document.getElementById("btnSample").addEventListener("click", loadSampleData);
   document.getElementById("btnNewCsv").addEventListener("click", resetToWelcome);
   document.getElementById("btnPrint").addEventListener("click", () => window.print());
+  window.addEventListener("beforeprint", expandAccordionForPrint);
 
   const addCsvFileInput = document.getElementById("addCsvFileInput");
   document.getElementById("btnAddCsv").addEventListener("click", () => addCsvFileInput.click());
   addCsvFileInput.addEventListener("change", (e) => {
-    if (e.target.files[0]) handleFile(e.target.files[0], "append");
+    if (e.target.files[0]) { warnIfMultipleFiles(e.target.files); handleFile(e.target.files[0], "append"); }
     addCsvFileInput.value = "";
   });
 
@@ -3286,8 +3442,8 @@ function init() {
     updateFilterSummary();
     renderTab(state.activeTab);
   });
-  document.getElementById("filterCustomStart").addEventListener("change", (e) => { state.filters.customStart = e.target.value || null; updateFilterSummary(); renderTab(state.activeTab); });
-  document.getElementById("filterCustomEnd").addEventListener("change", (e) => { state.filters.customEnd = e.target.value || null; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCustomStart").addEventListener("change", (e) => { state.filters.customStart = e.target.value || null; validateCustomRange(); updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCustomEnd").addEventListener("change", (e) => { state.filters.customEnd = e.target.value || null; validateCustomRange(); updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterType").addEventListener("change", (e) => { state.filters.type = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("btnResetFilters").addEventListener("click", () => {
@@ -3298,6 +3454,7 @@ function init() {
     document.getElementById("filterCustomStart").value = "";
     document.getElementById("filterCustomEnd").value = "";
     document.getElementById("filterCustomRangeField").classList.add("hidden");
+    document.getElementById("customRangeWarning").classList.add("hidden");
     updateFilterSummary();
     renderTab(state.activeTab);
   });
@@ -3331,6 +3488,7 @@ function init() {
   document.getElementById("btnSaveTxCategory").addEventListener("click", saveTxCategoryFromModal);
   document.getElementById("btnDeleteTx").addEventListener("click", deleteTxFromModal);
   document.getElementById("txModal").addEventListener("click", (e) => { if (e.target.id === "txModal") closeTxModal(); });
+  document.getElementById("txModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("txModal"), e));
 
   document.getElementById("btnSettings").addEventListener("click", openSettings);
   document.getElementById("btnEditBudgets").addEventListener("click", openSettings);
@@ -3348,8 +3506,17 @@ function init() {
   });
   document.getElementById("closeSettings").addEventListener("click", closeSettings);
   document.getElementById("settingsModal").addEventListener("click", (e) => { if (e.target.id === "settingsModal") closeSettings(); });
+  document.getElementById("settingsModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("settingsModal"), e));
   document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
   document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
+  document.getElementById("btnSaveSavingsGoal").addEventListener("click", () => {
+    const val = parseFloat(document.getElementById("savingsGoalInput").value);
+    if (isNaN(val) || val < 0 || val > 100) { alert("Inserisci una percentuale tra 0 e 100."); return; }
+    saveSavingsGoal(val / 100);
+    renderTab(state.activeTab);
+    alert("Obiettivo di risparmio aggiornato.");
+  });
+  document.getElementById("btnRenameCategory").addEventListener("click", renameCategory);
   document.getElementById("btnAddRule").addEventListener("click", addRuleFromForm);
   document.getElementById("btnCancelRuleEdit").addEventListener("click", cancelRuleEdit);
   document.getElementById("ruleSearch").addEventListener("input", renderRuleEditor);
@@ -3359,7 +3526,7 @@ function init() {
   const dictFileInput = document.getElementById("dictionaryFileInput");
   document.getElementById("btnImportDictionary").addEventListener("click", () => dictFileInput.click());
   dictFileInput.addEventListener("change", (e) => {
-    if (e.target.files[0]) importDictionaryCSV(e.target.files[0]);
+    if (e.target.files[0]) { warnIfMultipleFiles(e.target.files); importDictionaryCSV(e.target.files[0]); }
     dictFileInput.value = "";
   });
 
