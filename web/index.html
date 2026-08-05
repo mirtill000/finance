@@ -16,13 +16,13 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --primary: #00ff88;
-  --primary-dark: #0aa860;
-  --secondary: #00b8ff;
-  --accent: #ff6b35;
-  --warning: #ffaa00;
-  --danger: #ff4757;
-  --purple: #a855f7;
+  --primary: #4fd1a5;
+  --primary-dark: #2f9d78;
+  --secondary: #4ea8de;
+  --accent: #e08e5b;
+  --warning: #e0a838;
+  --danger: #e0707a;
+  --purple: #b48ee0;
   --background: #0a0f1a;
   --card: #111827;
   --card2: #161f2e;
@@ -40,13 +40,13 @@
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 :root[data-theme="light"] {
-  --primary: #15803d;
-  --primary-dark: #0f5c2c;
-  --secondary: #0369a1;
-  --accent: #c2410c;
-  --warning: #b45309;
-  --danger: #dc2626;
-  --purple: #7e22ce;
+  --primary: #2f855a;
+  --primary-dark: #1f6845;
+  --secondary: #2b6cb0;
+  --accent: #b56a3a;
+  --warning: #9a6324;
+  --danger: #c53030;
+  --purple: #6b46c1;
   --background: #f1f4f9;
   --card: #ffffff;
   --card2: #eef1f6;
@@ -89,8 +89,8 @@ button, input, select { font-family: inherit; }
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(circle at 20% 15%, rgba(0,255,136,0.07), transparent 45%),
-    radial-gradient(circle at 80% 85%, rgba(0,184,255,0.07), transparent 45%),
+    radial-gradient(circle at 20% 15%, rgba(79,209,165,0.07), transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(78,168,222,0.07), transparent 45%),
     var(--background);
 }
 .welcome-card {
@@ -125,7 +125,7 @@ button, input, select { font-family: inherit; }
 }
 .dropzone.dragover {
   border-color: var(--primary);
-  background: rgba(0,255,136,0.06);
+  background: rgba(79,209,165,0.06);
 }
 .dropzone .dz-icon { font-size: 34px; margin-bottom: 10px; }
 .dropzone .dz-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
@@ -138,8 +138,8 @@ button, input, select { font-family: inherit; }
 .welcome-actions { display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .welcome-error {
   margin-top: 16px;
-  background: rgba(255,71,87,0.1);
-  border: 1px solid rgba(255,71,87,0.4);
+  background: rgba(224,112,122,0.1);
+  border: 1px solid rgba(224,112,122,0.4);
   color: var(--danger);
   padding: 10px 14px;
   border-radius: 8px;
@@ -182,7 +182,7 @@ button, input, select { font-family: inherit; }
 .btn-link { background: transparent; border: none; color: var(--text-muted); text-decoration: underline; font-size: 12.5px; padding: 4px; }
 .btn-link:hover { color: var(--text); }
 .btn-danger-outline { background: transparent; border-color: var(--danger); color: var(--danger); }
-.btn-danger-outline:hover { background: rgba(255,71,87,0.1); }
+.btn-danger-outline:hover { background: rgba(224,112,122,0.1); }
 .btn-sm { padding: 6px 10px; font-size: 12px; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -209,6 +209,8 @@ button, input, select { font-family: inherit; }
   padding: 7px 10px; border-radius: 7px; font-size: 12.5px; min-width: 140px;
 }
 .filter-field select:focus, .filter-field input:focus { outline: 1.5px solid var(--secondary); }
+.custom-range-row { display: flex; gap: 6px; }
+.custom-range-row input { min-width: 0; flex: 1; }
 
 /* ===================== app shell: sidebar layout ===================== */
 .app-shell { display: flex; align-items: flex-start; }
@@ -304,6 +306,7 @@ button, input, select { font-family: inherit; }
 .metric-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 700; margin-bottom: 8px; }
 .metric-value { font-family: var(--font-mono); font-size: 24px; font-weight: 800; }
 .metric-sub { margin-top: 6px; font-size: 11.5px; color: var(--text-muted); }
+.metric-trend { margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--text-muted); }
 .pos { color: var(--primary); }
 .neg { color: var(--danger); }
 .warn { color: var(--warning); }
@@ -339,13 +342,13 @@ button, input, select { font-family: inherit; }
 .insight .ic { font-size: 16px; line-height: 1; }
 .insight .txt strong { display: block; font-size: 12.5px; margin-bottom: 2px; }
 .insight .txt span.action { display: block; margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
-.insight.danger { border-color: rgba(255,71,87,0.4); }
+.insight.danger { border-color: rgba(224,112,122,0.4); }
 .insight.danger .ic { color: var(--danger); }
-.insight.warning { border-color: rgba(255,170,0,0.4); }
+.insight.warning { border-color: rgba(224,168,56,0.4); }
 .insight.warning .ic { color: var(--warning); }
-.insight.success { border-color: rgba(0,255,136,0.35); }
+.insight.success { border-color: rgba(79,209,165,0.35); }
 .insight.success .ic { color: var(--primary); }
-.insight.info { border-color: rgba(0,184,255,0.35); }
+.insight.info { border-color: rgba(78,168,222,0.35); }
 .insight.info .ic { color: var(--secondary); }
 
 /* ===================== lists / tx rows ===================== */
@@ -363,14 +366,14 @@ button, input, select { font-family: inherit; }
 
 /* ===================== badges ===================== */
 .badge { display: inline-block; padding: 3px 9px; border-radius: 100px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.2px; text-transform: uppercase; }
-.badge.income { background: rgba(0,255,136,0.14); color: var(--primary); }
-.badge.outcome { background: rgba(255,71,87,0.14); color: var(--danger); }
+.badge.income { background: rgba(79,209,165,0.14); color: var(--primary); }
+.badge.outcome { background: rgba(224,112,122,0.14); color: var(--danger); }
 .tx-desc-hint { font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
 
 /* ===================== alert box ===================== */
 .alert-banner { margin: 0 0 16px; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; border: 1px solid var(--border); }
-.alert-banner.over { background: rgba(255,71,87,0.1); color: #ffb3b8; }
-.alert-banner.ok { background: rgba(0,255,136,0.08); color: #a7f3d3; }
+.alert-banner.over { background: rgba(224,112,122,0.1); color: #eeb2b8; }
+.alert-banner.ok { background: rgba(79,209,165,0.08); color: #b6e4d2; }
 
 /* ===================== simulator ===================== */
 .sim-layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; margin-bottom: 16px; }
@@ -399,8 +402,11 @@ button, input, select { font-family: inherit; }
 .sim-item .si-name { font-weight: 700; }
 .sim-item .si-meta { color: var(--text-muted); font-size: 11px; }
 .sim-item .si-amt { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
-.sim-item .si-remove { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px; padding: 2px 6px; }
+.sim-item .si-actions { display: flex; gap: 2px; }
+.sim-item .si-edit, .sim-item .si-remove { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 2px 6px; }
+.sim-item .si-edit:hover { color: var(--secondary); }
 .sim-item .si-remove:hover { color: var(--danger); }
+.sim-form-actions { display: flex; gap: 8px; }
 .sim-empty { color: var(--text-muted); font-size: 12.5px; padding: 18px 10px; text-align: center; border: 1px dashed var(--border); border-radius: 9px; }
 
 /* ===================== table ===================== */
@@ -428,6 +434,13 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .modal-box .mx-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px; }
 .modal-box .mx-amount { text-align: center; font-family: var(--font-mono); font-size: 26px; font-weight: 800; margin-bottom: 4px; }
 .modal-box .mx-cat { text-align: center; font-weight: 700; margin-bottom: 16px; }
+.mx-cat-edit { margin-bottom: 16px; }
+.mx-field-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; text-align: center; }
+.mx-cat-edit select {
+  width: 100%; background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 700; text-align: center;
+}
+.mx-actions-right { display: flex; gap: 8px; }
 .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
 .modal-grid .mi { background: var(--card2); border-radius: 8px; padding: 9px 11px; }
 .modal-grid .mi .ml { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 3px; }
@@ -446,16 +459,25 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .budget-edit-row label { font-size: 12.5px; display: flex; align-items: center; gap: 6px; }
 .budget-edit-row input { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 7px 9px; border-radius: 7px; font-family: var(--font-mono); font-size: 12.5px; text-align: right; }
 .budget-edit-row.unset label { color: var(--warning); }
-.budget-edit-row .unset-badge { font-size: 9.5px; text-transform: uppercase; background: rgba(255,170,0,0.15); color: var(--warning); padding: 1px 6px; border-radius: 100px; }
+.budget-edit-row .unset-badge { font-size: 9.5px; text-transform: uppercase; background: rgba(224,168,56,0.15); color: var(--warning); padding: 1px 6px; border-radius: 100px; }
 
 /* ===================== merchant rules dictionary ===================== */
+.rule-search-row { margin-bottom: 8px; }
+.rule-search-row input {
+  width: 100%; background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 10px; border-radius: 7px; font-size: 12.5px;
+}
 .rule-editor { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; padding-right: 4px; }
-.rule-row { display: grid; grid-template-columns: 1fr 150px 28px; align-items: center; gap: 8px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.rule-row { display: grid; grid-template-columns: 1fr 150px 52px; align-items: center; gap: 8px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
 .rule-row .rk { font-family: var(--font-mono); color: var(--text); }
 .rule-row .rc { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
-.rule-row .rm { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; }
-.rule-row .rm:hover { color: var(--danger); }
-.rule-add-row { display: grid; grid-template-columns: 1fr 150px auto; gap: 8px; align-items: center; margin-bottom: 4px; }
+.rule-row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+.rule-row-actions button { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 2px; }
+.rule-row-actions .re:hover { color: var(--secondary); }
+.rule-row-actions .rm:hover { color: var(--danger); }
+.rule-add-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 4px; }
+.rule-add-row input { flex: 1 1 160px; }
+.rule-add-row select { flex: 0 1 150px; }
 .rule-add-row input, .rule-add-row select {
   background: var(--card2); border: 1px solid var(--border); color: var(--text);
   padding: 8px 10px; border-radius: 7px; font-size: 12.5px;
@@ -467,7 +489,7 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .review-list { display: flex; flex-direction: column; gap: 8px; }
 .review-row {
   display: grid; grid-template-columns: 1fr 140px auto; gap: 8px; align-items: center;
-  padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,170,0,0.05);
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: rgba(224,168,56,0.05);
 }
 .review-row .rv-desc { font-size: 12px; font-weight: 600; }
 .review-row .rv-count { font-size: 10.5px; color: var(--text-muted); font-weight: 400; }
@@ -590,7 +612,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       </select>
       <button id="btnPrint" class="btn btn-ghost btn-sm" type="button" title="Stampa o esporta il tab corrente in PDF">🖨️ Stampa/PDF</button>
       <button id="btnSettings" class="btn btn-ghost btn-sm" type="button">⚙ Impostazioni</button>
-      <button id="btnNewCsv" class="btn btn-ghost btn-sm" type="button">🔄 Nuovo CSV</button>
+      <button id="btnAddCsv" class="btn btn-ghost btn-sm" type="button" title="Aggiungi le transazioni di un altro CSV a quelle già caricate">➕ Aggiungi CSV</button>
+      <input type="file" id="addCsvFileInput" accept=".csv,text/csv" hidden>
+      <button id="btnNewCsv" class="btn btn-ghost btn-sm" type="button" title="Cancella tutti i dati e ricomincia da capo">🔄 Nuovo CSV</button>
     </div>
   </header>
 
@@ -603,7 +627,15 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="month" selected>Questo Mese</option>
         <option value="quarter">Questo Trimestre</option>
         <option value="year">Quest'Anno</option>
+        <option value="custom">Intervallo personalizzato…</option>
       </select>
+    </div>
+    <div class="filter-field hidden" id="filterCustomRangeField">
+      <label for="filterCustomStart">Dal / Al</label>
+      <div class="custom-range-row">
+        <input type="date" id="filterCustomStart" aria-label="Data inizio">
+        <input type="date" id="filterCustomEnd" aria-label="Data fine">
+      </div>
     </div>
     <div class="filter-field">
       <label for="filterCategory">Categoria</label>
@@ -628,10 +660,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
   <div class="app-shell">
   <nav class="sidebar" role="tablist" aria-label="Sezioni della dashboard">
-    <button id="tabbtn-overview" class="side-nav-item active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="tab-overview"><span class="sni-icon" aria-hidden="true">📊</span><span class="sni-label">Overview</span></button>
-    <button id="tabbtn-simulator" class="side-nav-item" data-tab="simulator" type="button" role="tab" aria-selected="false" aria-controls="tab-simulator"><span class="sni-icon" aria-hidden="true">🧪</span><span class="sni-label">Simulatore</span></button>
-    <button id="tabbtn-analytics" class="side-nav-item" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics"><span class="sni-icon" aria-hidden="true">📈</span><span class="sni-label">Analytics</span></button>
-    <button id="tabbtn-transactions" class="side-nav-item" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions"><span class="sni-icon" aria-hidden="true">📋</span><span class="sni-label">Transazioni</span></button>
+    <button id="tabbtn-overview" class="side-nav-item active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="tab-overview" title="Overview"><span class="sni-icon" aria-hidden="true">📊</span><span class="sni-label">Overview</span></button>
+    <button id="tabbtn-simulator" class="side-nav-item" data-tab="simulator" type="button" role="tab" aria-selected="false" aria-controls="tab-simulator" title="Simulatore"><span class="sni-icon" aria-hidden="true">🧪</span><span class="sni-label">Simulatore</span></button>
+    <button id="tabbtn-analytics" class="side-nav-item" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics" title="Analytics"><span class="sni-icon" aria-hidden="true">📈</span><span class="sni-label">Analytics</span></button>
+    <button id="tabbtn-transactions" class="side-nav-item" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions" title="Transazioni"><span class="sni-icon" aria-hidden="true">📋</span><span class="sni-label">Transazioni</span></button>
   </nav>
 
   <div class="app-main">
@@ -694,6 +726,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
           <div class="metric-label">Saldo Netto <span class="panel-tag" id="prioritaPeriodTag"></span></div>
           <div class="hero-value" id="prioritaHeroValue">€0</div>
           <div class="metric-sub" id="prioritaHeroSub"></div>
+          <div class="metric-trend" id="prioritaHeroTrend"></div>
         </div>
         <div class="hero-spark chart-box"><canvas id="chartHeroSpark"></canvas></div>
       </div>
@@ -856,7 +889,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
           <label for="simStartMonth">Mese di inizio</label>
           <select id="simStartMonth"></select>
         </div>
-        <button id="btnAddSim" class="btn btn-primary" type="button" style="justify-content:center;">➕ Aggiungi Simulazione</button>
+        <div class="sim-form-actions">
+          <button id="btnAddSim" class="btn btn-primary" type="button" style="justify-content:center; flex:1;">➕ Aggiungi Simulazione</button>
+          <button id="btnCancelSimEdit" class="btn btn-ghost hidden" type="button">Annulla</button>
+        </div>
 
         <h3 style="margin-top:6px;">Preset Rapidi</h3>
         <div class="preset-grid" id="presetGrid"></div>
@@ -980,7 +1016,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   <div class="modal-box">
     <div class="mx-icon" id="mxIcon">💳</div>
     <div class="mx-amount" id="mxAmount">€0</div>
-    <div class="mx-cat" id="mxCat">Categoria</div>
+    <div class="mx-cat-edit">
+      <label for="mxCategorySelect" class="mx-field-label">Categoria</label>
+      <select id="mxCategorySelect"></select>
+    </div>
     <div class="modal-grid">
       <div class="mi"><div class="ml">Data</div><div class="mv" id="mxDate">-</div></div>
       <div class="mi"><div class="ml">Ora</div><div class="mv" id="mxTime">-</div></div>
@@ -988,7 +1027,13 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="mi"><div class="ml">ID Transazione</div><div class="mv" id="mxId">-</div></div>
       <div class="mi hidden" id="mxDescRow" style="grid-column: 1 / -1;"><div class="ml">Descrizione originale</div><div class="mv" id="mxDesc" style="font-family:var(--font-main); font-weight:600;">-</div></div>
     </div>
-    <div class="modal-close-row"><button id="btnCloseModal" class="btn btn-ghost btn-sm" type="button">Chiudi</button></div>
+    <div class="modal-close-row-split">
+      <button id="btnDeleteTx" class="btn-danger-outline btn-sm" type="button">🗑 Elimina</button>
+      <div class="mx-actions-right">
+        <button id="btnSaveTxCategory" class="btn btn-primary btn-sm" type="button">💾 Salva categoria</button>
+        <button id="btnCloseModal" class="btn btn-ghost btn-sm" type="button">Chiudi</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1009,14 +1054,21 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
       <h4>🔮 Dizionario categorie (matching automatico)</h4>
       <p class="modal-lead">Quando importi un CSV con una colonna descrizione/esercente ma senza categoria, il testo viene confrontato con queste parole chiave (case-insensitive) per assegnare automaticamente una categoria.</p>
+      <div class="rule-search-row">
+        <label for="ruleSearch" class="sr-only">Cerca nel dizionario</label>
+        <input type="text" id="ruleSearch" placeholder="🔎 Cerca per parola chiave o categoria...">
+      </div>
       <div id="ruleEditor" class="rule-editor"></div>
       <div class="rule-add-row">
         <input type="text" id="newRuleKeyword" placeholder="Parola chiave, es. ESSELUNGA">
         <select id="newRuleCategory"></select>
         <button id="btnAddRule" class="btn btn-primary btn-sm" type="button">+ Aggiungi</button>
+        <button id="btnCancelRuleEdit" class="btn-ghost btn-sm hidden" type="button">Annulla</button>
       </div>
       <div class="rule-import-row">
         <button id="btnImportDictionary" class="btn-ghost btn-sm" type="button">📂 Importa da CSV</button>
+        <button id="btnExportDictionary" class="btn-ghost btn-sm" type="button">⬇️ Esporta CSV</button>
+        <button id="btnDownloadDictionarySample" class="btn-link" type="button">Scarica esempio</button>
         <input type="file" id="dictionaryFileInput" accept=".csv,text/csv" hidden>
         <span class="muted">Colonne attese: <code>keyword,category</code> (con o senza intestazione) — le parole chiave già presenti vengono aggiornate.</span>
       </div>
@@ -1715,11 +1767,11 @@ const DEFAULT_MERCHANT_RULES = [
 ];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 const MONTH_NAMES = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
-const CHART_PALETTE = ["#00ff88", "#00b8ff", "#ff6b35", "#a855f7", "#ffaa00", "#ff4757", "#34d399", "#60a5fa", "#f472b6", "#fbbf24", "#2dd4bf", "#c084fc", "#f87171"];
+const CHART_PALETTE = ["#4fd1a5", "#4ea8de", "#e08e5b", "#b48ee0", "#e0a838", "#e0707a", "#7dd6b0", "#8bb8e8", "#e08ab0", "#e8c165", "#6bc9bd", "#c9a8ec", "#e08888"];
 const LS_KEY = "ffdpro_transactions_v1";
 const LS_BUDGETS_KEY = "ffdpro_budgets_v1";
 const LS_RULES_KEY = "ffdpro_merchant_rules_v1";
-const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno" };
+const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
 
 const PRESETS = [
   { icon: "🏋️", name: "Abbonamento Palestra", amount: 45, type: "expense", frequency: "monthly", duration: 12 },
@@ -1736,7 +1788,7 @@ const state = {
   transactions: [],
   budgets: {},
   merchantRules: [],
-  filters: { period: "month", category: "all", type: "all" },
+  filters: { period: "month", category: "all", type: "all", customStart: null, customEnd: null },
   simulations: [],
   charts: {},
   txSort: { field: "date", dir: "desc" },
@@ -1994,7 +2046,21 @@ function getPeriodRange() {
   if (period === "year") {
     return [new Date(anchor.getFullYear(), 0, 1), new Date(anchor.getFullYear(), 11, 31, 23, 59, 59, 999)];
   }
+  if (period === "custom") {
+    const start = state.filters.customStart ? new Date(state.filters.customStart + "T00:00:00") : null;
+    const end = state.filters.customEnd ? new Date(state.filters.customEnd + "T23:59:59.999") : null;
+    return [start && !isNaN(start) ? start : null, end && !isNaN(end) ? end : null];
+  }
   return [null, null];
+}
+function periodRangeLabel() {
+  const label = periodLabel();
+  if (!state.transactions.length) return label;
+  const [start, end] = getPeriodRange();
+  if (!start && !end) return label;
+  const startTxt = start ? fmtDateFull(start) : "…";
+  const endTxt = end ? fmtDateFull(end) : "…";
+  return `${label} (${startTxt} → ${endTxt})`;
 }
 function getCategoryTypeFiltered() {
   return state.transactions.filter((t) =>
@@ -2007,6 +2073,39 @@ function getPeriodFiltered() {
   return getCategoryTypeFiltered().filter((t) => (!start || t.date >= start) && (!end || t.date <= end));
 }
 function periodLabel() { return PERIOD_LABELS[state.filters.period] || "Tutto"; }
+function getPreviousPeriodRange() {
+  const period = state.filters.period;
+  const [start, end] = getPeriodRange();
+  if (!start || !end) return [null, null];
+  if (period === "week") {
+    const pStart = new Date(start); pStart.setDate(pStart.getDate() - 7);
+    const pEnd = new Date(end); pEnd.setDate(pEnd.getDate() - 7);
+    return [pStart, pEnd];
+  }
+  if (period === "month") {
+    return [new Date(start.getFullYear(), start.getMonth() - 1, 1), new Date(start.getFullYear(), start.getMonth(), 0, 23, 59, 59, 999)];
+  }
+  if (period === "quarter") {
+    return [new Date(start.getFullYear(), start.getMonth() - 3, 1), new Date(start.getFullYear(), start.getMonth(), 0, 23, 59, 59, 999)];
+  }
+  if (period === "year") {
+    return [new Date(start.getFullYear() - 1, 0, 1), new Date(start.getFullYear() - 1, 11, 31, 23, 59, 59, 999)];
+  }
+  // custom range (or anything else bounded): use an equal-length immediately preceding window
+  const durationMs = end.getTime() - start.getTime() + 1;
+  return [new Date(start.getTime() - durationMs), new Date(start.getTime() - 1)];
+}
+function pctDelta(curr, prev) {
+  if (prev === 0) return curr === 0 ? 0 : null;
+  return (curr - prev) / Math.abs(prev);
+}
+function buildTrend(curr, prev, invert) {
+  const pct = pctDelta(curr, prev);
+  if (pct === null) return null;
+  const dir = pct > 0.0005 ? "up" : pct < -0.0005 ? "down" : "flat";
+  const favorable = dir === "flat" ? "flat" : invert ? (dir === "down" ? "good" : "bad") : (dir === "up" ? "good" : "bad");
+  return { pct, dir, favorable };
+}
 
 function computeMonthlySeries(txs) {
   const map = new Map();
@@ -2127,10 +2226,19 @@ function computeOverviewData() {
   const net = income - outcome;
   const savingsRate = income > 0 ? net / income : 0;
   const forecast = computeForecastNextMonth();
+  const [prevStart, prevEnd] = getPreviousPeriodRange();
+  let trendNet = null, trendIncome = null, trendOutcome = null;
+  if (prevStart && prevEnd) {
+    const prevTxs = getCategoryTypeFiltered().filter((t) => t.date >= prevStart && t.date <= prevEnd);
+    const prevIncome = sumBy(prevTxs, "income"), prevOutcome = sumBy(prevTxs, "outcome");
+    trendNet = buildTrend(net, prevIncome - prevOutcome, false);
+    trendIncome = buildTrend(income, prevIncome, false);
+    trendOutcome = buildTrend(outcome, prevOutcome, true);
+  }
   const cards = [
-    { label: "Saldo Netto", value: fmtCurrency(net), cls: net >= 0 ? "pos" : "neg", sub: periodLabel() },
-    { label: "Entrate", value: fmtCurrency(income), cls: "pos", sub: `${periodTxs.filter((t) => t.type === "income").length} transazioni` },
-    { label: "Uscite", value: fmtCurrency(outcome), cls: "neg", sub: `${periodTxs.filter((t) => t.type === "outcome").length} transazioni` },
+    { label: "Saldo Netto", value: fmtCurrency(net), cls: net >= 0 ? "pos" : "neg", sub: periodLabel(), trend: trendNet },
+    { label: "Entrate", value: fmtCurrency(income), cls: "pos", sub: `${periodTxs.filter((t) => t.type === "income").length} transazioni`, trend: trendIncome },
+    { label: "Uscite", value: fmtCurrency(outcome), cls: "neg", sub: `${periodTxs.filter((t) => t.type === "outcome").length} transazioni`, trend: trendOutcome },
     { label: "Obiettivo", value: fmtPercent(savingsRate), cls: savingsRate >= 0.2 ? "pos" : "warn", sub: "Target: 20% di risparmio" },
     { label: "Previsione", value: fmtCurrency(forecast), cls: "acc", sub: "Saldo stimato prossimo mese" },
   ];
@@ -2143,6 +2251,11 @@ function computeOverviewData() {
   const recent = periodTxs.slice().sort((a, b) => b.date - a.date).slice(0, 8);
   return { periodTxs, income, outcome, net, savingsRate, forecast, cards, monthlySeries, budgetBreakdown, pieRows, weekly, insights, recent };
 }
+function trendHtml(trend) {
+  const cls = trend.favorable === "good" ? "pos" : trend.favorable === "bad" ? "neg" : "";
+  const arrow = trend.dir === "up" ? "▲" : trend.dir === "down" ? "▼" : "●";
+  return { cls, text: `${arrow} ${fmtPercent(Math.abs(trend.pct))} vs periodo prec.` };
+}
 function renderMetricCards(containerId, cards) {
   const grid = document.getElementById(containerId);
   if (!grid) return;
@@ -2152,6 +2265,10 @@ function renderMetricCards(containerId, cards) {
     card.appendChild(el("div", "metric-label", c.label));
     card.appendChild(el("div", "metric-value " + c.cls, c.value));
     card.appendChild(el("div", "metric-sub", c.sub));
+    if (c.trend) {
+      const t = trendHtml(c.trend);
+      card.appendChild(el("div", "metric-trend " + t.cls, t.text));
+    }
     grid.appendChild(card);
   }
 }
@@ -2253,7 +2370,7 @@ function buildNarrativeSummary(data) {
 }
 function renderOverviewClassica(data) {
   renderMetricCards("overviewMetrics", data.cards);
-  document.getElementById("pieRangeTag").textContent = periodLabel();
+  document.getElementById("pieRangeTag").textContent = periodRangeLabel();
   renderCashflowChart("chartCashflow", data.monthlySeries);
   renderCategoryPieChart("chartCategoryPie", "pieEmptyMsg", data.pieRows);
   renderWeeklyChart("chartWeekly", data.weekly);
@@ -2262,11 +2379,21 @@ function renderOverviewClassica(data) {
   renderRecentTx("recentTxList", data.recent);
 }
 function renderOverviewPriorita(data) {
-  document.getElementById("prioritaPeriodTag").textContent = periodLabel();
+  document.getElementById("prioritaPeriodTag").textContent = periodRangeLabel();
   const heroValue = document.getElementById("prioritaHeroValue");
   heroValue.textContent = fmtCurrency(data.net);
   heroValue.className = "hero-value " + (data.net >= 0 ? "pos" : "neg");
   document.getElementById("prioritaHeroSub").textContent = `${fmtCurrency(data.income)} entrate · ${fmtCurrency(data.outcome)} uscite`;
+  const netTrend = data.cards.find((c) => c.label === "Saldo Netto")?.trend;
+  const heroTrendEl = document.getElementById("prioritaHeroTrend");
+  if (netTrend) {
+    const t = trendHtml(netTrend);
+    heroTrendEl.textContent = t.text;
+    heroTrendEl.className = "metric-trend " + t.cls;
+  } else {
+    heroTrendEl.textContent = "";
+    heroTrendEl.className = "metric-trend";
+  }
   renderChart("chartHeroSpark", {
     type: "line",
     data: { labels: data.monthlySeries.map((m) => m.label), datasets: [{ data: data.monthlySeries.map((m) => m.cumulative), borderColor: cssVar("--secondary"), backgroundColor: hexToRgba(cssVar("--secondary"), 0.15), fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2 }] },
@@ -2290,7 +2417,7 @@ function renderOverviewAccordion(data) {
   renderRecentTx("recentTxListAccordion", data.recent);
 }
 function renderOverviewNarrativa(data) {
-  document.getElementById("narrativaPeriodTag").textContent = periodLabel();
+  document.getElementById("narrativaPeriodTag").textContent = periodRangeLabel();
   document.getElementById("narrativaSummary").innerHTML = buildNarrativeSummary(data);
   renderCashflowChart("chartCashflowNarrativa", data.monthlySeries);
   renderCategoryPieChart("chartCategoryPieNarrativa", null, data.pieRows);
@@ -2421,10 +2548,22 @@ function renderSimulator() {
       info.appendChild(el("div", "si-meta", `${typeLabel[sim.type]} · ${freqLabel[sim.frequency]}${sim.frequency !== "once" ? " · " + sim.duration + " mesi" : ""} · dal mese ${sim.startMonth}`));
       item.appendChild(info);
       item.appendChild(el("div", "si-amt " + (sim.type === "expense" ? "neg" : "pos"), (sim.type === "expense" ? "-" : "+") + fmtCurrency(sim.amount)));
+      const actions = el("div", "si-actions");
+      const edit = el("button", "si-edit", "✏️");
+      edit.type = "button";
+      edit.setAttribute("aria-label", `Modifica simulazione ${sim.name}`);
+      edit.addEventListener("click", () => editSimulation(sim));
       const rm = el("button", "si-remove", "✕");
       rm.type = "button";
-      rm.addEventListener("click", () => { state.simulations = state.simulations.filter((s) => s.id !== sim.id); renderSimulator(); });
-      item.appendChild(rm);
+      rm.setAttribute("aria-label", `Rimuovi simulazione ${sim.name}`);
+      rm.addEventListener("click", () => {
+        if (editingSimId === sim.id) cancelSimEdit();
+        state.simulations = state.simulations.filter((s) => s.id !== sim.id);
+        renderSimulator();
+      });
+      actions.appendChild(edit);
+      actions.appendChild(rm);
+      item.appendChild(actions);
       list.appendChild(item);
     }
   }
@@ -2463,6 +2602,45 @@ function renderSimulator() {
 }
 function addSimulation(sim) {
   state.simulations.push({ id: simIdSeq++, startMonth: 1, ...sim });
+  renderSimulator();
+}
+let editingSimId = null;
+function editSimulation(sim) {
+  editingSimId = sim.id;
+  document.getElementById("simName").value = sim.name;
+  document.getElementById("simAmount").value = sim.amount;
+  document.getElementById("simType").value = sim.type;
+  document.getElementById("simFrequency").value = sim.frequency;
+  document.getElementById("simDuration").value = sim.duration;
+  document.getElementById("simStartMonth").value = sim.startMonth;
+  document.getElementById("btnAddSim").textContent = "💾 Salva modifica";
+  document.getElementById("btnCancelSimEdit").classList.remove("hidden");
+  document.getElementById("simName").focus();
+}
+function cancelSimEdit() {
+  editingSimId = null;
+  document.getElementById("simName").value = "";
+  document.getElementById("simAmount").value = "";
+  document.getElementById("btnAddSim").textContent = "➕ Aggiungi Simulazione";
+  document.getElementById("btnCancelSimEdit").classList.add("hidden");
+}
+function saveSimulationFromForm() {
+  const name = document.getElementById("simName").value.trim() || "Simulazione";
+  const amount = parseFloat(document.getElementById("simAmount").value);
+  if (isNaN(amount) || amount <= 0) { alert("Inserisci un importo valido."); return; }
+  const type = document.getElementById("simType").value;
+  const frequency = document.getElementById("simFrequency").value;
+  const duration = clamp(parseInt(document.getElementById("simDuration").value, 10) || 12, 1, 12);
+  const startMonth = parseInt(document.getElementById("simStartMonth").value, 10) || 1;
+  if (editingSimId !== null) {
+    const sim = state.simulations.find((s) => s.id === editingSimId);
+    if (sim) Object.assign(sim, { name, amount, type, frequency, duration, startMonth });
+    cancelSimEdit();
+  } else {
+    state.simulations.push({ id: simIdSeq++, name, amount, type, frequency, duration, startMonth });
+    document.getElementById("simName").value = "";
+    document.getElementById("simAmount").value = "";
+  }
   renderSimulator();
 }
 function renderPresets() {
@@ -2630,11 +2808,13 @@ function renderTransactions() {
 }
 
 // ---------------------------------------------------------------- modal
+let modalTx = null;
 function openTxModal(t) {
+  modalTx = t;
   document.getElementById("mxIcon").textContent = catIcon(t.category);
   document.getElementById("mxAmount").textContent = (t.type === "income" ? "+" : "-") + fmtCurrency(t.value, 2);
   document.getElementById("mxAmount").style.color = t.type === "income" ? "var(--primary)" : "var(--danger)";
-  document.getElementById("mxCat").textContent = t.category;
+  populateCategorySelect(document.getElementById("mxCategorySelect"), t.category);
   document.getElementById("mxDate").textContent = fmtDateFull(t.date);
   document.getElementById("mxTime").textContent = fmtTime(t.date);
   document.getElementById("mxType").textContent = t.type === "income" ? "Entrata" : "Uscita";
@@ -2648,7 +2828,29 @@ function openTxModal(t) {
   }
   document.getElementById("txModal").classList.remove("hidden");
 }
-function closeTxModal() { document.getElementById("txModal").classList.add("hidden"); }
+function closeTxModal() { document.getElementById("txModal").classList.add("hidden"); modalTx = null; }
+function saveTxCategoryFromModal() {
+  if (!modalTx) return;
+  const newCat = document.getElementById("mxCategorySelect").value;
+  if (newCat !== modalTx.category) {
+    modalTx.category = newCat;
+    modalTx.autoCategorized = false;
+    ensureBudgetKeysForTransactions();
+    persistTransactions();
+    populateCategoryFilters();
+    renderTab(state.activeTab);
+  }
+  closeTxModal();
+}
+function deleteTxFromModal() {
+  if (!modalTx) return;
+  if (!confirm("Eliminare definitivamente questa transazione? L'operazione non può essere annullata.")) return;
+  state.transactions = state.transactions.filter((t) => t.id !== modalTx.id);
+  persistTransactions();
+  populateCategoryFilters();
+  closeTxModal();
+  renderTab(state.activeTab);
+}
 
 // ---------------------------------------------------------------- settings / budget editor
 function renderBudgetEditor() {
@@ -2678,10 +2880,10 @@ function openSettings() {
   renderReviewSection();
   document.getElementById("settingsModal").classList.remove("hidden");
 }
-function closeSettings() { document.getElementById("settingsModal").classList.add("hidden"); }
+function closeSettings() { document.getElementById("settingsModal").classList.add("hidden"); cancelRuleEdit(); }
 function saveBudgetsFromModal() {
   const inputs = document.querySelectorAll("#budgetEditor input");
-  inputs.forEach((inp) => { state.budgets[inp.dataset.category] = parseFloat(inp.value) || 0; });
+  inputs.forEach((inp) => { state.budgets[inp.dataset.category] = Math.max(0, parseFloat(inp.value) || 0); });
   saveBudgets();
   closeSettings();
   renderTab(state.activeTab);
@@ -2702,32 +2904,66 @@ function allCategoryOptions() {
 }
 function populateCategorySelect(sel, selected) {
   sel.innerHTML = "";
-  for (const c of allCategoryOptions()) {
+  const opts = allCategoryOptions();
+  if (selected && !opts.includes(selected)) opts.unshift(selected);
+  for (const c of opts) {
     const opt = document.createElement("option");
     opt.value = c; opt.textContent = `${catIcon(c)} ${c}`;
     if (c === selected) opt.selected = true;
     sel.appendChild(opt);
   }
 }
+let editingRuleRef = null;
+function editRule(rule) {
+  editingRuleRef = rule;
+  document.getElementById("newRuleKeyword").value = rule.keyword;
+  populateCategorySelect(document.getElementById("newRuleCategory"), rule.category);
+  document.getElementById("btnAddRule").textContent = "💾 Salva modifica";
+  document.getElementById("btnCancelRuleEdit").classList.remove("hidden");
+  document.getElementById("newRuleKeyword").focus();
+}
+function cancelRuleEdit() {
+  editingRuleRef = null;
+  document.getElementById("newRuleKeyword").value = "";
+  document.getElementById("btnAddRule").textContent = "+ Aggiungi";
+  document.getElementById("btnCancelRuleEdit").classList.add("hidden");
+}
 function renderRuleEditor() {
   const editor = document.getElementById("ruleEditor");
+  const query = normalizeForMatch(document.getElementById("ruleSearch").value);
   editor.innerHTML = "";
-  state.merchantRules.forEach((rule, i) => {
+  const filtered = query
+    ? state.merchantRules.filter((r) => normalizeForMatch(r.keyword).includes(query) || normalizeForMatch(r.category).includes(query))
+    : state.merchantRules;
+  for (const rule of filtered) {
     const row = el("div", "rule-row");
     row.appendChild(el("div", "rk", rule.keyword));
     row.appendChild(el("div", "rc", `${catIcon(rule.category)} ${rule.category}`));
+    const actions = el("div", "rule-row-actions");
+    const edit = el("button", "re", "✏️");
+    edit.type = "button";
+    edit.setAttribute("aria-label", `Modifica regola ${rule.keyword}`);
+    edit.addEventListener("click", () => editRule(rule));
     const rm = el("button", "rm", "✕");
     rm.type = "button";
     rm.setAttribute("aria-label", `Rimuovi regola ${rule.keyword}`);
-    rm.addEventListener("click", () => removeRule(i));
-    row.appendChild(rm);
+    rm.addEventListener("click", () => removeRule(rule));
+    actions.appendChild(edit);
+    actions.appendChild(rm);
+    row.appendChild(actions);
     editor.appendChild(row);
-  });
-  document.getElementById("ruleCount").textContent = `${state.merchantRules.length} regole`;
+  }
+  if (query && !filtered.length) editor.appendChild(el("div", "sim-empty", "Nessuna regola corrisponde alla ricerca."));
+  document.getElementById("ruleCount").textContent = query
+    ? `${filtered.length} di ${state.merchantRules.length} regole`
+    : `${state.merchantRules.length} regole`;
   populateCategorySelect(document.getElementById("newRuleCategory"));
 }
-function removeRule(index) {
-  state.merchantRules.splice(index, 1);
+function removeRule(rule) {
+  const idx = state.merchantRules.indexOf(rule);
+  if (idx === -1) return;
+  if (editingRuleRef === rule) cancelRuleEdit();
+  state.merchantRules.splice(idx, 1);
   saveMerchantRules();
   renderRuleEditor();
 }
@@ -2736,13 +2972,41 @@ function addRuleFromForm() {
   const keyword = kwInput.value.trim();
   const category = document.getElementById("newRuleCategory").value;
   if (!keyword) { alert("Inserisci una parola chiave."); return; }
-  state.merchantRules.unshift({ keyword, category });
+  if (editingRuleRef) {
+    editingRuleRef.keyword = keyword;
+    editingRuleRef.category = category;
+    cancelRuleEdit();
+  } else {
+    state.merchantRules.unshift({ keyword, category });
+    kwInput.value = "";
+  }
   saveMerchantRules();
-  kwInput.value = "";
   renderRuleEditor();
+}
+function exportDictionaryCSV() {
+  if (!state.merchantRules.length) { alert("Il dizionario è vuoto."); return; }
+  const lines = ["keyword,category"];
+  for (const r of state.merchantRules) lines.push([csvEscape(r.keyword), csvEscape(r.category)].join(","));
+  downloadCSV(lines.join("\n"), `dizionario_categorie_${Date.now()}.csv`);
+}
+function downloadDictionarySample() {
+  const sample = "keyword,category\nESSELUNGA,Groceries\nFARMACIA,Healthcare\nJYO JAPANESE RESTAURAN,Dining Out\n";
+  downloadCSV(sample, "esempio_dizionario_categorie.csv");
+}
+function downloadCSV(text, filename) {
+  const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 function resetDictionaryToDefault() {
   if (!confirm("Ripristinare il dizionario predefinito? Le regole personalizzate aggiunte finora verranno perse.")) return;
+  cancelRuleEdit();
   state.merchantRules = DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
   saveMerchantRules();
   renderRuleEditor();
@@ -2836,9 +3100,27 @@ function populateCategoryFilters() {
 }
 
 // ---------------------------------------------------------------- data load / app boot
-function loadTransactions(rows) {
-  state.transactions = rows.map((r, i) => ({ ...r, id: "TXN-" + String(i + 1).padStart(6, "0") }));
-  state.simulations = [];
+function txDedupeKey(t) {
+  return [+t.date, t.category, t.type, t.value.toFixed(2), t.description || ""].join("|");
+}
+function loadTransactions(rows, opts = {}) {
+  const mode = opts.mode || "replace";
+  let combined = rows, addedCount = rows.length, skippedCount = 0;
+  if (mode === "append" && state.transactions.length) {
+    const existingKeys = new Set(state.transactions.map(txDedupeKey));
+    const toAdd = [];
+    for (const r of rows) {
+      const key = txDedupeKey(r);
+      if (existingKeys.has(key)) { skippedCount++; continue; }
+      existingKeys.add(key);
+      toAdd.push(r);
+    }
+    addedCount = toAdd.length;
+    combined = state.transactions.concat(toAdd);
+  }
+  combined = combined.slice().sort((a, b) => a.date - b.date);
+  state.transactions = combined.map((r, i) => ({ ...r, id: "TXN-" + String(i + 1).padStart(6, "0") }));
+  if (mode !== "append") state.simulations = [];
   state.txPage = 1;
   ensureBudgetKeysForTransactions();
   persistTransactions();
@@ -2851,6 +3133,7 @@ function loadTransactions(rows) {
   document.getElementById("footerInfo").textContent = `Fonte dati: ${state.transactions.length} transazioni · ultimo aggiornamento ${fmtDateFull(maxDate)}`;
   updateFilterSummary();
   switchTab(state.activeTab);
+  return { addedCount, skippedCount };
 }
 function confirmDataReplace() {
   if (!state.simulations.length) return true;
@@ -2861,7 +3144,7 @@ function updateFilterSummary() {
   const catSel = document.getElementById("filterCategory");
   const catLabel = state.filters.category === "all" ? "tutte le categorie" : catSel.options[catSel.selectedIndex]?.textContent || state.filters.category;
   const typeLabel = state.filters.type === "all" ? "tutti i tipi" : state.filters.type === "income" ? "solo entrate" : "solo uscite";
-  document.getElementById("filterSummary").textContent = `${periodLabel()} · ${catLabel} · ${typeLabel} → ${n} transazioni`;
+  document.getElementById("filterSummary").textContent = `${periodRangeLabel()} · ${catLabel} · ${typeLabel} → ${n} transazioni`;
 }
 function showWelcomeError(msg) {
   const box = document.getElementById("welcomeError");
@@ -2869,19 +3152,26 @@ function showWelcomeError(msg) {
   box.classList.remove("hidden");
 }
 function hideWelcomeError() { document.getElementById("welcomeError").classList.add("hidden"); }
-function handleFile(file) {
-  hideWelcomeError();
+function handleFile(file, mode) {
+  const isAppend = mode === "append";
+  if (!isAppend) hideWelcomeError();
+  const reportError = isAppend ? (msg) => alert(msg) : showWelcomeError;
   const reader = new FileReader();
   reader.onload = () => {
     try {
       const rows = parseCSV(reader.result);
-      if (!confirmDataReplace()) return;
-      loadTransactions(rows);
+      if (!isAppend && !confirmDataReplace()) return;
+      const result = loadTransactions(rows, { mode: isAppend ? "append" : "replace" });
+      if (isAppend) {
+        const parts = [`${result.addedCount} nuove transazioni aggiunte`];
+        if (result.skippedCount) parts.push(`${result.skippedCount} duplicati ignorati`);
+        alert("Importazione completata: " + parts.join(", ") + ".");
+      }
     } catch (err) {
-      showWelcomeError("Errore nell'importazione: " + err.message);
+      reportError("Errore nell'importazione: " + err.message);
     }
   };
-  reader.onerror = () => showWelcomeError("Impossibile leggere il file.");
+  reader.onerror = () => reportError("Impossibile leggere il file.");
   reader.readAsText(file, "UTF-8");
 }
 function loadSampleData() {
@@ -2970,27 +3260,44 @@ function init() {
   dropzone.addEventListener("click", () => fileInput.click());
   dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } });
   document.getElementById("btnBrowse").addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+  fileInput.addEventListener("change", (e) => { if (e.target.files[0]) handleFile(e.target.files[0], "replace"); });
   dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("dragover"); });
   dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
   dropzone.addEventListener("drop", (e) => {
     e.preventDefault(); dropzone.classList.remove("dragover");
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], "replace");
   });
   document.getElementById("btnSample").addEventListener("click", loadSampleData);
   document.getElementById("btnNewCsv").addEventListener("click", resetToWelcome);
   document.getElementById("btnPrint").addEventListener("click", () => window.print());
 
+  const addCsvFileInput = document.getElementById("addCsvFileInput");
+  document.getElementById("btnAddCsv").addEventListener("click", () => addCsvFileInput.click());
+  addCsvFileInput.addEventListener("change", (e) => {
+    if (e.target.files[0]) handleFile(e.target.files[0], "append");
+    addCsvFileInput.value = "";
+  });
+
   document.querySelectorAll(".side-nav-item").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
-  document.getElementById("filterPeriod").addEventListener("change", (e) => { state.filters.period = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterPeriod").addEventListener("change", (e) => {
+    state.filters.period = e.target.value;
+    document.getElementById("filterCustomRangeField").classList.toggle("hidden", e.target.value !== "custom");
+    updateFilterSummary();
+    renderTab(state.activeTab);
+  });
+  document.getElementById("filterCustomStart").addEventListener("change", (e) => { state.filters.customStart = e.target.value || null; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCustomEnd").addEventListener("change", (e) => { state.filters.customEnd = e.target.value || null; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("filterType").addEventListener("change", (e) => { state.filters.type = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("btnResetFilters").addEventListener("click", () => {
-    state.filters = { period: "month", category: "all", type: "all" };
+    state.filters = { period: "month", category: "all", type: "all", customStart: null, customEnd: null };
     document.getElementById("filterPeriod").value = "month";
     document.getElementById("filterCategory").value = "all";
     document.getElementById("filterType").value = "all";
+    document.getElementById("filterCustomStart").value = "";
+    document.getElementById("filterCustomEnd").value = "";
+    document.getElementById("filterCustomRangeField").classList.add("hidden");
     updateFilterSummary();
     renderTab(state.activeTab);
   });
@@ -3010,27 +3317,19 @@ function init() {
     });
   });
 
-  document.getElementById("btnAddSim").addEventListener("click", () => {
-    const name = document.getElementById("simName").value.trim() || "Simulazione";
-    const amount = parseFloat(document.getElementById("simAmount").value);
-    if (isNaN(amount) || amount <= 0) { alert("Inserisci un importo valido."); return; }
-    const type = document.getElementById("simType").value;
-    const frequency = document.getElementById("simFrequency").value;
-    const duration = clamp(parseInt(document.getElementById("simDuration").value, 10) || 12, 1, 12);
-    const startMonth = parseInt(document.getElementById("simStartMonth").value, 10) || 1;
-    state.simulations.push({ id: simIdSeq++, name, amount, type, frequency, duration, startMonth });
-    document.getElementById("simName").value = "";
-    document.getElementById("simAmount").value = "";
-    renderSimulator();
-  });
+  document.getElementById("btnAddSim").addEventListener("click", saveSimulationFromForm);
+  document.getElementById("btnCancelSimEdit").addEventListener("click", cancelSimEdit);
   document.getElementById("btnClearSims").addEventListener("click", () => {
     if (!state.simulations.length) return;
     if (!confirm(`Rimuovere tutte le ${state.simulations.length} simulazioni attive?`)) return;
     state.simulations = [];
+    cancelSimEdit();
     renderSimulator();
   });
 
   document.getElementById("btnCloseModal").addEventListener("click", closeTxModal);
+  document.getElementById("btnSaveTxCategory").addEventListener("click", saveTxCategoryFromModal);
+  document.getElementById("btnDeleteTx").addEventListener("click", deleteTxFromModal);
   document.getElementById("txModal").addEventListener("click", (e) => { if (e.target.id === "txModal") closeTxModal(); });
 
   document.getElementById("btnSettings").addEventListener("click", openSettings);
@@ -3052,7 +3351,11 @@ function init() {
   document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
   document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
   document.getElementById("btnAddRule").addEventListener("click", addRuleFromForm);
+  document.getElementById("btnCancelRuleEdit").addEventListener("click", cancelRuleEdit);
+  document.getElementById("ruleSearch").addEventListener("input", renderRuleEditor);
   document.getElementById("btnResetDictionary").addEventListener("click", resetDictionaryToDefault);
+  document.getElementById("btnExportDictionary").addEventListener("click", exportDictionaryCSV);
+  document.getElementById("btnDownloadDictionarySample").addEventListener("click", downloadDictionarySample);
   const dictFileInput = document.getElementById("dictionaryFileInput");
   document.getElementById("btnImportDictionary").addEventListener("click", () => dictFileInput.click());
   dictFileInput.addEventListener("change", (e) => {
