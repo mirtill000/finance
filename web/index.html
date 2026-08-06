@@ -2146,6 +2146,12 @@ function normalizeForMatch(s) {
 function guessCategory(description) {
   const norm = normalizeForMatch(description);
   if (!norm) return null;
+  // Se la descrizione coincide esattamente con il nome di una categoria esistente (es. una
+  // riga CSV con description="Stipendio"), quella è un'evidenza più forte di qualunque parola
+  // chiave del dizionario: adotta direttamente quella categoria senza passare dal matching.
+  for (const cat of getAllCategories()) {
+    if (normalizeForMatch(cat) === norm) return { category: cat, keyword: cat };
+  }
   let best = null;
   for (const rule of state.merchantRules) {
     const kw = normalizeForMatch(rule.keyword);
