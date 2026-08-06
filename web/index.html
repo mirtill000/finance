@@ -1062,11 +1062,11 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveSavingsGoal" class="btn btn-primary btn-sm" type="button">Salva Obiettivo</button>
       </div>
 
-      <h4>🔀 Rinomina o unisci categoria</h4>
-      <p class="modal-lead">Rinomina una categoria esistente, oppure scrivi il nome esatto di un'altra categoria già presente per unirle: si applica a transazioni, budget e regole del dizionario.</p>
+      <h4>🔀 Sposta/unisci categoria</h4>
+      <p class="modal-lead">Sposta tutti i dati di una categoria su un'altra tra le 24 categorie disponibili: si applica a transazioni, budget e regole del dizionario.</p>
       <div class="rule-add-row">
         <select id="categoryRenameFrom"></select>
-        <input type="text" id="categoryRenameTo" placeholder="Nuovo nome, es. Spesa & Alimentari">
+        <select id="categoryRenameTo"></select>
         <button id="btnRenameCategory" class="btn btn-primary btn-sm" type="button">Applica</button>
       </div>
 
@@ -1729,6 +1729,10 @@ const EXPENSE_CATEGORIES = [
 ];
 const INCOME_CATEGORIES = ["Stipendio", "Giroconto"];
 const NEEDS_CATEGORY = "Da categorizzare";
+// Le uniche categorie ammesse nell'app sono queste 24 (più il segnaposto "Da categorizzare").
+// Qualunque altro nome di categoria incontrato nei dati (vecchie versioni, CSV esterni,
+// dizionari importati) viene ricondotto a una di queste o, se non riconoscibile, a NEEDS_CATEGORY.
+const CANONICAL_CATEGORIES = new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES, NEEDS_CATEGORY]);
 // Le categorie sono cambiate due volte in passato (dall'inglese originale, poi da una prima
 // versione italiana all'attuale tassonomia più granulare): i dati già salvati nel browser
 // (localStorage) di chi ha usato l'app in precedenza contengono ancora i vecchi nomi. Questa
@@ -1997,7 +2001,7 @@ function parseCSV(text) {
     const rawCat = idx.cat >= 0 ? parts[idx.cat].trim() : "";
     const desc = idx.desc >= 0 ? parts[idx.desc].trim() : "";
     if (!d || isNaN(v) || (!rawCat && !desc)) continue;
-    let category = rawCat, autoCategorized = false, matchedKeyword = null;
+    let category = rawCat ? resolveKnownCategory(rawCat) : null, autoCategorized = false, matchedKeyword = null;
     if (!category) {
       const guess = guessCategory(desc);
       category = guess ? guess.category : NEEDS_CATEGORY;
@@ -2037,8 +2041,10 @@ function importDictionaryCSV(file) {
   reader.onload = () => {
     try {
       const parsed = parseDictionaryCSV(reader.result);
-      let added = 0, updated = 0;
-      for (const { keyword, category } of parsed) {
+      let added = 0, updated = 0, skipped = 0;
+      for (const { keyword, category: rawCategory } of parsed) {
+        const category = resolveKnownCategory(rawCategory);
+        if (!category || category === NEEDS_CATEGORY) { skipped++; continue; }
         const norm = normalizeForMatch(keyword);
         const existing = state.merchantRules.find((r) => normalizeForMatch(r.keyword) === norm);
         if (existing) { existing.category = category; updated++; }
@@ -2048,7 +2054,8 @@ function importDictionaryCSV(file) {
       renderRuleEditor();
       errBox.classList.remove("hidden");
       errBox.style.color = "var(--primary)";
-      errBox.textContent = `Dizionario importato: ${added} nuove regole aggiunte, ${updated} aggiornate.`;
+      errBox.textContent = `Dizionario importato: ${added} nuove regole aggiunte, ${updated} aggiornate`
+        + (skipped ? `, ${skipped} scartate (categoria non tra le 24 disponibili)` : "") + ".";
     } catch (err) {
       errBox.classList.remove("hidden");
       errBox.style.color = "";
@@ -2073,7 +2080,7 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto, kw]) => ({ date: new Date(iso), category: LEGACY_CATEGORY_MIGRATION[cat] || cat, type, value: val, description: desc || null, autoCategorized: !!auto, matchedKeyword: kw || null }));
+    return arr.map(([iso, cat, type, val, desc, auto, kw]) => ({ date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null, autoCategorized: !!auto, matchedKeyword: kw || null }));
   } catch (e) { return null; }
 }
 function saveBudgets() {
@@ -2088,14 +2095,13 @@ function loadBudgets() {
 }
 function migrateLegacyCategoryBudgets() {
   let changed = false;
-  for (const oldCat of Object.keys(LEGACY_CATEGORY_MIGRATION)) {
-    if (oldCat in state.budgets) {
-      const newCat = LEGACY_CATEGORY_MIGRATION[oldCat];
-      const oldVal = state.budgets[oldCat];
-      delete state.budgets[oldCat];
-      if (!(newCat in state.budgets)) state.budgets[newCat] = oldVal;
-      changed = true;
-    }
+  for (const key of Object.keys(state.budgets)) {
+    if (CANONICAL_CATEGORIES.has(key)) continue;
+    const oldVal = state.budgets[key];
+    delete state.budgets[key];
+    changed = true;
+    const newCat = resolveKnownCategory(key);
+    if (newCat && newCat !== NEEDS_CATEGORY && !(newCat in state.budgets)) state.budgets[newCat] = oldVal;
   }
   if (changed) saveBudgets();
 }
@@ -2131,9 +2137,13 @@ function loadMerchantRules() {
 }
 function migrateLegacyCategoryRules() {
   let changed = false;
-  for (const r of state.merchantRules) {
-    if (r.category in LEGACY_CATEGORY_MIGRATION) { r.category = LEGACY_CATEGORY_MIGRATION[r.category]; changed = true; }
-  }
+  state.merchantRules = state.merchantRules.filter((r) => {
+    if (CANONICAL_CATEGORIES.has(r.category)) return true;
+    const resolved = resolveKnownCategory(r.category);
+    if (resolved && resolved !== NEEDS_CATEGORY) { r.category = resolved; changed = true; return true; }
+    changed = true;
+    return false; // regola non riconducibile a una categoria valida: va scartata
+  });
   if (changed) saveMerchantRules();
 }
 function normalizeForMatch(s) {
@@ -2160,6 +2170,16 @@ function guessCategory(description) {
     }
   }
   return best ? { category: best.category, keyword: best.keyword } : null;
+}
+// Riconduce un nome di categoria arbitrario (proveniente da dati legacy, CSV esterni o
+// dizionari importati) a una delle 24 categorie ammesse, se possibile. Restituisce null se
+// non è riconoscibile: sta al chiamante decidere il fallback (di norma NEEDS_CATEGORY).
+function resolveKnownCategory(rawCat) {
+  if (!rawCat) return null;
+  if (CANONICAL_CATEGORIES.has(rawCat)) return rawCat;
+  if (rawCat in LEGACY_CATEGORY_MIGRATION) return LEGACY_CATEGORY_MIGRATION[rawCat];
+  const guess = guessCategory(rawCat);
+  return guess && CANONICAL_CATEGORIES.has(guess.category) ? guess.category : null;
 }
 
 // ---------------------------------------------------------------- data helpers
@@ -3102,16 +3122,24 @@ function populateCategoryRenameSelect() {
   }
   if (cats.includes(current)) sel.value = current;
 }
+function populateCategoryRenameToSelect() {
+  const sel = document.getElementById("categoryRenameTo");
+  const current = sel.value;
+  const cats = Array.from(CANONICAL_CATEGORIES).filter((c) => c !== NEEDS_CATEGORY).sort((a, b) => a.localeCompare(b));
+  sel.innerHTML = "";
+  for (const c of cats) {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = `${catIcon(c)} ${c}`;
+    sel.appendChild(opt);
+  }
+  if (cats.includes(current)) sel.value = current;
+}
 function renameCategory() {
   const from = document.getElementById("categoryRenameFrom").value;
-  const to = document.getElementById("categoryRenameTo").value.trim();
-  if (!from) return;
-  if (!to) { alert("Inserisci il nuovo nome della categoria."); return; }
-  if (to === from) { alert("Il nuovo nome è identico a quello attuale."); return; }
-  const merging = getAllCategories().includes(to);
-  const msg = merging
-    ? `Unire "${from}" in "${to}"? Tutte le transazioni, il budget e le regole del dizionario verranno spostati su "${to}" e "${from}" verrà rimossa.`
-    : `Rinominare "${from}" in "${to}"? Verranno aggiornate tutte le transazioni, il budget e le regole del dizionario.`;
+  const to = document.getElementById("categoryRenameTo").value;
+  if (!from || !to) return;
+  if (to === from) { alert("Seleziona una categoria di destinazione diversa da quella di partenza."); return; }
+  const msg = `Spostare tutti i dati di "${from}" su "${to}"? Tutte le transazioni, il budget e le regole del dizionario verranno spostati su "${to}" e "${from}" verrà rimossa.`;
   if (!confirm(msg)) return;
 
   let txCount = 0;
@@ -3120,7 +3148,7 @@ function renameCategory() {
   if (from in state.budgets) {
     const oldBudget = state.budgets[from];
     delete state.budgets[from];
-    if (!merging || !(to in state.budgets)) state.budgets[to] = oldBudget;
+    if (!(to in state.budgets)) state.budgets[to] = oldBudget;
   }
 
   let ruleCount = 0;
@@ -3132,7 +3160,7 @@ function renameCategory() {
   ensureBudgetKeysForTransactions();
   populateCategoryFilters();
   populateCategoryRenameSelect();
-  document.getElementById("categoryRenameTo").value = "";
+  populateCategoryRenameToSelect();
   renderBudgetEditor();
   renderRuleEditor();
   renderTab(state.activeTab);
@@ -3144,6 +3172,7 @@ function openSettings() {
   renderRuleEditor();
   renderReviewSection();
   populateCategoryRenameSelect();
+  populateCategoryRenameToSelect();
   document.getElementById("savingsGoalInput").value = Math.round(state.savingsGoal * 100);
   document.getElementById("settingsModal").classList.remove("hidden");
   requestAnimationFrame(() => document.getElementById("closeSettings").focus());
