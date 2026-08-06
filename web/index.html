@@ -1723,6 +1723,24 @@ const SAMPLE_TRANSACTIONS_PRO = [
 const EXPENSE_CATEGORIES = ["Spesa Alimentare", "Utenze", "Trasporti", "Ristoranti", "Intrattenimento", "Salute", "Abbonamenti", "Acquisti", "Bar e Caffè"];
 const INCOME_CATEGORIES = ["Stipendio", "Lavoro Autonomo", "Dividendi", "Rimborsi"];
 const NEEDS_CATEGORY = "Da categorizzare";
+// Le categorie erano in inglese prima della traduzione italiana: i dati già salvati nel
+// browser (localStorage) di chi ha usato l'app in precedenza contengono ancora i vecchi
+// nomi. Questa mappa li converte automaticamente al primo caricamento.
+const LEGACY_CATEGORY_MIGRATION = {
+  "Groceries": "Spesa Alimentare",
+  "Salary": "Stipendio",
+  "Coffee & Drinks": "Bar e Caffè",
+  "Dining Out": "Ristoranti",
+  "Transportation": "Trasporti",
+  "Shopping": "Acquisti",
+  "Utilities": "Utenze",
+  "Freelance": "Lavoro Autonomo",
+  "Entertainment": "Intrattenimento",
+  "Healthcare": "Salute",
+  "Dividends": "Dividendi",
+  "Subscriptions": "Abbonamenti",
+  "Cashback": "Rimborsi",
+};
 const CATEGORY_ICONS = {
   "Spesa Alimentare": "🛒", "Stipendio": "💼", "Bar e Caffè": "☕", "Ristoranti": "🍽️",
   "Trasporti": "🚗", "Acquisti": "🛍️", "Utenze": "💡", "Lavoro Autonomo": "💻",
@@ -2015,7 +2033,7 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto, kw]) => ({ date: new Date(iso), category: cat, type, value: val, description: desc || null, autoCategorized: !!auto, matchedKeyword: kw || null }));
+    return arr.map(([iso, cat, type, val, desc, auto, kw]) => ({ date: new Date(iso), category: LEGACY_CATEGORY_MIGRATION[cat] || cat, type, value: val, description: desc || null, autoCategorized: !!auto, matchedKeyword: kw || null }));
   } catch (e) { return null; }
 }
 function saveBudgets() {
@@ -2026,6 +2044,20 @@ function loadBudgets() {
     const raw = localStorage.getItem(LS_BUDGETS_KEY);
     state.budgets = raw ? JSON.parse(raw) : { ...DEFAULT_BUDGETS };
   } catch (e) { state.budgets = { ...DEFAULT_BUDGETS }; }
+  migrateLegacyCategoryBudgets();
+}
+function migrateLegacyCategoryBudgets() {
+  let changed = false;
+  for (const oldCat of Object.keys(LEGACY_CATEGORY_MIGRATION)) {
+    if (oldCat in state.budgets) {
+      const newCat = LEGACY_CATEGORY_MIGRATION[oldCat];
+      const oldVal = state.budgets[oldCat];
+      delete state.budgets[oldCat];
+      if (!(newCat in state.budgets)) state.budgets[newCat] = oldVal;
+      changed = true;
+    }
+  }
+  if (changed) saveBudgets();
 }
 function saveSavingsGoal(pct) {
   state.savingsGoal = clamp(pct, 0, 1);
@@ -2055,6 +2087,14 @@ function loadMerchantRules() {
     const raw = localStorage.getItem(LS_RULES_KEY);
     state.merchantRules = raw ? JSON.parse(raw) : DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
   } catch (e) { state.merchantRules = DEFAULT_MERCHANT_RULES.map((r) => ({ ...r })); }
+  migrateLegacyCategoryRules();
+}
+function migrateLegacyCategoryRules() {
+  let changed = false;
+  for (const r of state.merchantRules) {
+    if (r.category in LEGACY_CATEGORY_MIGRATION) { r.category = LEGACY_CATEGORY_MIGRATION[r.category]; changed = true; }
+  }
+  if (changed) saveMerchantRules();
 }
 function normalizeForMatch(s) {
   return (s || "")
