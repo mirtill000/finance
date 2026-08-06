@@ -1,608 +1,608 @@
-datetime,category,value,type
-2025-07-01 22:53,Salute & Prevenzione,52.47,outcome
-2025-07-02 13:31,Spesa & Alimentari,81.18,outcome
-2025-07-02 13:49,Cena & Ristoranti,6.80,outcome
-2025-07-03 12:09,Sport & Tempo Libero,6.21,outcome
-2025-07-03 13:28,Shopping Online,3.00,outcome
-2025-07-04 09:36,Spesa & Alimentari,149.75,outcome
-2025-07-04 10:54,Colazione & Caffè,5.05,outcome
-2025-07-04 16:35,Spesa & Alimentari,140.98,outcome
-2025-07-05 10:47,Colazione & Caffè,10.06,outcome
-2025-07-06 10:21,Shopping & Abbigliamento,32.03,outcome
-2025-07-08 08:35,Spesa & Alimentari,5.56,outcome
-2025-07-08 08:36,Spesa & Alimentari,17.58,outcome
-2025-07-08 12:44,Bollette,116.94,outcome
-2025-07-09 11:52,Sport & Tempo Libero,12.42,outcome
-2025-07-10 11:47,Cena & Ristoranti,53.59,outcome
-2025-07-10 21:18,Cena & Ristoranti,12.96,outcome
-2025-07-11 11:59,Sosta & Parcheggi,27.00,outcome
-2025-07-11 15:30,Colazione & Caffè,3.00,outcome
-2025-07-13 08:12,Shopping Online,151.28,outcome
-2025-07-13 14:09,Sport & Tempo Libero,31.38,outcome
-2025-07-14 11:34,Spesa & Alimentari,15.51,outcome
-2025-07-14 12:48,Auto & Trasporti,18.76,outcome
-2025-07-14 15:45,Sport & Tempo Libero,17.57,outcome
-2025-07-14 18:43,Sport & Tempo Libero,7.08,outcome
-2025-07-15 18:10,Cena & Ristoranti,35.15,outcome
-2025-07-15 18:19,Bollette,174.72,outcome
-2025-07-16 16:05,Colazione & Caffè,3.00,outcome
-2025-07-16 20:02,Viaggi & Trasporti,70.17,outcome
-2025-07-16 21:30,Colazione & Caffè,4.81,outcome
-2025-07-18 17:21,Sosta & Parcheggi,16.69,outcome
-2025-07-18 18:39,Abbonamenti & Streaming,10.38,outcome
-2025-07-19 13:23,Spesa & Alimentari,34.59,outcome
-2025-07-19 17:08,Abbonamenti & Streaming,9.71,outcome
-2025-07-19 19:03,Spesa & Alimentari,9.61,outcome
-2025-07-20 08:06,Shopping & Abbigliamento,199.01,outcome
-2025-07-20 10:31,Cena & Ristoranti,85.14,outcome
-2025-07-20 18:30,Colazione & Caffè,4.13,outcome
-2025-07-21 15:22,Colazione & Caffè,3.00,outcome
-2025-07-22 09:48,Auto & Trasporti,23.15,outcome
-2025-07-22 18:01,Cena & Ristoranti,4.95,outcome
-2025-07-23 08:29,Abbonamenti & Streaming,51.15,outcome
-2025-07-23 18:00,Da categorizzare,271.73,income
-2025-07-23 18:38,Viaggi & Trasporti,3.15,outcome
-2025-07-23 19:56,Cena & Ristoranti,3.00,outcome
-2025-07-25 14:05,Luce & Gas,83.60,outcome
-2025-07-27 09:30,Stipendio,3329.53,income
-2025-07-27 12:06,Spesa & Alimentari,4.28,outcome
-2025-07-28 11:18,Spesa & Alimentari,9.78,outcome
-2025-08-01 10:33,Cena & Ristoranti,8.57,outcome
-2025-08-01 11:11,Abbonamenti & Streaming,10.73,outcome
-2025-08-02 18:57,Salute & Prevenzione,96.21,outcome
-2025-08-03 18:00,Da categorizzare,342.35,income
-2025-08-04 11:45,Colazione & Caffè,9.53,outcome
-2025-08-04 19:28,Colazione & Caffè,3.00,outcome
-2025-08-05 07:55,Abbonamenti & Streaming,18.52,outcome
-2025-08-06 20:50,Sosta & Parcheggi,114.65,outcome
-2025-08-07 16:50,Colazione & Caffè,3.00,outcome
-2025-08-07 17:13,Bollette,66.07,outcome
-2025-08-08 13:51,Spesa & Alimentari,108.17,outcome
-2025-08-08 15:59,Colazione & Caffè,12.37,outcome
-2025-08-08 17:40,Spesa & Alimentari,47.54,outcome
-2025-08-08 19:47,Spesa & Alimentari,30.09,outcome
-2025-08-08 20:04,Colazione & Caffè,3.00,outcome
-2025-08-09 13:18,Sport & Tempo Libero,37.59,outcome
-2025-08-09 13:44,Spesa & Alimentari,32.81,outcome
-2025-08-09 21:32,Colazione & Caffè,10.59,outcome
-2025-08-11 09:42,Colazione & Caffè,14.74,outcome
-2025-08-12 11:35,Cena & Ristoranti,57.69,outcome
-2025-08-13 09:46,Auto & Trasporti,17.96,outcome
-2025-08-15 11:26,Colazione & Caffè,3.91,outcome
-2025-08-15 12:38,Abbonamenti & Streaming,3.00,outcome
-2025-08-16 07:30,Bollette,225.20,outcome
-2025-08-17 11:34,Abbonamenti & Streaming,32.08,outcome
-2025-08-17 14:48,Sport & Tempo Libero,109.56,outcome
-2025-08-17 22:22,Spesa & Alimentari,65.04,outcome
-2025-08-18 08:20,Shopping Online,110.96,outcome
-2025-08-18 11:01,Cena & Ristoranti,16.53,outcome
-2025-08-18 13:53,Colazione & Caffè,4.79,outcome
-2025-08-18 22:32,Colazione & Caffè,3.00,outcome
-2025-08-19 17:16,Sport & Tempo Libero,30.96,outcome
-2025-08-20 13:44,Colazione & Caffè,7.89,outcome
-2025-08-20 18:28,Spesa & Alimentari,3.08,outcome
-2025-08-20 22:42,Cena & Ristoranti,3.63,outcome
-2025-08-21 17:05,Viaggi & Trasporti,27.69,outcome
-2025-08-21 18:09,Colazione & Caffè,6.51,outcome
-2025-08-24 07:01,Spesa & Alimentari,60.19,outcome
-2025-08-24 11:27,Cena & Ristoranti,45.35,outcome
-2025-08-26 13:30,Sosta & Parcheggi,16.88,outcome
-2025-08-26 14:12,Spesa & Alimentari,84.99,outcome
-2025-08-26 15:30,Spesa & Alimentari,45.60,outcome
-2025-08-26 18:23,Spesa & Alimentari,44.85,outcome
-2025-08-26 19:29,Auto & Trasporti,21.93,outcome
-2025-08-27 09:30,Stipendio,3531.54,income
-2025-09-01 15:23,Shopping & Abbigliamento,74.41,outcome
-2025-09-01 16:19,Colazione & Caffè,6.02,outcome
-2025-09-01 17:35,Viaggi & Trasporti,23.45,outcome
-2025-09-02 11:00,Abbonamenti & Streaming,31.88,outcome
-2025-09-02 12:27,Luce & Gas,26.92,outcome
-2025-09-02 21:11,Shopping Online,144.99,outcome
-2025-09-03 10:58,Spesa & Alimentari,8.99,outcome
-2025-09-03 15:01,Bollette,144.78,outcome
-2025-09-03 15:27,Abbonamenti & Streaming,5.24,outcome
-2025-09-04 09:16,Spesa & Alimentari,18.26,outcome
-2025-09-05 08:33,Sosta & Parcheggi,141.78,outcome
-2025-09-06 08:05,Abbonamenti & Streaming,21.22,outcome
-2025-09-06 15:28,Shopping & Abbigliamento,22.74,outcome
-2025-09-09 08:57,Spesa & Alimentari,8.42,outcome
-2025-09-09 09:09,Colazione & Caffè,18.50,outcome
-2025-09-09 09:38,Bollette,90.15,outcome
-2025-09-10 11:02,Colazione & Caffè,42.83,outcome
-2025-09-10 13:14,Salute & Prevenzione,31.94,outcome
-2025-09-10 16:33,Cena & Ristoranti,43.82,outcome
-2025-09-11 11:00,Da categorizzare,143.72,income
-2025-09-11 13:53,Salute & Prevenzione,14.95,outcome
-2025-09-11 16:32,Spesa & Alimentari,118.54,outcome
-2025-09-11 22:09,Colazione & Caffè,3.00,outcome
-2025-09-12 07:16,Cena & Ristoranti,7.45,outcome
-2025-09-13 08:25,Colazione & Caffè,4.02,outcome
-2025-09-14 15:25,Spesa & Alimentari,3.00,outcome
-2025-09-14 15:39,Auto & Trasporti,27.52,outcome
-2025-09-15 12:17,Cena & Ristoranti,171.11,outcome
-2025-09-16 14:59,Sport & Tempo Libero,12.06,outcome
-2025-09-16 19:32,Salute & Prevenzione,35.69,outcome
-2025-09-17 07:05,Colazione & Caffè,3.00,outcome
-2025-09-17 18:00,Da categorizzare,348.81,income
-2025-09-18 13:32,Sport & Tempo Libero,33.12,outcome
-2025-09-19 11:42,Colazione & Caffè,3.00,outcome
-2025-09-21 09:51,Luce & Gas,39.07,outcome
-2025-09-21 14:05,Colazione & Caffè,4.35,outcome
-2025-09-22 19:55,Abbonamenti & Streaming,33.39,outcome
-2025-09-22 20:15,Tasse & Rimborsi,30.48,income
-2025-09-23 07:24,Spesa & Alimentari,44.46,outcome
-2025-09-23 19:48,Colazione & Caffè,8.61,outcome
-2025-09-25 11:52,Spesa & Alimentari,258.22,outcome
-2025-09-25 12:17,Spesa & Alimentari,18.04,outcome
-2025-09-25 13:18,Cena & Ristoranti,19.53,outcome
-2025-09-26 14:56,Spesa & Alimentari,4.50,outcome
-2025-09-27 09:30,Stipendio,3301.24,income
-2025-09-27 20:46,Colazione & Caffè,3.18,outcome
-2025-10-01 22:03,Viaggi & Trasporti,41.13,outcome
-2025-10-02 07:40,Spesa & Alimentari,212.68,outcome
-2025-10-02 13:04,Bollette,77.25,outcome
-2025-10-03 22:01,Cena & Ristoranti,60.21,outcome
-2025-10-04 13:43,Sosta & Parcheggi,42.65,outcome
-2025-10-04 18:14,Sport & Tempo Libero,156.82,outcome
-2025-10-05 14:17,Colazione & Caffè,3.00,outcome
-2025-10-05 15:56,Sport & Tempo Libero,3.00,outcome
-2025-10-05 18:06,Spesa & Alimentari,18.71,outcome
-2025-10-06 07:31,Salute & Prevenzione,35.35,outcome
-2025-10-07 07:57,Shopping Online,21.23,outcome
-2025-10-09 07:29,Spesa & Alimentari,6.26,outcome
-2025-10-10 21:04,Cena & Ristoranti,45.86,outcome
-2025-10-12 09:25,Shopping & Abbigliamento,28.45,outcome
-2025-10-13 09:30,Bollette,132.96,outcome
-2025-10-13 13:58,Cena & Ristoranti,3.00,outcome
-2025-10-13 17:07,Abbonamenti & Streaming,21.28,outcome
-2025-10-13 21:35,Spesa & Alimentari,119.38,outcome
-2025-10-14 07:51,Colazione & Caffè,3.73,outcome
-2025-10-14 17:12,Colazione & Caffè,9.60,outcome
-2025-10-15 22:54,Luce & Gas,73.18,outcome
-2025-10-16 15:43,Auto & Trasporti,8.18,outcome
-2025-10-16 16:45,Viaggi & Trasporti,28.42,outcome
-2025-10-17 09:42,Spesa & Alimentari,13.05,outcome
-2025-10-17 09:47,Spesa & Alimentari,5.12,outcome
-2025-10-17 16:29,Sosta & Parcheggi,41.59,outcome
-2025-10-18 14:31,Spesa & Alimentari,59.36,outcome
-2025-10-22 16:49,Bollette,33.78,outcome
-2025-10-22 21:25,Salute & Prevenzione,54.35,outcome
-2025-10-24 15:23,Sport & Tempo Libero,12.86,outcome
-2025-10-24 16:16,Shopping Online,127.16,outcome
-2025-10-24 22:16,Spesa & Alimentari,34.77,outcome
-2025-10-25 18:50,Colazione & Caffè,4.74,outcome
-2025-10-25 19:58,Colazione & Caffè,31.66,outcome
-2025-10-26 09:47,Spesa & Alimentari,66.87,outcome
-2025-10-26 09:54,Spesa & Alimentari,64.36,outcome
-2025-10-27 09:30,Stipendio,3480.42,income
-2025-10-27 16:40,Colazione & Caffè,3.00,outcome
-2025-10-27 17:00,Abbonamenti & Streaming,29.85,outcome
-2025-10-27 21:17,Cena & Ristoranti,85.81,outcome
-2025-11-01 16:47,Colazione & Caffè,3.00,outcome
-2025-11-01 20:24,Bollette,130.00,outcome
-2025-11-03 20:15,Tasse & Rimborsi,9.34,income
-2025-11-05 13:15,Spesa & Alimentari,52.55,outcome
-2025-11-06 12:04,Spesa & Alimentari,38.49,outcome
-2025-11-07 22:35,Spesa & Alimentari,38.65,outcome
-2025-11-08 07:00,Shopping & Abbigliamento,33.11,outcome
-2025-11-08 10:14,Cena & Ristoranti,68.72,outcome
-2025-11-08 21:58,Spesa & Alimentari,151.84,outcome
-2025-11-09 14:24,Auto & Trasporti,5.40,outcome
-2025-11-09 14:42,Colazione & Caffè,10.25,outcome
-2025-11-09 18:08,Viaggi & Trasporti,8.67,outcome
-2025-11-10 16:16,Spesa & Alimentari,82.65,outcome
-2025-11-11 20:23,Colazione & Caffè,8.08,outcome
-2025-11-11 21:27,Spesa & Alimentari,25.31,outcome
-2025-11-12 15:51,Luce & Gas,93.46,outcome
-2025-11-13 21:27,Sosta & Parcheggi,87.03,outcome
-2025-11-13 21:28,Cena & Ristoranti,98.43,outcome
-2025-11-14 18:14,Colazione & Caffè,3.00,outcome
-2025-11-16 07:04,Cena & Ristoranti,86.64,outcome
-2025-11-16 08:44,Colazione & Caffè,3.00,outcome
-2025-11-16 13:19,Colazione & Caffè,3.70,outcome
-2025-11-16 19:07,Spesa & Alimentari,42.18,outcome
-2025-11-16 20:05,Colazione & Caffè,3.00,outcome
-2025-11-17 20:44,Abbonamenti & Streaming,50.15,outcome
-2025-11-18 08:00,Sport & Tempo Libero,3.60,outcome
-2025-11-18 16:29,Shopping Online,52.21,outcome
-2025-11-19 08:41,Salute & Prevenzione,129.52,outcome
-2025-11-19 13:56,Bollette,69.25,outcome
-2025-11-21 14:19,Spesa & Alimentari,145.60,outcome
-2025-11-22 13:05,Auto & Trasporti,38.57,outcome
-2025-11-22 19:12,Colazione & Caffè,8.14,outcome
-2025-11-24 15:25,Spesa & Alimentari,19.20,outcome
-2025-11-24 21:05,Sport & Tempo Libero,58.01,outcome
-2025-11-25 10:06,Abbonamenti & Streaming,29.90,outcome
-2025-11-25 13:14,Colazione & Caffè,3.00,outcome
-2025-11-26 22:37,Cena & Ristoranti,37.00,outcome
-2025-11-27 09:30,Stipendio,3550.29,income
-2025-11-28 09:13,Colazione & Caffè,8.62,outcome
-2025-12-01 09:17,Bollette,25.05,outcome
-2025-12-03 08:16,Cena & Ristoranti,3.10,outcome
-2025-12-03 08:30,Shopping & Abbigliamento,32.41,outcome
-2025-12-03 18:26,Luce & Gas,77.62,outcome
-2025-12-04 09:59,Spesa & Alimentari,16.03,outcome
-2025-12-05 20:03,Spesa & Alimentari,92.53,outcome
-2025-12-06 17:12,Spesa & Alimentari,16.36,outcome
-2025-12-07 09:57,Cena & Ristoranti,7.36,outcome
-2025-12-08 11:26,Colazione & Caffè,3.00,outcome
-2025-12-08 20:15,Tasse & Rimborsi,21.10,income
-2025-12-09 15:23,Colazione & Caffè,3.00,outcome
-2025-12-09 17:39,Cena & Ristoranti,28.86,outcome
-2025-12-11 17:29,Abbonamenti & Streaming,47.64,outcome
-2025-12-12 09:32,Abbonamenti & Streaming,30.81,outcome
-2025-12-12 18:00,Da categorizzare,299.05,income
-2025-12-13 08:29,Cena & Ristoranti,13.52,outcome
-2025-12-13 15:58,Sport & Tempo Libero,3.49,outcome
-2025-12-13 18:21,Bollette,9.76,outcome
-2025-12-13 18:49,Viaggi & Trasporti,114.84,outcome
-2025-12-13 21:57,Spesa & Alimentari,114.10,outcome
-2025-12-15 12:06,Bollette,193.54,outcome
-2025-12-15 14:47,Colazione & Caffè,15.79,outcome
-2025-12-16 12:00,Salute & Prevenzione,10.64,outcome
-2025-12-16 21:49,Sport & Tempo Libero,9.34,outcome
-2025-12-18 10:49,Colazione & Caffè,21.89,outcome
-2025-12-18 17:10,Shopping Online,98.63,outcome
-2025-12-19 11:00,Da categorizzare,159.32,income
-2025-12-20 09:01,Sport & Tempo Libero,13.71,outcome
-2025-12-20 17:23,Cena & Ristoranti,21.51,outcome
-2025-12-21 20:15,Cena & Ristoranti,21.50,outcome
-2025-12-23 08:11,Spesa & Alimentari,42.07,outcome
-2025-12-23 17:46,Spesa & Alimentari,350.99,outcome
-2025-12-23 21:11,Colazione & Caffè,7.88,outcome
-2025-12-26 16:52,Salute & Prevenzione,69.55,outcome
-2025-12-26 19:02,Cena & Ristoranti,14.02,outcome
-2025-12-26 20:05,Sosta & Parcheggi,49.36,outcome
-2025-12-27 09:30,Stipendio,3386.05,income
-2025-12-27 14:06,Sport & Tempo Libero,19.55,outcome
-2025-12-27 16:18,Colazione & Caffè,45.86,outcome
-2025-12-27 16:52,Auto & Trasporti,40.46,outcome
-2026-01-02 13:38,Spesa & Alimentari,116.20,outcome
-2026-01-02 18:21,Luce & Gas,121.15,outcome
-2026-01-03 10:24,Shopping & Abbigliamento,69.95,outcome
-2026-01-03 12:40,Colazione & Caffè,3.00,outcome
-2026-01-04 07:30,Spesa & Alimentari,59.97,outcome
-2026-01-05 08:13,Bollette,38.89,outcome
-2026-01-05 20:15,Tasse & Rimborsi,15.60,income
-2026-01-06 19:44,Cena & Ristoranti,3.00,outcome
-2026-01-07 07:52,Viaggi & Trasporti,125.87,outcome
-2026-01-07 08:25,Colazione & Caffè,3.00,outcome
-2026-01-07 19:46,Sport & Tempo Libero,27.95,outcome
-2026-01-08 13:02,Colazione & Caffè,5.40,outcome
-2026-01-09 20:18,Cena & Ristoranti,81.93,outcome
-2026-01-10 14:07,Spesa & Alimentari,190.16,outcome
-2026-01-11 20:43,Sosta & Parcheggi,10.97,outcome
-2026-01-12 10:09,Colazione & Caffè,4.67,outcome
-2026-01-12 12:39,Auto & Trasporti,73.15,outcome
-2026-01-12 16:10,Shopping Online,45.71,outcome
-2026-01-13 13:00,Sport & Tempo Libero,51.62,outcome
-2026-01-13 13:53,Colazione & Caffè,3.00,outcome
-2026-01-13 18:29,Salute & Prevenzione,35.90,outcome
-2026-01-14 07:55,Sport & Tempo Libero,41.70,outcome
-2026-01-14 12:27,Sport & Tempo Libero,6.25,outcome
-2026-01-15 18:02,Spesa & Alimentari,70.26,outcome
-2026-01-16 12:36,Colazione & Caffè,18.14,outcome
-2026-01-17 12:24,Colazione & Caffè,12.43,outcome
-2026-01-17 12:59,Shopping & Abbigliamento,150.57,outcome
-2026-01-17 18:00,Da categorizzare,361.34,income
-2026-01-18 09:41,Cena & Ristoranti,12.24,outcome
-2026-01-18 11:40,Cena & Ristoranti,61.19,outcome
-2026-01-18 11:41,Abbonamenti & Streaming,3.00,outcome
-2026-01-21 18:13,Bollette,54.96,outcome
-2026-01-21 21:02,Spesa & Alimentari,146.12,outcome
-2026-01-25 07:06,Luce & Gas,75.52,outcome
-2026-01-25 18:41,Sport & Tempo Libero,5.98,outcome
-2026-01-26 14:39,Colazione & Caffè,15.97,outcome
-2026-01-26 19:05,Abbonamenti & Streaming,82.87,outcome
-2026-01-26 19:42,Cena & Ristoranti,5.11,outcome
-2026-01-27 09:30,Stipendio,3301.62,income
-2026-01-27 13:59,Spesa & Alimentari,4.77,outcome
-2026-01-27 14:53,Spesa & Alimentari,44.04,outcome
-2026-02-01 08:14,Salute & Prevenzione,13.39,outcome
-2026-02-01 08:41,Colazione & Caffè,3.00,outcome
-2026-02-02 07:25,Colazione & Caffè,3.00,outcome
-2026-02-02 07:36,Abbonamenti & Streaming,8.41,outcome
-2026-02-02 10:00,Colazione & Caffè,7.30,outcome
-2026-02-02 11:31,Abbonamenti & Streaming,14.73,outcome
-2026-02-02 19:41,Bollette,209.25,outcome
-2026-02-03 21:32,Spesa & Alimentari,61.12,outcome
-2026-02-04 09:08,Spesa & Alimentari,22.66,outcome
-2026-02-05 18:21,Sport & Tempo Libero,48.45,outcome
-2026-02-06 07:00,Spesa & Alimentari,118.04,outcome
-2026-02-06 07:02,Colazione & Caffè,8.32,outcome
-2026-02-06 14:10,Colazione & Caffè,4.03,outcome
-2026-02-06 19:10,Cena & Ristoranti,60.58,outcome
-2026-02-06 22:25,Spesa & Alimentari,31.50,outcome
-2026-02-08 08:01,Abbonamenti & Streaming,3.00,outcome
-2026-02-08 21:48,Spesa & Alimentari,28.05,outcome
-2026-02-09 14:20,Cena & Ristoranti,4.05,outcome
-2026-02-10 11:13,Shopping Online,102.61,outcome
-2026-02-11 19:10,Cena & Ristoranti,15.85,outcome
-2026-02-12 08:12,Cena & Ristoranti,30.99,outcome
-2026-02-12 16:06,Abbonamenti & Streaming,15.15,outcome
-2026-02-12 20:23,Spesa & Alimentari,68.88,outcome
-2026-02-12 22:10,Shopping & Abbigliamento,145.70,outcome
-2026-02-13 18:36,Sport & Tempo Libero,3.98,outcome
-2026-02-16 13:37,Cena & Ristoranti,38.28,outcome
-2026-02-16 16:51,Viaggi & Trasporti,34.45,outcome
-2026-02-17 08:02,Spesa & Alimentari,33.59,outcome
-2026-02-17 22:15,Colazione & Caffè,7.02,outcome
-2026-02-18 19:47,Sport & Tempo Libero,16.75,outcome
-2026-02-20 21:53,Spesa & Alimentari,10.31,outcome
-2026-02-20 22:29,Spesa & Alimentari,27.92,outcome
-2026-02-21 11:05,Spesa & Alimentari,71.50,outcome
-2026-02-21 15:43,Cena & Ristoranti,67.71,outcome
-2026-02-21 17:46,Salute & Prevenzione,36.30,outcome
-2026-02-21 21:38,Colazione & Caffè,4.85,outcome
-2026-02-22 20:15,Tasse & Rimborsi,30.63,income
-2026-02-25 08:40,Cena & Ristoranti,27.58,outcome
-2026-02-25 09:28,Sport & Tempo Libero,18.81,outcome
-2026-02-26 11:01,Bollette,108.88,outcome
-2026-02-26 12:43,Sosta & Parcheggi,140.15,outcome
-2026-02-26 14:04,Auto & Trasporti,3.25,outcome
-2026-02-26 15:07,Cena & Ristoranti,21.57,outcome
-2026-02-26 18:16,Sport & Tempo Libero,72.16,outcome
-2026-02-27 09:30,Stipendio,3553.55,income
-2026-02-27 15:19,Salute & Prevenzione,3.00,outcome
-2026-02-27 18:38,Colazione & Caffè,3.14,outcome
-2026-02-28 09:39,Luce & Gas,90.97,outcome
-2026-03-01 19:54,Spesa & Alimentari,28.10,outcome
-2026-03-01 20:46,Viaggi & Trasporti,21.48,outcome
-2026-03-02 07:07,Cena & Ristoranti,25.18,outcome
-2026-03-02 11:44,Cena & Ristoranti,3.00,outcome
-2026-03-02 15:40,Spesa & Alimentari,17.62,outcome
-2026-03-03 08:04,Cena & Ristoranti,30.94,outcome
-2026-03-03 16:10,Colazione & Caffè,12.64,outcome
-2026-03-04 08:02,Sport & Tempo Libero,7.26,outcome
-2026-03-04 11:06,Salute & Prevenzione,101.52,outcome
-2026-03-04 12:22,Cena & Ristoranti,32.29,outcome
-2026-03-05 07:01,Cena & Ristoranti,25.48,outcome
-2026-03-07 16:48,Colazione & Caffè,11.15,outcome
-2026-03-08 08:07,Spesa & Alimentari,235.29,outcome
-2026-03-08 10:16,Spesa & Alimentari,5.28,outcome
-2026-03-08 13:13,Sport & Tempo Libero,67.27,outcome
-2026-03-09 14:53,Bollette,338.28,outcome
-2026-03-10 08:45,Abbonamenti & Streaming,13.67,outcome
-2026-03-11 14:24,Sosta & Parcheggi,58.60,outcome
-2026-03-11 15:45,Spesa & Alimentari,39.16,outcome
-2026-03-11 22:54,Abbonamenti & Streaming,33.97,outcome
-2026-03-12 22:06,Colazione & Caffè,9.20,outcome
-2026-03-13 11:00,Da categorizzare,102.76,income
-2026-03-14 07:33,Colazione & Caffè,7.60,outcome
-2026-03-14 21:05,Spesa & Alimentari,73.11,outcome
-2026-03-16 12:31,Colazione & Caffè,8.04,outcome
-2026-03-17 07:10,Bollette,31.60,outcome
-2026-03-18 20:43,Spesa & Alimentari,44.03,outcome
-2026-03-20 20:15,Tasse & Rimborsi,25.35,income
-2026-03-21 08:44,Cena & Ristoranti,29.92,outcome
-2026-03-21 16:30,Salute & Prevenzione,13.37,outcome
-2026-03-22 09:56,Sport & Tempo Libero,31.87,outcome
-2026-03-24 21:11,Spesa & Alimentari,72.80,outcome
-2026-03-25 08:00,Colazione & Caffè,9.73,outcome
-2026-03-25 18:58,Abbonamenti & Streaming,4.70,outcome
-2026-03-26 13:18,Salute & Prevenzione,38.01,outcome
-2026-03-26 15:18,Spesa & Alimentari,64.12,outcome
-2026-03-26 20:01,Shopping Online,163.55,outcome
-2026-03-27 07:54,Auto & Trasporti,24.02,outcome
-2026-03-27 09:30,Stipendio,3445.06,income
-2026-03-28 19:06,Sport & Tempo Libero,53.50,outcome
-2026-03-28 22:30,Viaggi & Trasporti,75.16,outcome
-2026-04-01 11:16,Cena & Ristoranti,53.99,outcome
-2026-04-01 20:33,Salute & Prevenzione,28.85,outcome
-2026-04-02 07:04,Colazione & Caffè,5.66,outcome
-2026-04-02 07:25,Cena & Ristoranti,4.68,outcome
-2026-04-04 21:34,Shopping & Abbigliamento,165.03,outcome
-2026-04-05 14:46,Sosta & Parcheggi,17.05,outcome
-2026-04-05 21:42,Luce & Gas,29.49,outcome
-2026-04-06 10:29,Sport & Tempo Libero,3.00,outcome
-2026-04-07 12:08,Colazione & Caffè,3.00,outcome
-2026-04-07 16:16,Spesa & Alimentari,3.00,outcome
-2026-04-07 19:29,Cena & Ristoranti,3.00,outcome
-2026-04-07 22:32,Shopping Online,152.81,outcome
-2026-04-08 13:17,Auto & Trasporti,18.35,outcome
-2026-04-08 16:29,Cena & Ristoranti,3.00,outcome
-2026-04-08 17:12,Viaggi & Trasporti,16.72,outcome
-2026-04-08 19:29,Colazione & Caffè,5.75,outcome
-2026-04-09 10:14,Colazione & Caffè,5.05,outcome
-2026-04-09 13:06,Cena & Ristoranti,22.51,outcome
-2026-04-09 13:10,Abbonamenti & Streaming,46.34,outcome
-2026-04-09 19:25,Colazione & Caffè,3.00,outcome
-2026-04-10 11:46,Sosta & Parcheggi,48.91,outcome
-2026-04-10 19:33,Colazione & Caffè,3.00,outcome
-2026-04-11 18:06,Spesa & Alimentari,33.31,outcome
-2026-04-11 18:10,Auto & Trasporti,44.54,outcome
-2026-04-12 08:16,Colazione & Caffè,3.80,outcome
-2026-04-13 19:57,Spesa & Alimentari,131.13,outcome
-2026-04-14 12:24,Spesa & Alimentari,31.06,outcome
-2026-04-14 14:50,Sport & Tempo Libero,19.51,outcome
-2026-04-14 17:16,Sport & Tempo Libero,28.39,outcome
-2026-04-14 20:40,Colazione & Caffè,3.00,outcome
-2026-04-14 22:29,Salute & Prevenzione,19.01,outcome
-2026-04-16 10:02,Abbonamenti & Streaming,29.47,outcome
-2026-04-18 17:10,Bollette,195.60,outcome
-2026-04-19 17:33,Bollette,94.92,outcome
-2026-04-19 20:15,Tasse & Rimborsi,33.48,income
-2026-04-20 19:00,Cena & Ristoranti,51.14,outcome
-2026-04-21 07:23,Spesa & Alimentari,86.90,outcome
-2026-04-21 10:17,Cena & Ristoranti,3.00,outcome
-2026-04-21 10:57,Sport & Tempo Libero,5.04,outcome
-2026-04-21 14:43,Sport & Tempo Libero,104.01,outcome
-2026-04-22 12:57,Salute & Prevenzione,28.16,outcome
-2026-04-23 10:40,Spesa & Alimentari,84.01,outcome
-2026-04-23 18:37,Colazione & Caffè,3.46,outcome
-2026-04-24 09:27,Spesa & Alimentari,140.12,outcome
-2026-04-24 14:58,Cena & Ristoranti,3.00,outcome
-2026-04-25 08:22,Luce & Gas,97.53,outcome
-2026-04-25 09:51,Colazione & Caffè,3.00,outcome
-2026-04-27 09:30,Stipendio,3437.02,income
-2026-04-28 20:44,Cena & Ristoranti,15.47,outcome
-2026-05-01 13:04,Bollette,6.17,outcome
-2026-05-01 15:22,Spesa & Alimentari,15.55,outcome
-2026-05-02 13:45,Salute & Prevenzione,126.00,outcome
-2026-05-02 13:52,Colazione & Caffè,3.00,outcome
-2026-05-02 21:40,Colazione & Caffè,3.00,outcome
-2026-05-03 17:50,Spesa & Alimentari,86.28,outcome
-2026-05-03 21:42,Viaggi & Trasporti,45.86,outcome
-2026-05-04 10:16,Sosta & Parcheggi,39.40,outcome
-2026-05-04 22:31,Sport & Tempo Libero,3.21,outcome
-2026-05-05 09:13,Colazione & Caffè,3.31,outcome
-2026-05-05 14:11,Bollette,69.49,outcome
-2026-05-05 20:15,Tasse & Rimborsi,17.53,income
-2026-05-08 16:20,Spesa & Alimentari,34.90,outcome
-2026-05-10 10:00,Colazione & Caffè,9.76,outcome
-2026-05-10 19:03,Spesa & Alimentari,9.78,outcome
-2026-05-11 15:55,Shopping & Abbigliamento,43.08,outcome
-2026-05-12 11:59,Spesa & Alimentari,164.94,outcome
-2026-05-12 22:25,Shopping Online,11.42,outcome
-2026-05-13 08:25,Colazione & Caffè,3.00,outcome
-2026-05-13 15:27,Spesa & Alimentari,72.32,outcome
-2026-05-16 08:50,Colazione & Caffè,10.15,outcome
-2026-05-16 12:34,Cena & Ristoranti,3.00,outcome
-2026-05-16 13:18,Abbonamenti & Streaming,39.08,outcome
-2026-05-16 13:33,Auto & Trasporti,24.18,outcome
-2026-05-16 22:27,Spesa & Alimentari,65.49,outcome
-2026-05-17 18:13,Shopping & Abbigliamento,8.14,outcome
-2026-05-17 19:39,Colazione & Caffè,3.00,outcome
-2026-05-18 16:12,Viaggi & Trasporti,35.52,outcome
-2026-05-20 07:10,Cena & Ristoranti,13.39,outcome
-2026-05-20 08:43,Sport & Tempo Libero,3.58,outcome
-2026-05-20 09:42,Spesa & Alimentari,46.32,outcome
-2026-05-20 09:43,Sosta & Parcheggi,38.20,outcome
-2026-05-20 10:37,Luce & Gas,81.64,outcome
-2026-05-21 07:01,Sport & Tempo Libero,24.43,outcome
-2026-05-21 16:16,Bollette,254.67,outcome
-2026-05-21 18:40,Sport & Tempo Libero,6.15,outcome
-2026-05-21 22:50,Shopping Online,154.02,outcome
-2026-05-22 12:30,Spesa & Alimentari,82.19,outcome
-2026-05-23 18:00,Da categorizzare,502.92,income
-2026-05-23 22:15,Cena & Ristoranti,86.99,outcome
-2026-05-23 22:42,Cena & Ristoranti,17.38,outcome
-2026-05-24 17:51,Sport & Tempo Libero,44.19,outcome
-2026-05-25 12:06,Colazione & Caffè,8.13,outcome
-2026-05-27 09:30,Stipendio,3519.36,income
-2026-05-27 17:29,Cena & Ristoranti,64.01,outcome
-2026-05-28 18:21,Abbonamenti & Streaming,20.01,outcome
-2026-06-01 20:36,Spesa & Alimentari,19.90,outcome
-2026-06-02 17:23,Cena & Ristoranti,8.37,outcome
-2026-06-02 19:29,Shopping & Abbigliamento,102.15,outcome
-2026-06-03 07:43,Spesa & Alimentari,88.52,outcome
-2026-06-03 13:55,Bollette,79.13,outcome
-2026-06-04 11:30,Luce & Gas,30.67,outcome
-2026-06-04 20:36,Spesa & Alimentari,72.39,outcome
-2026-06-05 16:37,Sport & Tempo Libero,3.00,outcome
-2026-06-07 13:05,Colazione & Caffè,9.01,outcome
-2026-06-12 11:46,Auto & Trasporti,41.53,outcome
-2026-06-13 11:30,Spesa & Alimentari,5.50,outcome
-2026-06-13 13:50,Abbonamenti & Streaming,3.00,outcome
-2026-06-13 15:56,Colazione & Caffè,17.32,outcome
-2026-06-13 19:38,Sport & Tempo Libero,11.39,outcome
-2026-06-13 21:17,Cena & Ristoranti,57.60,outcome
-2026-06-14 07:00,Bollette,138.96,outcome
-2026-06-14 12:37,Salute & Prevenzione,3.00,outcome
-2026-06-14 14:24,Sport & Tempo Libero,56.24,outcome
-2026-06-16 11:00,Da categorizzare,203.93,income
-2026-06-17 13:12,Colazione & Caffè,3.00,outcome
-2026-06-18 09:34,Abbonamenti & Streaming,60.05,outcome
-2026-06-18 22:22,Abbonamenti & Streaming,13.57,outcome
-2026-06-18 22:51,Abbonamenti & Streaming,16.45,outcome
-2026-06-19 08:52,Spesa & Alimentari,26.78,outcome
-2026-06-19 21:30,Cena & Ristoranti,73.79,outcome
-2026-06-21 08:31,Spesa & Alimentari,60.70,outcome
-2026-06-21 12:40,Cena & Ristoranti,5.30,outcome
-2026-06-21 22:29,Viaggi & Trasporti,16.45,outcome
-2026-06-22 10:54,Bollette,45.53,outcome
-2026-06-22 12:09,Cena & Ristoranti,22.39,outcome
-2026-06-22 15:58,Sosta & Parcheggi,7.11,outcome
-2026-06-23 13:59,Shopping Online,227.92,outcome
-2026-06-23 19:28,Spesa & Alimentari,232.91,outcome
-2026-06-25 09:14,Colazione & Caffè,4.08,outcome
-2026-06-25 09:18,Auto & Trasporti,27.03,outcome
-2026-06-25 14:51,Sport & Tempo Libero,10.33,outcome
-2026-06-25 20:35,Spesa & Alimentari,74.43,outcome
-2026-06-26 10:23,Cena & Ristoranti,61.84,outcome
-2026-06-26 17:18,Cena & Ristoranti,34.17,outcome
-2026-06-26 20:30,Cena & Ristoranti,20.04,outcome
-2026-06-27 08:18,Salute & Prevenzione,21.74,outcome
-2026-06-27 09:30,Stipendio,3465.45,income
-2026-06-27 11:51,Salute & Prevenzione,61.30,outcome
-2026-06-27 17:30,Colazione & Caffè,15.45,outcome
-2026-06-28 22:38,Cena & Ristoranti,9.36,outcome
-2026-07-02 07:53,Cena & Ristoranti,46.94,outcome
-2026-07-02 13:55,Spesa & Alimentari,18.08,outcome
-2026-07-02 15:22,Cena & Ristoranti,4.76,outcome
-2026-07-02 15:50,Cena & Ristoranti,7.14,outcome
-2026-07-02 17:12,Luce & Gas,15.14,outcome
-2026-07-03 11:20,Spesa & Alimentari,149.24,outcome
-2026-07-03 19:59,Viaggi & Trasporti,29.23,outcome
-2026-07-04 09:16,Sosta & Parcheggi,12.07,outcome
-2026-07-05 07:17,Colazione & Caffè,3.00,outcome
-2026-07-05 08:40,Colazione & Caffè,9.93,outcome
-2026-07-05 15:53,Bollette,225.26,outcome
-2026-07-06 19:05,Bollette,53.19,outcome
-2026-07-08 14:11,Cena & Ristoranti,40.53,outcome
-2026-07-09 07:06,Spesa & Alimentari,55.60,outcome
-2026-07-11 18:16,Sport & Tempo Libero,20.63,outcome
-2026-07-13 07:40,Shopping & Abbigliamento,221.01,outcome
-2026-07-13 10:23,Sport & Tempo Libero,6.78,outcome
-2026-07-14 20:15,Colazione & Caffè,3.00,outcome
-2026-07-15 11:17,Colazione & Caffè,4.03,outcome
-2026-07-15 12:23,Cena & Ristoranti,64.37,outcome
-2026-07-15 14:51,Salute & Prevenzione,87.38,outcome
-2026-07-15 22:07,Colazione & Caffè,3.00,outcome
-2026-07-15 22:54,Auto & Trasporti,52.00,outcome
-2026-07-16 10:20,Colazione & Caffè,3.00,outcome
-2026-07-16 16:07,Colazione & Caffè,3.86,outcome
-2026-07-19 13:16,Spesa & Alimentari,34.08,outcome
-2026-07-19 16:21,Colazione & Caffè,3.09,outcome
-2026-07-19 20:15,Tasse & Rimborsi,17.69,income
-2026-07-19 21:48,Sport & Tempo Libero,9.96,outcome
-2026-07-20 07:22,Spesa & Alimentari,75.96,outcome
-2026-07-20 18:56,Abbonamenti & Streaming,3.00,outcome
-2026-07-21 10:30,Sport & Tempo Libero,68.26,outcome
-2026-07-22 16:37,Sport & Tempo Libero,6.24,outcome
-2026-07-24 11:49,Abbonamenti & Streaming,3.50,outcome
-2026-07-25 15:27,Spesa & Alimentari,46.89,outcome
-2026-07-26 08:10,Abbonamenti & Streaming,18.73,outcome
-2026-07-26 12:16,Colazione & Caffè,3.00,outcome
-2026-07-26 13:35,Colazione & Caffè,5.35,outcome
-2026-07-27 09:30,Stipendio,3272.28,income
-2026-07-27 14:04,Abbonamenti & Streaming,16.98,outcome
-2026-07-28 22:37,Spesa & Alimentari,226.07,outcome
-2026-08-01 14:05,Salute & Prevenzione,132.63,outcome
-2026-08-01 20:58,Viaggi & Trasporti,6.45,outcome
-2026-08-03 10:22,Cena & Ristoranti,77.99,outcome
-2026-08-04 19:56,Colazione & Caffè,4.11,outcome
-2026-08-04 22:28,Sport & Tempo Libero,42.33,outcome
-2026-08-05 14:55,Colazione & Caffè,19.56,outcome
-2026-08-05 21:00,Spesa & Alimentari,8.38,outcome
-2026-08-06 18:02,Sosta & Parcheggi,7.36,outcome
-2026-08-06 18:36,Auto & Trasporti,8.20,outcome
-2026-08-07 11:39,Luce & Gas,3.00,outcome
-2026-08-08 11:42,Colazione & Caffè,3.00,outcome
-2026-08-08 20:15,Tasse & Rimborsi,32.98,income
-2026-08-08 21:06,Shopping Online,69.97,outcome
-2026-08-09 10:07,Colazione & Caffè,3.00,outcome
-2026-08-10 13:00,Bollette,119.23,outcome
-2026-08-10 15:35,Abbonamenti & Streaming,7.67,outcome
-2026-08-12 20:02,Spesa & Alimentari,12.43,outcome
-2026-08-13 12:52,Colazione & Caffè,14.94,outcome
-2026-08-14 13:17,Spesa & Alimentari,92.82,outcome
-2026-08-14 18:00,Da categorizzare,444.43,income
-2026-08-16 15:11,Bollette,24.14,outcome
-2026-08-17 07:33,Sport & Tempo Libero,102.86,outcome
-2026-08-17 17:32,Spesa & Alimentari,67.77,outcome
-2026-08-19 12:08,Spesa & Alimentari,90.39,outcome
-2026-08-19 21:47,Colazione & Caffè,11.42,outcome
-2026-08-21 22:05,Viaggi & Trasporti,27.58,outcome
-2026-08-22 13:37,Luce & Gas,158.73,outcome
-2026-08-23 14:52,Cena & Ristoranti,126.12,outcome
-2026-08-23 19:36,Cena & Ristoranti,6.85,outcome
-2026-08-25 14:45,Spesa & Alimentari,10.08,outcome
-2026-08-25 22:08,Sosta & Parcheggi,16.72,outcome
-2026-08-26 16:11,Spesa & Alimentari,118.99,outcome
-2026-08-27 07:01,Abbonamenti & Streaming,37.99,outcome
-2026-08-27 09:30,Stipendio,3303.12,income
-2026-08-27 12:33,Spesa & Alimentari,68.65,outcome
-2026-08-27 17:49,Cena & Ristoranti,8.02,outcome
-2026-08-27 21:33,Shopping & Abbigliamento,24.76,outcome
-2026-08-28 15:15,Auto & Trasporti,31.58,outcome
+date,category,value,type
+2025-07-01,Salute & Prevenzione,52.47,outcome
+2025-07-02,Spesa & Alimentari,81.18,outcome
+2025-07-02,Cena & Ristoranti,6.80,outcome
+2025-07-03,Sport & Tempo Libero,6.21,outcome
+2025-07-03,Shopping Online,3.00,outcome
+2025-07-04,Spesa & Alimentari,149.75,outcome
+2025-07-04,Colazione & Caffè,5.05,outcome
+2025-07-04,Spesa & Alimentari,140.98,outcome
+2025-07-05,Colazione & Caffè,10.06,outcome
+2025-07-06,Shopping & Abbigliamento,32.03,outcome
+2025-07-08,Spesa & Alimentari,5.56,outcome
+2025-07-08,Spesa & Alimentari,17.58,outcome
+2025-07-08,Bollette,116.94,outcome
+2025-07-09,Sport & Tempo Libero,12.42,outcome
+2025-07-10,Cena & Ristoranti,53.59,outcome
+2025-07-10,Cena & Ristoranti,12.96,outcome
+2025-07-11,Sosta & Parcheggi,27.00,outcome
+2025-07-11,Colazione & Caffè,3.00,outcome
+2025-07-13,Shopping Online,151.28,outcome
+2025-07-13,Sport & Tempo Libero,31.38,outcome
+2025-07-14,Spesa & Alimentari,15.51,outcome
+2025-07-14,Auto & Trasporti,18.76,outcome
+2025-07-14,Sport & Tempo Libero,17.57,outcome
+2025-07-14,Sport & Tempo Libero,7.08,outcome
+2025-07-15,Cena & Ristoranti,35.15,outcome
+2025-07-15,Bollette,174.72,outcome
+2025-07-16,Colazione & Caffè,3.00,outcome
+2025-07-16,Viaggi & Trasporti,70.17,outcome
+2025-07-16,Colazione & Caffè,4.81,outcome
+2025-07-18,Sosta & Parcheggi,16.69,outcome
+2025-07-18,Abbonamenti & Streaming,10.38,outcome
+2025-07-19,Spesa & Alimentari,34.59,outcome
+2025-07-19,Abbonamenti & Streaming,9.71,outcome
+2025-07-19,Spesa & Alimentari,9.61,outcome
+2025-07-20,Shopping & Abbigliamento,199.01,outcome
+2025-07-20,Cena & Ristoranti,85.14,outcome
+2025-07-20,Colazione & Caffè,4.13,outcome
+2025-07-21,Colazione & Caffè,3.00,outcome
+2025-07-22,Auto & Trasporti,23.15,outcome
+2025-07-22,Cena & Ristoranti,4.95,outcome
+2025-07-23,Abbonamenti & Streaming,51.15,outcome
+2025-07-23,Da categorizzare,271.73,income
+2025-07-23,Viaggi & Trasporti,3.15,outcome
+2025-07-23,Cena & Ristoranti,3.00,outcome
+2025-07-25,Luce & Gas,83.60,outcome
+2025-07-27,Stipendio,3329.53,income
+2025-07-27,Spesa & Alimentari,4.28,outcome
+2025-07-28,Spesa & Alimentari,9.78,outcome
+2025-08-01,Cena & Ristoranti,8.57,outcome
+2025-08-01,Abbonamenti & Streaming,10.73,outcome
+2025-08-02,Salute & Prevenzione,96.21,outcome
+2025-08-03,Da categorizzare,342.35,income
+2025-08-04,Colazione & Caffè,9.53,outcome
+2025-08-04,Colazione & Caffè,3.00,outcome
+2025-08-05,Abbonamenti & Streaming,18.52,outcome
+2025-08-06,Sosta & Parcheggi,114.65,outcome
+2025-08-07,Colazione & Caffè,3.00,outcome
+2025-08-07,Bollette,66.07,outcome
+2025-08-08,Spesa & Alimentari,108.17,outcome
+2025-08-08,Colazione & Caffè,12.37,outcome
+2025-08-08,Spesa & Alimentari,47.54,outcome
+2025-08-08,Spesa & Alimentari,30.09,outcome
+2025-08-08,Colazione & Caffè,3.00,outcome
+2025-08-09,Sport & Tempo Libero,37.59,outcome
+2025-08-09,Spesa & Alimentari,32.81,outcome
+2025-08-09,Colazione & Caffè,10.59,outcome
+2025-08-11,Colazione & Caffè,14.74,outcome
+2025-08-12,Cena & Ristoranti,57.69,outcome
+2025-08-13,Auto & Trasporti,17.96,outcome
+2025-08-15,Colazione & Caffè,3.91,outcome
+2025-08-15,Abbonamenti & Streaming,3.00,outcome
+2025-08-16,Bollette,225.20,outcome
+2025-08-17,Abbonamenti & Streaming,32.08,outcome
+2025-08-17,Sport & Tempo Libero,109.56,outcome
+2025-08-17,Spesa & Alimentari,65.04,outcome
+2025-08-18,Shopping Online,110.96,outcome
+2025-08-18,Cena & Ristoranti,16.53,outcome
+2025-08-18,Colazione & Caffè,4.79,outcome
+2025-08-18,Colazione & Caffè,3.00,outcome
+2025-08-19,Sport & Tempo Libero,30.96,outcome
+2025-08-20,Colazione & Caffè,7.89,outcome
+2025-08-20,Spesa & Alimentari,3.08,outcome
+2025-08-20,Cena & Ristoranti,3.63,outcome
+2025-08-21,Viaggi & Trasporti,27.69,outcome
+2025-08-21,Colazione & Caffè,6.51,outcome
+2025-08-24,Spesa & Alimentari,60.19,outcome
+2025-08-24,Cena & Ristoranti,45.35,outcome
+2025-08-26,Sosta & Parcheggi,16.88,outcome
+2025-08-26,Spesa & Alimentari,84.99,outcome
+2025-08-26,Spesa & Alimentari,45.60,outcome
+2025-08-26,Spesa & Alimentari,44.85,outcome
+2025-08-26,Auto & Trasporti,21.93,outcome
+2025-08-27,Stipendio,3531.54,income
+2025-09-01,Shopping & Abbigliamento,74.41,outcome
+2025-09-01,Colazione & Caffè,6.02,outcome
+2025-09-01,Viaggi & Trasporti,23.45,outcome
+2025-09-02,Abbonamenti & Streaming,31.88,outcome
+2025-09-02,Luce & Gas,26.92,outcome
+2025-09-02,Shopping Online,144.99,outcome
+2025-09-03,Spesa & Alimentari,8.99,outcome
+2025-09-03,Bollette,144.78,outcome
+2025-09-03,Abbonamenti & Streaming,5.24,outcome
+2025-09-04,Spesa & Alimentari,18.26,outcome
+2025-09-05,Sosta & Parcheggi,141.78,outcome
+2025-09-06,Abbonamenti & Streaming,21.22,outcome
+2025-09-06,Shopping & Abbigliamento,22.74,outcome
+2025-09-09,Spesa & Alimentari,8.42,outcome
+2025-09-09,Colazione & Caffè,18.50,outcome
+2025-09-09,Bollette,90.15,outcome
+2025-09-10,Colazione & Caffè,42.83,outcome
+2025-09-10,Salute & Prevenzione,31.94,outcome
+2025-09-10,Cena & Ristoranti,43.82,outcome
+2025-09-11,Da categorizzare,143.72,income
+2025-09-11,Salute & Prevenzione,14.95,outcome
+2025-09-11,Spesa & Alimentari,118.54,outcome
+2025-09-11,Colazione & Caffè,3.00,outcome
+2025-09-12,Cena & Ristoranti,7.45,outcome
+2025-09-13,Colazione & Caffè,4.02,outcome
+2025-09-14,Spesa & Alimentari,3.00,outcome
+2025-09-14,Auto & Trasporti,27.52,outcome
+2025-09-15,Cena & Ristoranti,171.11,outcome
+2025-09-16,Sport & Tempo Libero,12.06,outcome
+2025-09-16,Salute & Prevenzione,35.69,outcome
+2025-09-17,Colazione & Caffè,3.00,outcome
+2025-09-17,Da categorizzare,348.81,income
+2025-09-18,Sport & Tempo Libero,33.12,outcome
+2025-09-19,Colazione & Caffè,3.00,outcome
+2025-09-21,Luce & Gas,39.07,outcome
+2025-09-21,Colazione & Caffè,4.35,outcome
+2025-09-22,Abbonamenti & Streaming,33.39,outcome
+2025-09-22,Tasse & Rimborsi,30.48,income
+2025-09-23,Spesa & Alimentari,44.46,outcome
+2025-09-23,Colazione & Caffè,8.61,outcome
+2025-09-25,Spesa & Alimentari,258.22,outcome
+2025-09-25,Spesa & Alimentari,18.04,outcome
+2025-09-25,Cena & Ristoranti,19.53,outcome
+2025-09-26,Spesa & Alimentari,4.50,outcome
+2025-09-27,Stipendio,3301.24,income
+2025-09-27,Colazione & Caffè,3.18,outcome
+2025-10-01,Viaggi & Trasporti,41.13,outcome
+2025-10-02,Spesa & Alimentari,212.68,outcome
+2025-10-02,Bollette,77.25,outcome
+2025-10-03,Cena & Ristoranti,60.21,outcome
+2025-10-04,Sosta & Parcheggi,42.65,outcome
+2025-10-04,Sport & Tempo Libero,156.82,outcome
+2025-10-05,Colazione & Caffè,3.00,outcome
+2025-10-05,Sport & Tempo Libero,3.00,outcome
+2025-10-05,Spesa & Alimentari,18.71,outcome
+2025-10-06,Salute & Prevenzione,35.35,outcome
+2025-10-07,Shopping Online,21.23,outcome
+2025-10-09,Spesa & Alimentari,6.26,outcome
+2025-10-10,Cena & Ristoranti,45.86,outcome
+2025-10-12,Shopping & Abbigliamento,28.45,outcome
+2025-10-13,Bollette,132.96,outcome
+2025-10-13,Cena & Ristoranti,3.00,outcome
+2025-10-13,Abbonamenti & Streaming,21.28,outcome
+2025-10-13,Spesa & Alimentari,119.38,outcome
+2025-10-14,Colazione & Caffè,3.73,outcome
+2025-10-14,Colazione & Caffè,9.60,outcome
+2025-10-15,Luce & Gas,73.18,outcome
+2025-10-16,Auto & Trasporti,8.18,outcome
+2025-10-16,Viaggi & Trasporti,28.42,outcome
+2025-10-17,Spesa & Alimentari,13.05,outcome
+2025-10-17,Spesa & Alimentari,5.12,outcome
+2025-10-17,Sosta & Parcheggi,41.59,outcome
+2025-10-18,Spesa & Alimentari,59.36,outcome
+2025-10-22,Bollette,33.78,outcome
+2025-10-22,Salute & Prevenzione,54.35,outcome
+2025-10-24,Sport & Tempo Libero,12.86,outcome
+2025-10-24,Shopping Online,127.16,outcome
+2025-10-24,Spesa & Alimentari,34.77,outcome
+2025-10-25,Colazione & Caffè,4.74,outcome
+2025-10-25,Colazione & Caffè,31.66,outcome
+2025-10-26,Spesa & Alimentari,66.87,outcome
+2025-10-26,Spesa & Alimentari,64.36,outcome
+2025-10-27,Stipendio,3480.42,income
+2025-10-27,Colazione & Caffè,3.00,outcome
+2025-10-27,Abbonamenti & Streaming,29.85,outcome
+2025-10-27,Cena & Ristoranti,85.81,outcome
+2025-11-01,Colazione & Caffè,3.00,outcome
+2025-11-01,Bollette,130.00,outcome
+2025-11-03,Tasse & Rimborsi,9.34,income
+2025-11-05,Spesa & Alimentari,52.55,outcome
+2025-11-06,Spesa & Alimentari,38.49,outcome
+2025-11-07,Spesa & Alimentari,38.65,outcome
+2025-11-08,Shopping & Abbigliamento,33.11,outcome
+2025-11-08,Cena & Ristoranti,68.72,outcome
+2025-11-08,Spesa & Alimentari,151.84,outcome
+2025-11-09,Auto & Trasporti,5.40,outcome
+2025-11-09,Colazione & Caffè,10.25,outcome
+2025-11-09,Viaggi & Trasporti,8.67,outcome
+2025-11-10,Spesa & Alimentari,82.65,outcome
+2025-11-11,Colazione & Caffè,8.08,outcome
+2025-11-11,Spesa & Alimentari,25.31,outcome
+2025-11-12,Luce & Gas,93.46,outcome
+2025-11-13,Sosta & Parcheggi,87.03,outcome
+2025-11-13,Cena & Ristoranti,98.43,outcome
+2025-11-14,Colazione & Caffè,3.00,outcome
+2025-11-16,Cena & Ristoranti,86.64,outcome
+2025-11-16,Colazione & Caffè,3.00,outcome
+2025-11-16,Colazione & Caffè,3.70,outcome
+2025-11-16,Spesa & Alimentari,42.18,outcome
+2025-11-16,Colazione & Caffè,3.00,outcome
+2025-11-17,Abbonamenti & Streaming,50.15,outcome
+2025-11-18,Sport & Tempo Libero,3.60,outcome
+2025-11-18,Shopping Online,52.21,outcome
+2025-11-19,Salute & Prevenzione,129.52,outcome
+2025-11-19,Bollette,69.25,outcome
+2025-11-21,Spesa & Alimentari,145.60,outcome
+2025-11-22,Auto & Trasporti,38.57,outcome
+2025-11-22,Colazione & Caffè,8.14,outcome
+2025-11-24,Spesa & Alimentari,19.20,outcome
+2025-11-24,Sport & Tempo Libero,58.01,outcome
+2025-11-25,Abbonamenti & Streaming,29.90,outcome
+2025-11-25,Colazione & Caffè,3.00,outcome
+2025-11-26,Cena & Ristoranti,37.00,outcome
+2025-11-27,Stipendio,3550.29,income
+2025-11-28,Colazione & Caffè,8.62,outcome
+2025-12-01,Bollette,25.05,outcome
+2025-12-03,Cena & Ristoranti,3.10,outcome
+2025-12-03,Shopping & Abbigliamento,32.41,outcome
+2025-12-03,Luce & Gas,77.62,outcome
+2025-12-04,Spesa & Alimentari,16.03,outcome
+2025-12-05,Spesa & Alimentari,92.53,outcome
+2025-12-06,Spesa & Alimentari,16.36,outcome
+2025-12-07,Cena & Ristoranti,7.36,outcome
+2025-12-08,Colazione & Caffè,3.00,outcome
+2025-12-08,Tasse & Rimborsi,21.10,income
+2025-12-09,Colazione & Caffè,3.00,outcome
+2025-12-09,Cena & Ristoranti,28.86,outcome
+2025-12-11,Abbonamenti & Streaming,47.64,outcome
+2025-12-12,Abbonamenti & Streaming,30.81,outcome
+2025-12-12,Da categorizzare,299.05,income
+2025-12-13,Cena & Ristoranti,13.52,outcome
+2025-12-13,Sport & Tempo Libero,3.49,outcome
+2025-12-13,Bollette,9.76,outcome
+2025-12-13,Viaggi & Trasporti,114.84,outcome
+2025-12-13,Spesa & Alimentari,114.10,outcome
+2025-12-15,Bollette,193.54,outcome
+2025-12-15,Colazione & Caffè,15.79,outcome
+2025-12-16,Salute & Prevenzione,10.64,outcome
+2025-12-16,Sport & Tempo Libero,9.34,outcome
+2025-12-18,Colazione & Caffè,21.89,outcome
+2025-12-18,Shopping Online,98.63,outcome
+2025-12-19,Da categorizzare,159.32,income
+2025-12-20,Sport & Tempo Libero,13.71,outcome
+2025-12-20,Cena & Ristoranti,21.51,outcome
+2025-12-21,Cena & Ristoranti,21.50,outcome
+2025-12-23,Spesa & Alimentari,42.07,outcome
+2025-12-23,Spesa & Alimentari,350.99,outcome
+2025-12-23,Colazione & Caffè,7.88,outcome
+2025-12-26,Salute & Prevenzione,69.55,outcome
+2025-12-26,Cena & Ristoranti,14.02,outcome
+2025-12-26,Sosta & Parcheggi,49.36,outcome
+2025-12-27,Stipendio,3386.05,income
+2025-12-27,Sport & Tempo Libero,19.55,outcome
+2025-12-27,Colazione & Caffè,45.86,outcome
+2025-12-27,Auto & Trasporti,40.46,outcome
+2026-01-02,Spesa & Alimentari,116.20,outcome
+2026-01-02,Luce & Gas,121.15,outcome
+2026-01-03,Shopping & Abbigliamento,69.95,outcome
+2026-01-03,Colazione & Caffè,3.00,outcome
+2026-01-04,Spesa & Alimentari,59.97,outcome
+2026-01-05,Bollette,38.89,outcome
+2026-01-05,Tasse & Rimborsi,15.60,income
+2026-01-06,Cena & Ristoranti,3.00,outcome
+2026-01-07,Viaggi & Trasporti,125.87,outcome
+2026-01-07,Colazione & Caffè,3.00,outcome
+2026-01-07,Sport & Tempo Libero,27.95,outcome
+2026-01-08,Colazione & Caffè,5.40,outcome
+2026-01-09,Cena & Ristoranti,81.93,outcome
+2026-01-10,Spesa & Alimentari,190.16,outcome
+2026-01-11,Sosta & Parcheggi,10.97,outcome
+2026-01-12,Colazione & Caffè,4.67,outcome
+2026-01-12,Auto & Trasporti,73.15,outcome
+2026-01-12,Shopping Online,45.71,outcome
+2026-01-13,Sport & Tempo Libero,51.62,outcome
+2026-01-13,Colazione & Caffè,3.00,outcome
+2026-01-13,Salute & Prevenzione,35.90,outcome
+2026-01-14,Sport & Tempo Libero,41.70,outcome
+2026-01-14,Sport & Tempo Libero,6.25,outcome
+2026-01-15,Spesa & Alimentari,70.26,outcome
+2026-01-16,Colazione & Caffè,18.14,outcome
+2026-01-17,Colazione & Caffè,12.43,outcome
+2026-01-17,Shopping & Abbigliamento,150.57,outcome
+2026-01-17,Da categorizzare,361.34,income
+2026-01-18,Cena & Ristoranti,12.24,outcome
+2026-01-18,Cena & Ristoranti,61.19,outcome
+2026-01-18,Abbonamenti & Streaming,3.00,outcome
+2026-01-21,Bollette,54.96,outcome
+2026-01-21,Spesa & Alimentari,146.12,outcome
+2026-01-25,Luce & Gas,75.52,outcome
+2026-01-25,Sport & Tempo Libero,5.98,outcome
+2026-01-26,Colazione & Caffè,15.97,outcome
+2026-01-26,Abbonamenti & Streaming,82.87,outcome
+2026-01-26,Cena & Ristoranti,5.11,outcome
+2026-01-27,Stipendio,3301.62,income
+2026-01-27,Spesa & Alimentari,4.77,outcome
+2026-01-27,Spesa & Alimentari,44.04,outcome
+2026-02-01,Salute & Prevenzione,13.39,outcome
+2026-02-01,Colazione & Caffè,3.00,outcome
+2026-02-02,Colazione & Caffè,3.00,outcome
+2026-02-02,Abbonamenti & Streaming,8.41,outcome
+2026-02-02,Colazione & Caffè,7.30,outcome
+2026-02-02,Abbonamenti & Streaming,14.73,outcome
+2026-02-02,Bollette,209.25,outcome
+2026-02-03,Spesa & Alimentari,61.12,outcome
+2026-02-04,Spesa & Alimentari,22.66,outcome
+2026-02-05,Sport & Tempo Libero,48.45,outcome
+2026-02-06,Spesa & Alimentari,118.04,outcome
+2026-02-06,Colazione & Caffè,8.32,outcome
+2026-02-06,Colazione & Caffè,4.03,outcome
+2026-02-06,Cena & Ristoranti,60.58,outcome
+2026-02-06,Spesa & Alimentari,31.50,outcome
+2026-02-08,Abbonamenti & Streaming,3.00,outcome
+2026-02-08,Spesa & Alimentari,28.05,outcome
+2026-02-09,Cena & Ristoranti,4.05,outcome
+2026-02-10,Shopping Online,102.61,outcome
+2026-02-11,Cena & Ristoranti,15.85,outcome
+2026-02-12,Cena & Ristoranti,30.99,outcome
+2026-02-12,Abbonamenti & Streaming,15.15,outcome
+2026-02-12,Spesa & Alimentari,68.88,outcome
+2026-02-12,Shopping & Abbigliamento,145.70,outcome
+2026-02-13,Sport & Tempo Libero,3.98,outcome
+2026-02-16,Cena & Ristoranti,38.28,outcome
+2026-02-16,Viaggi & Trasporti,34.45,outcome
+2026-02-17,Spesa & Alimentari,33.59,outcome
+2026-02-17,Colazione & Caffè,7.02,outcome
+2026-02-18,Sport & Tempo Libero,16.75,outcome
+2026-02-20,Spesa & Alimentari,10.31,outcome
+2026-02-20,Spesa & Alimentari,27.92,outcome
+2026-02-21,Spesa & Alimentari,71.50,outcome
+2026-02-21,Cena & Ristoranti,67.71,outcome
+2026-02-21,Salute & Prevenzione,36.30,outcome
+2026-02-21,Colazione & Caffè,4.85,outcome
+2026-02-22,Tasse & Rimborsi,30.63,income
+2026-02-25,Cena & Ristoranti,27.58,outcome
+2026-02-25,Sport & Tempo Libero,18.81,outcome
+2026-02-26,Bollette,108.88,outcome
+2026-02-26,Sosta & Parcheggi,140.15,outcome
+2026-02-26,Auto & Trasporti,3.25,outcome
+2026-02-26,Cena & Ristoranti,21.57,outcome
+2026-02-26,Sport & Tempo Libero,72.16,outcome
+2026-02-27,Stipendio,3553.55,income
+2026-02-27,Salute & Prevenzione,3.00,outcome
+2026-02-27,Colazione & Caffè,3.14,outcome
+2026-02-28,Luce & Gas,90.97,outcome
+2026-03-01,Spesa & Alimentari,28.10,outcome
+2026-03-01,Viaggi & Trasporti,21.48,outcome
+2026-03-02,Cena & Ristoranti,25.18,outcome
+2026-03-02,Cena & Ristoranti,3.00,outcome
+2026-03-02,Spesa & Alimentari,17.62,outcome
+2026-03-03,Cena & Ristoranti,30.94,outcome
+2026-03-03,Colazione & Caffè,12.64,outcome
+2026-03-04,Sport & Tempo Libero,7.26,outcome
+2026-03-04,Salute & Prevenzione,101.52,outcome
+2026-03-04,Cena & Ristoranti,32.29,outcome
+2026-03-05,Cena & Ristoranti,25.48,outcome
+2026-03-07,Colazione & Caffè,11.15,outcome
+2026-03-08,Spesa & Alimentari,235.29,outcome
+2026-03-08,Spesa & Alimentari,5.28,outcome
+2026-03-08,Sport & Tempo Libero,67.27,outcome
+2026-03-09,Bollette,338.28,outcome
+2026-03-10,Abbonamenti & Streaming,13.67,outcome
+2026-03-11,Sosta & Parcheggi,58.60,outcome
+2026-03-11,Spesa & Alimentari,39.16,outcome
+2026-03-11,Abbonamenti & Streaming,33.97,outcome
+2026-03-12,Colazione & Caffè,9.20,outcome
+2026-03-13,Da categorizzare,102.76,income
+2026-03-14,Colazione & Caffè,7.60,outcome
+2026-03-14,Spesa & Alimentari,73.11,outcome
+2026-03-16,Colazione & Caffè,8.04,outcome
+2026-03-17,Bollette,31.60,outcome
+2026-03-18,Spesa & Alimentari,44.03,outcome
+2026-03-20,Tasse & Rimborsi,25.35,income
+2026-03-21,Cena & Ristoranti,29.92,outcome
+2026-03-21,Salute & Prevenzione,13.37,outcome
+2026-03-22,Sport & Tempo Libero,31.87,outcome
+2026-03-24,Spesa & Alimentari,72.80,outcome
+2026-03-25,Colazione & Caffè,9.73,outcome
+2026-03-25,Abbonamenti & Streaming,4.70,outcome
+2026-03-26,Salute & Prevenzione,38.01,outcome
+2026-03-26,Spesa & Alimentari,64.12,outcome
+2026-03-26,Shopping Online,163.55,outcome
+2026-03-27,Auto & Trasporti,24.02,outcome
+2026-03-27,Stipendio,3445.06,income
+2026-03-28,Sport & Tempo Libero,53.50,outcome
+2026-03-28,Viaggi & Trasporti,75.16,outcome
+2026-04-01,Cena & Ristoranti,53.99,outcome
+2026-04-01,Salute & Prevenzione,28.85,outcome
+2026-04-02,Colazione & Caffè,5.66,outcome
+2026-04-02,Cena & Ristoranti,4.68,outcome
+2026-04-04,Shopping & Abbigliamento,165.03,outcome
+2026-04-05,Sosta & Parcheggi,17.05,outcome
+2026-04-05,Luce & Gas,29.49,outcome
+2026-04-06,Sport & Tempo Libero,3.00,outcome
+2026-04-07,Colazione & Caffè,3.00,outcome
+2026-04-07,Spesa & Alimentari,3.00,outcome
+2026-04-07,Cena & Ristoranti,3.00,outcome
+2026-04-07,Shopping Online,152.81,outcome
+2026-04-08,Auto & Trasporti,18.35,outcome
+2026-04-08,Cena & Ristoranti,3.00,outcome
+2026-04-08,Viaggi & Trasporti,16.72,outcome
+2026-04-08,Colazione & Caffè,5.75,outcome
+2026-04-09,Colazione & Caffè,5.05,outcome
+2026-04-09,Cena & Ristoranti,22.51,outcome
+2026-04-09,Abbonamenti & Streaming,46.34,outcome
+2026-04-09,Colazione & Caffè,3.00,outcome
+2026-04-10,Sosta & Parcheggi,48.91,outcome
+2026-04-10,Colazione & Caffè,3.00,outcome
+2026-04-11,Spesa & Alimentari,33.31,outcome
+2026-04-11,Auto & Trasporti,44.54,outcome
+2026-04-12,Colazione & Caffè,3.80,outcome
+2026-04-13,Spesa & Alimentari,131.13,outcome
+2026-04-14,Spesa & Alimentari,31.06,outcome
+2026-04-14,Sport & Tempo Libero,19.51,outcome
+2026-04-14,Sport & Tempo Libero,28.39,outcome
+2026-04-14,Colazione & Caffè,3.00,outcome
+2026-04-14,Salute & Prevenzione,19.01,outcome
+2026-04-16,Abbonamenti & Streaming,29.47,outcome
+2026-04-18,Bollette,195.60,outcome
+2026-04-19,Bollette,94.92,outcome
+2026-04-19,Tasse & Rimborsi,33.48,income
+2026-04-20,Cena & Ristoranti,51.14,outcome
+2026-04-21,Spesa & Alimentari,86.90,outcome
+2026-04-21,Cena & Ristoranti,3.00,outcome
+2026-04-21,Sport & Tempo Libero,5.04,outcome
+2026-04-21,Sport & Tempo Libero,104.01,outcome
+2026-04-22,Salute & Prevenzione,28.16,outcome
+2026-04-23,Spesa & Alimentari,84.01,outcome
+2026-04-23,Colazione & Caffè,3.46,outcome
+2026-04-24,Spesa & Alimentari,140.12,outcome
+2026-04-24,Cena & Ristoranti,3.00,outcome
+2026-04-25,Luce & Gas,97.53,outcome
+2026-04-25,Colazione & Caffè,3.00,outcome
+2026-04-27,Stipendio,3437.02,income
+2026-04-28,Cena & Ristoranti,15.47,outcome
+2026-05-01,Bollette,6.17,outcome
+2026-05-01,Spesa & Alimentari,15.55,outcome
+2026-05-02,Salute & Prevenzione,126.00,outcome
+2026-05-02,Colazione & Caffè,3.00,outcome
+2026-05-02,Colazione & Caffè,3.00,outcome
+2026-05-03,Spesa & Alimentari,86.28,outcome
+2026-05-03,Viaggi & Trasporti,45.86,outcome
+2026-05-04,Sosta & Parcheggi,39.40,outcome
+2026-05-04,Sport & Tempo Libero,3.21,outcome
+2026-05-05,Colazione & Caffè,3.31,outcome
+2026-05-05,Bollette,69.49,outcome
+2026-05-05,Tasse & Rimborsi,17.53,income
+2026-05-08,Spesa & Alimentari,34.90,outcome
+2026-05-10,Colazione & Caffè,9.76,outcome
+2026-05-10,Spesa & Alimentari,9.78,outcome
+2026-05-11,Shopping & Abbigliamento,43.08,outcome
+2026-05-12,Spesa & Alimentari,164.94,outcome
+2026-05-12,Shopping Online,11.42,outcome
+2026-05-13,Colazione & Caffè,3.00,outcome
+2026-05-13,Spesa & Alimentari,72.32,outcome
+2026-05-16,Colazione & Caffè,10.15,outcome
+2026-05-16,Cena & Ristoranti,3.00,outcome
+2026-05-16,Abbonamenti & Streaming,39.08,outcome
+2026-05-16,Auto & Trasporti,24.18,outcome
+2026-05-16,Spesa & Alimentari,65.49,outcome
+2026-05-17,Shopping & Abbigliamento,8.14,outcome
+2026-05-17,Colazione & Caffè,3.00,outcome
+2026-05-18,Viaggi & Trasporti,35.52,outcome
+2026-05-20,Cena & Ristoranti,13.39,outcome
+2026-05-20,Sport & Tempo Libero,3.58,outcome
+2026-05-20,Spesa & Alimentari,46.32,outcome
+2026-05-20,Sosta & Parcheggi,38.20,outcome
+2026-05-20,Luce & Gas,81.64,outcome
+2026-05-21,Sport & Tempo Libero,24.43,outcome
+2026-05-21,Bollette,254.67,outcome
+2026-05-21,Sport & Tempo Libero,6.15,outcome
+2026-05-21,Shopping Online,154.02,outcome
+2026-05-22,Spesa & Alimentari,82.19,outcome
+2026-05-23,Da categorizzare,502.92,income
+2026-05-23,Cena & Ristoranti,86.99,outcome
+2026-05-23,Cena & Ristoranti,17.38,outcome
+2026-05-24,Sport & Tempo Libero,44.19,outcome
+2026-05-25,Colazione & Caffè,8.13,outcome
+2026-05-27,Stipendio,3519.36,income
+2026-05-27,Cena & Ristoranti,64.01,outcome
+2026-05-28,Abbonamenti & Streaming,20.01,outcome
+2026-06-01,Spesa & Alimentari,19.90,outcome
+2026-06-02,Cena & Ristoranti,8.37,outcome
+2026-06-02,Shopping & Abbigliamento,102.15,outcome
+2026-06-03,Spesa & Alimentari,88.52,outcome
+2026-06-03,Bollette,79.13,outcome
+2026-06-04,Luce & Gas,30.67,outcome
+2026-06-04,Spesa & Alimentari,72.39,outcome
+2026-06-05,Sport & Tempo Libero,3.00,outcome
+2026-06-07,Colazione & Caffè,9.01,outcome
+2026-06-12,Auto & Trasporti,41.53,outcome
+2026-06-13,Spesa & Alimentari,5.50,outcome
+2026-06-13,Abbonamenti & Streaming,3.00,outcome
+2026-06-13,Colazione & Caffè,17.32,outcome
+2026-06-13,Sport & Tempo Libero,11.39,outcome
+2026-06-13,Cena & Ristoranti,57.60,outcome
+2026-06-14,Bollette,138.96,outcome
+2026-06-14,Salute & Prevenzione,3.00,outcome
+2026-06-14,Sport & Tempo Libero,56.24,outcome
+2026-06-16,Da categorizzare,203.93,income
+2026-06-17,Colazione & Caffè,3.00,outcome
+2026-06-18,Abbonamenti & Streaming,60.05,outcome
+2026-06-18,Abbonamenti & Streaming,13.57,outcome
+2026-06-18,Abbonamenti & Streaming,16.45,outcome
+2026-06-19,Spesa & Alimentari,26.78,outcome
+2026-06-19,Cena & Ristoranti,73.79,outcome
+2026-06-21,Spesa & Alimentari,60.70,outcome
+2026-06-21,Cena & Ristoranti,5.30,outcome
+2026-06-21,Viaggi & Trasporti,16.45,outcome
+2026-06-22,Bollette,45.53,outcome
+2026-06-22,Cena & Ristoranti,22.39,outcome
+2026-06-22,Sosta & Parcheggi,7.11,outcome
+2026-06-23,Shopping Online,227.92,outcome
+2026-06-23,Spesa & Alimentari,232.91,outcome
+2026-06-25,Colazione & Caffè,4.08,outcome
+2026-06-25,Auto & Trasporti,27.03,outcome
+2026-06-25,Sport & Tempo Libero,10.33,outcome
+2026-06-25,Spesa & Alimentari,74.43,outcome
+2026-06-26,Cena & Ristoranti,61.84,outcome
+2026-06-26,Cena & Ristoranti,34.17,outcome
+2026-06-26,Cena & Ristoranti,20.04,outcome
+2026-06-27,Salute & Prevenzione,21.74,outcome
+2026-06-27,Stipendio,3465.45,income
+2026-06-27,Salute & Prevenzione,61.30,outcome
+2026-06-27,Colazione & Caffè,15.45,outcome
+2026-06-28,Cena & Ristoranti,9.36,outcome
+2026-07-02,Cena & Ristoranti,46.94,outcome
+2026-07-02,Spesa & Alimentari,18.08,outcome
+2026-07-02,Cena & Ristoranti,4.76,outcome
+2026-07-02,Cena & Ristoranti,7.14,outcome
+2026-07-02,Luce & Gas,15.14,outcome
+2026-07-03,Spesa & Alimentari,149.24,outcome
+2026-07-03,Viaggi & Trasporti,29.23,outcome
+2026-07-04,Sosta & Parcheggi,12.07,outcome
+2026-07-05,Colazione & Caffè,3.00,outcome
+2026-07-05,Colazione & Caffè,9.93,outcome
+2026-07-05,Bollette,225.26,outcome
+2026-07-06,Bollette,53.19,outcome
+2026-07-08,Cena & Ristoranti,40.53,outcome
+2026-07-09,Spesa & Alimentari,55.60,outcome
+2026-07-11,Sport & Tempo Libero,20.63,outcome
+2026-07-13,Shopping & Abbigliamento,221.01,outcome
+2026-07-13,Sport & Tempo Libero,6.78,outcome
+2026-07-14,Colazione & Caffè,3.00,outcome
+2026-07-15,Colazione & Caffè,4.03,outcome
+2026-07-15,Cena & Ristoranti,64.37,outcome
+2026-07-15,Salute & Prevenzione,87.38,outcome
+2026-07-15,Colazione & Caffè,3.00,outcome
+2026-07-15,Auto & Trasporti,52.00,outcome
+2026-07-16,Colazione & Caffè,3.00,outcome
+2026-07-16,Colazione & Caffè,3.86,outcome
+2026-07-19,Spesa & Alimentari,34.08,outcome
+2026-07-19,Colazione & Caffè,3.09,outcome
+2026-07-19,Tasse & Rimborsi,17.69,income
+2026-07-19,Sport & Tempo Libero,9.96,outcome
+2026-07-20,Spesa & Alimentari,75.96,outcome
+2026-07-20,Abbonamenti & Streaming,3.00,outcome
+2026-07-21,Sport & Tempo Libero,68.26,outcome
+2026-07-22,Sport & Tempo Libero,6.24,outcome
+2026-07-24,Abbonamenti & Streaming,3.50,outcome
+2026-07-25,Spesa & Alimentari,46.89,outcome
+2026-07-26,Abbonamenti & Streaming,18.73,outcome
+2026-07-26,Colazione & Caffè,3.00,outcome
+2026-07-26,Colazione & Caffè,5.35,outcome
+2026-07-27,Stipendio,3272.28,income
+2026-07-27,Abbonamenti & Streaming,16.98,outcome
+2026-07-28,Spesa & Alimentari,226.07,outcome
+2026-08-01,Salute & Prevenzione,132.63,outcome
+2026-08-01,Viaggi & Trasporti,6.45,outcome
+2026-08-03,Cena & Ristoranti,77.99,outcome
+2026-08-04,Colazione & Caffè,4.11,outcome
+2026-08-04,Sport & Tempo Libero,42.33,outcome
+2026-08-05,Colazione & Caffè,19.56,outcome
+2026-08-05,Spesa & Alimentari,8.38,outcome
+2026-08-06,Sosta & Parcheggi,7.36,outcome
+2026-08-06,Auto & Trasporti,8.20,outcome
+2026-08-07,Luce & Gas,3.00,outcome
+2026-08-08,Colazione & Caffè,3.00,outcome
+2026-08-08,Tasse & Rimborsi,32.98,income
+2026-08-08,Shopping Online,69.97,outcome
+2026-08-09,Colazione & Caffè,3.00,outcome
+2026-08-10,Bollette,119.23,outcome
+2026-08-10,Abbonamenti & Streaming,7.67,outcome
+2026-08-12,Spesa & Alimentari,12.43,outcome
+2026-08-13,Colazione & Caffè,14.94,outcome
+2026-08-14,Spesa & Alimentari,92.82,outcome
+2026-08-14,Da categorizzare,444.43,income
+2026-08-16,Bollette,24.14,outcome
+2026-08-17,Sport & Tempo Libero,102.86,outcome
+2026-08-17,Spesa & Alimentari,67.77,outcome
+2026-08-19,Spesa & Alimentari,90.39,outcome
+2026-08-19,Colazione & Caffè,11.42,outcome
+2026-08-21,Viaggi & Trasporti,27.58,outcome
+2026-08-22,Luce & Gas,158.73,outcome
+2026-08-23,Cena & Ristoranti,126.12,outcome
+2026-08-23,Cena & Ristoranti,6.85,outcome
+2026-08-25,Spesa & Alimentari,10.08,outcome
+2026-08-25,Sosta & Parcheggi,16.72,outcome
+2026-08-26,Spesa & Alimentari,118.99,outcome
+2026-08-27,Abbonamenti & Streaming,37.99,outcome
+2026-08-27,Stipendio,3303.12,income
+2026-08-27,Spesa & Alimentari,68.65,outcome
+2026-08-27,Cena & Ristoranti,8.02,outcome
+2026-08-27,Shopping & Abbigliamento,24.76,outcome
+2026-08-28,Auto & Trasporti,31.58,outcome
