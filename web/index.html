@@ -599,7 +599,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       date,description,value,type<br>
       2025-01-15,ESSELUNGA RIPAMONTI,42.10,outcome<br>
       <br>
-      La colonna <em>value</em> accetta sia il formato anglosassone (1,234.56) sia quello europeo (1.234,56).
+      La colonna <em>value</em> accetta sia il formato anglosassone (1,234.56) sia quello europeo (1.234,56).<br>
+      La colonna <em>date</em> accetta i formati AAAA-MM-GG (es. 2025-01-15), GG/MM/AAAA e GG-MM-AA (es. 15-01-25).
     </div>
   </div>
 </div>
@@ -2070,9 +2071,10 @@ function parseDateFlexible(raw) {
   let d = null;
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) { const parsed = new Date(s.replace(" ", "T")); if (!isNaN(parsed)) d = parsed; }
   if (!d) {
-    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?$/);
+    // DD/MM/YYYY o DD-MM-YY (stesso separatore su entrambi i lati), anno a 2 o 4 cifre.
+    const m = s.match(/^(\d{1,2})([/-])(\d{1,2})\2(\d{2,4})(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?$/);
     if (m) {
-      let [, dd, mm, yyyy] = m;
+      let [, dd, , mm, yyyy] = m;
       if (yyyy.length === 2) yyyy = "20" + yyyy;
       d = new Date(+yyyy, +mm - 1, +dd);
     }
