@@ -597,7 +597,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       (l'estratto conto dell'esercente): la categoria verrà indovinata da un dizionario di parole chiave,
       modificabile in Impostazioni.<br>
       date,description,value,type<br>
-      2025-01-15,ESSELUNGA RIPAMONTI,42.10,outcome
+      2025-01-15,ESSELUNGA RIPAMONTI,42.10,outcome<br>
+      <br>
+      La colonna <em>value</em> accetta sia il formato anglosassone (1,234.56) sia quello europeo (1.234,56).
     </div>
   </div>
 </div>
@@ -2035,11 +2037,24 @@ function catIcon(cat) { return CATEGORY_ICONS[cat] || "💳"; }
 function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
 
 // ---------------------------------------------------------------- CSV parsing
+// Supporta sia il formato anglosassone (1,000.00) sia quello europeo (1.000,00). Quando compaiono
+// entrambi i separatori, quello più a destra è il decimale (l'altro è il separatore delle migliaia).
+// Con un solo tipo di separatore, un solo simbolo seguito da esattamente 3 cifre finali (o ripetuto
+// più volte) è trattato come separatore delle migliaia; altrimenti è il separatore decimale.
 function normalizeNumber(raw) {
   let s = raw.replace(/[€\s]/g, "");
-  const hasComma = s.includes(","), hasDot = s.includes(".");
-  if (hasComma && hasDot) s = s.replace(/\./g, "").replace(",", ".");
-  else if (hasComma && !hasDot) s = s.replace(",", ".");
+  const lastComma = s.lastIndexOf(","), lastDot = s.lastIndexOf(".");
+  if (lastComma !== -1 && lastDot !== -1) {
+    s = lastComma > lastDot ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+  } else if (lastComma !== -1) {
+    const decimals = s.length - lastComma - 1;
+    const commaCount = (s.match(/,/g) || []).length;
+    s = commaCount > 1 || decimals === 3 ? s.replace(/,/g, "") : s.replace(",", ".");
+  } else if (lastDot !== -1) {
+    const decimals = s.length - lastDot - 1;
+    const dotCount = (s.match(/\./g) || []).length;
+    if (dotCount > 1 || decimals === 3) s = s.replace(/\./g, "");
+  }
   return s;
 }
 function normalizeType(raw) {
