@@ -409,6 +409,7 @@ button, input, select { font-family: inherit; }
 .sim-item .si-remove:hover { color: var(--danger); }
 .sim-form-actions { display: flex; gap: 8px; }
 .sim-empty { color: var(--text-muted); font-size: 12.5px; padding: 18px 10px; text-align: center; border: 1px dashed var(--border); border-radius: 9px; }
+.amt-mono { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
 
 /* ===================== table ===================== */
 .table-wrap { overflow-x: auto; }
@@ -540,7 +541,8 @@ table.data-table tbody tr:focus-visible { outline: 2px solid var(--secondary); o
 @media print {
   .topbar, .filter-bar, .sidebar, .appfooter, #btnEditBudgets, #btnEditBudgetsPriorita, #btnEditBudgetsAccordion, #btnEditBudgetsNarrativa,
   .modal-overlay, .pagination, .acc-body-actions,
-  #btnExportCsv, #btnPrint, #btnSettings, #btnNewCsv, #btnResetFilters, .overview-layout-row { display: none !important; }
+  #btnExportCsv, #btnPrint, #btnSettings, #btnNewCsv, #btnResetFilters, .overview-layout-row,
+  .review-row button, #antThresholdInput, #savingsCalcCategory, #savingsCalcPct { display: none !important; }
   body, #app { background: #fff !important; color: #111 !important; }
   .panel, .metric-card, .kpi-card { border: 1px solid #ccc !important; background: #fff !important; break-inside: avoid; }
   a, .metric-value, .kpi-value { color: #111 !important; }
@@ -666,6 +668,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <button id="tabbtn-simulator" class="side-nav-item" data-tab="simulator" type="button" role="tab" aria-selected="false" aria-controls="tab-simulator" title="Simulatore"><span class="sni-icon" aria-hidden="true">🧪</span><span class="sni-label">Simulatore</span></button>
     <button id="tabbtn-analytics" class="side-nav-item" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics" title="Analytics"><span class="sni-icon" aria-hidden="true">📈</span><span class="sni-label">Analytics</span></button>
     <button id="tabbtn-transactions" class="side-nav-item" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions" title="Transazioni"><span class="sni-icon" aria-hidden="true">📋</span><span class="sni-label">Transazioni</span></button>
+    <button id="tabbtn-savings" class="side-nav-item" data-tab="savings" type="button" role="tab" aria-selected="false" aria-controls="tab-savings" title="Risparmio"><span class="sni-icon" aria-hidden="true">🐷</span><span class="sni-label">Risparmio</span></button>
   </nav>
 
   <div class="app-main">
@@ -1001,6 +1004,92 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     </div>
   </section>
 
+  <!-- ===================== RISPARMIO ===================== -->
+  <section id="tab-savings" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-savings">
+    <div class="stat-strip" id="savingsStats"></div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>🔁 Abbonamenti e Pagamenti Ricorrenti</h3>
+        <p class="modal-lead">Esercenti addebitati con importo simile in almeno 3 mesi diversi.</p>
+        <div class="review-list" id="recurringList"></div>
+      </div>
+      <div class="panel">
+        <h3>📈 Aumenti di Prezzo Rilevati</h3>
+        <p class="modal-lead">Confronto tra l'ultimo addebito e la media dei precedenti sugli stessi ricorrenti.</p>
+        <div class="review-list" id="priceIncreaseList"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>🏆 Top Esercenti <span class="panel-tag" id="topMerchantRangeTag"></span></h3>
+        <p class="modal-lead">Spesa cumulata per singolo esercente nel periodo selezionato (non solo per categoria).</p>
+        <div id="topMerchantList"></div>
+      </div>
+      <div class="panel">
+        <h3>🐜 Effetto Formica</h3>
+        <p class="modal-lead">Tante piccole spese che, sommate, pesano più di quanto sembri.</p>
+        <div class="rule-add-row">
+          <label for="antThresholdInput" style="flex:0 0 auto;">Soglia micro-spesa</label>
+          <input type="number" id="antThresholdInput" min="0" step="0.5" style="max-width:100px;">
+          <span class="muted">€</span>
+        </div>
+        <div id="antEffectResult"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>⚖️ Spesa Necessaria vs Superflua</h3>
+      <p class="modal-lead">Categorie discrezionali predefinite (es. ristoranti, streaming, shopping): apri una transazione per correggerne manualmente la classificazione.</p>
+      <div class="metric-grid" style="margin-bottom:12px;">
+        <div class="metric-card">
+          <div class="metric-label">Quota Superflua (periodo)</div>
+          <div class="metric-value" id="discretionaryPctValue">-</div>
+          <div class="metric-sub" id="discretionaryAmountValue"></div>
+        </div>
+      </div>
+      <div class="chart-box short"><canvas id="chartDiscretionaryTrend"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <h3>🧮 Calcolatore Impatto Risparmio</h3>
+      <p class="modal-lead">Quanto risparmieresti, e come cambierebbe il tuo tasso di risparmio, riducendo una categoria nel periodo selezionato.</p>
+      <div class="rule-add-row">
+        <label for="savingsCalcCategory" class="sr-only">Categoria</label>
+        <select id="savingsCalcCategory"></select>
+        <label for="savingsCalcPct" style="flex:0 0 auto;">Riduzione</label>
+        <input type="range" id="savingsCalcPct" min="0" max="100" step="5" style="flex:1 1 140px;">
+        <span id="savingsCalcPctLabel" class="muted" style="flex:0 0 auto;">20%</span>
+      </div>
+      <p id="savingsCalcResult" class="modal-lead"></p>
+    </div>
+
+    <div class="panel" id="yoySection">
+      <h3>📆 Confronto Anno su Anno per Categoria <span class="panel-tag" id="yoyRangeTag"></span></h3>
+      <p class="modal-lead yoy-empty hidden">Disponibile solo per periodi con uno storico di almeno un anno (non "Tutto lo storico").</p>
+      <div class="table-wrap">
+        <table class="data-table hidden" id="yoyTable">
+          <thead><tr><th>Categoria</th><th>Periodo attuale</th><th>Stesso periodo anno scorso</th><th>Variazione</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h3>✂️ Spese da Rivedere</h3>
+        <p class="modal-lead">Categorie discrezionali vicine o sopra budget: pronte da stampare (Stampa/PDF) e discutere in famiglia.</p>
+        <div class="review-list" id="reviewShortlistList"></div>
+      </div>
+      <div class="panel">
+        <h3>⚠️ Doppioni Sospetti</h3>
+        <p class="modal-lead">Stesso importo, stesso esercente, entro 3 giorni: possibile doppio addebito.</p>
+        <div class="review-list" id="duplicatesList"></div>
+      </div>
+    </div>
+  </section>
+
   </div><!-- /app-main -->
   </div><!-- /app-shell -->
 
@@ -1017,6 +1106,14 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="mx-cat-edit">
       <label for="mxCategorySelect" class="mx-field-label">Categoria</label>
       <select id="mxCategorySelect"></select>
+    </div>
+    <div class="mx-cat-edit hidden" id="mxDiscretionaryRow">
+      <label for="mxDiscretionarySelect" class="mx-field-label">Classificazione spesa</label>
+      <select id="mxDiscretionarySelect">
+        <option value="auto">Automatica (in base alla categoria)</option>
+        <option value="true">🛑 Superflua</option>
+        <option value="false">✅ Necessaria</option>
+      </select>
     </div>
     <div class="modal-grid">
       <div class="mi"><div class="ml">Data</div><div class="mv" id="mxDate">-</div></div>
@@ -1728,6 +1825,14 @@ const NEEDS_CATEGORY = "Da categorizzare";
 // Qualunque altro nome di categoria incontrato nei dati (vecchie versioni, CSV esterni,
 // dizionari importati) viene ricondotto a una di queste o, se non riconoscibile, a NEEDS_CATEGORY.
 const CANONICAL_CATEGORIES = new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES, NEEDS_CATEGORY]);
+// Categorie considerate "discrezionali" (rinunciabili senza impatto sui bisogni essenziali) per
+// il modulo Risparmio: usate come default quando una transazione non ha una classificazione
+// manuale esplicita (t.discretionaryOverride).
+const DISCRETIONARY_CATEGORIES = new Set([
+  "Cena & Ristoranti", "Colazione & Caffè", "Birra & Aperitivi", "Abbonamenti & Streaming",
+  "Shopping Online", "Shopping & Abbigliamento", "Sport & Tempo Libero", "Regali & Donazioni",
+  "Libri", "Beauty & Benessere",
+]);
 // Le categorie sono cambiate due volte in passato (dall'inglese originale, poi da una prima
 // versione italiana all'attuale tassonomia più granulare): i dati già salvati nel browser
 // (localStorage) di chi ha usato l'app in precedenza contengono ancora i vecchi nomi. Questa
@@ -1909,6 +2014,8 @@ const state = {
   activeTab: "overview",
   overviewLayout: "classica",
   savingsGoal: 0.2,
+  antThreshold: 5,
+  savingsCalc: { category: null, pct: 20 },
 };
 let simIdSeq = 1;
 
@@ -2073,7 +2180,10 @@ function importDictionaryCSV(file) {
 
 // ---------------------------------------------------------------- persistence
 function persistTransactions() {
-  const raw = state.transactions.map((t) => [t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || ""]);
+  const raw = state.transactions.map((t) => [
+    t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
+    t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "",
+  ]);
   try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
 }
 function loadPersisted() {
@@ -2081,7 +2191,11 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto, kw]) => ({ date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null, autoCategorized: !!auto, matchedKeyword: kw || null }));
+    return arr.map(([iso, cat, type, val, desc, auto, kw, disc]) => ({
+      date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
+      autoCategorized: !!auto, matchedKeyword: kw || null,
+      discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
+    }));
   } catch (e) { return null; }
 }
 function saveBudgets() {
@@ -2845,6 +2959,346 @@ function renderPresets() {
   }
 }
 
+// ---------------------------------------------------------------- Risparmio tab
+function isDiscretionary(t) {
+  if (t.discretionaryOverride === true) return true;
+  if (t.discretionaryOverride === false) return false;
+  return DISCRETIONARY_CATEGORIES.has(t.category);
+}
+// Raggruppa le uscite per descrizione normalizzata (stesso esercente): usato da rilevamento
+// ricorrenti/aumenti di prezzo, classifica top esercenti e doppioni sospetti. Le transazioni
+// senza descrizione (es. import con sola colonna category) non possono essere raggruppate.
+function groupByMerchant(txs) {
+  const map = new Map();
+  for (const t of txs) {
+    if (t.type !== "outcome" || !t.description) continue;
+    const key = normalizeForMatch(t.description);
+    if (!key) continue;
+    if (!map.has(key)) map.set(key, { key, label: t.description, category: t.category, items: [] });
+    map.get(key).items.push(t);
+  }
+  return map;
+}
+function computeRecurringMerchants(allTxs) {
+  const result = [];
+  for (const g of groupByMerchant(allTxs).values()) {
+    if (g.items.length < 3) continue;
+    const months = new Set(g.items.map((t) => monthKey(t.date)));
+    if (months.size < 3) continue;
+    const amounts = g.items.map((t) => t.value);
+    const avg = amounts.reduce((s, v) => s + v, 0) / amounts.length;
+    const stdev = Math.sqrt(amounts.reduce((s, v) => s + (v - avg) ** 2, 0) / amounts.length);
+    if (avg > 0 && stdev / avg > 0.3) continue; // importo troppo variabile per essere un pagamento ricorrente
+    const sorted = g.items.slice().sort((a, b) => a.date - b.date);
+    const last = sorted[sorted.length - 1];
+    const daysSinceLast = (latestDate() - last.date) / 86400000;
+    result.push({
+      key: g.key, label: g.label, category: g.category, count: g.items.length, monthsSeen: months.size,
+      avgAmount: avg, lastAmount: last.value, lastDate: last.date, active: daysSinceLast <= 45, items: sorted,
+    });
+  }
+  result.sort((a, b) => b.avgAmount - a.avgAmount);
+  return result;
+}
+function computePriceIncreases(recurringList) {
+  const flagged = [];
+  for (const r of recurringList) {
+    const previous = r.items.slice(0, -1);
+    if (previous.length < 2) continue;
+    const prevAvg = previous.reduce((s, t) => s + t.value, 0) / previous.length;
+    if (prevAvg <= 0) continue;
+    const increase = (r.lastAmount - prevAvg) / prevAvg;
+    if (increase > 0.1) flagged.push({ ...r, prevAvg, increase });
+  }
+  flagged.sort((a, b) => b.increase - a.increase);
+  return flagged;
+}
+function computeTopMerchants(periodTxs, limit) {
+  const arr = Array.from(groupByMerchant(periodTxs).values()).map((g) => ({
+    key: g.key, label: g.label, category: g.category,
+    total: g.items.reduce((s, t) => s + t.value, 0), count: g.items.length,
+  }));
+  arr.sort((a, b) => b.total - a.total);
+  return arr.slice(0, limit || 10);
+}
+function computeAntEffect(periodTxs, threshold) {
+  const small = periodTxs.filter((t) => t.type === "outcome" && t.value < threshold);
+  const total = small.reduce((s, t) => s + t.value, 0);
+  const byCategory = {};
+  for (const t of small) byCategory[t.category] = (byCategory[t.category] || 0) + t.value;
+  const topEntry = Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0] || null;
+  return { count: small.length, total, topCategory: topEntry ? { category: topEntry[0], total: topEntry[1] } : null };
+}
+function computeDiscretionaryTrend(allTxs) {
+  const map = new Map();
+  for (const t of allTxs) {
+    if (t.type !== "outcome") continue;
+    const k = monthKey(t.date);
+    if (!map.has(k)) map.set(k, { key: k, label: monthLabel(k), total: 0, discretionary: 0 });
+    const m = map.get(k);
+    m.total += t.value;
+    if (isDiscretionary(t)) m.discretionary += t.value;
+  }
+  return Array.from(map.values()).sort((a, b) => a.key.localeCompare(b.key));
+}
+function getSameRangeLastYear() {
+  const [start, end] = getPeriodRange();
+  if (!start || !end) return [null, null];
+  const s = new Date(start); s.setFullYear(s.getFullYear() - 1);
+  const e = new Date(end); e.setFullYear(e.getFullYear() - 1);
+  return [s, e];
+}
+function computeYoYComparison() {
+  const [start, end] = getSameRangeLastYear();
+  if (!start || !end) return null;
+  const lastYearTxs = getCategoryTypeFiltered().filter((t) => t.type === "outcome" && t.date >= start && t.date <= end);
+  const currentTxs = getPeriodFiltered().filter((t) => t.type === "outcome");
+  const cats = new Set([...currentTxs.map((t) => t.category), ...lastYearTxs.map((t) => t.category)]);
+  const rows = Array.from(cats).map((cat) => {
+    const curr = currentTxs.filter((t) => t.category === cat).reduce((s, t) => s + t.value, 0);
+    const prev = lastYearTxs.filter((t) => t.category === cat).reduce((s, t) => s + t.value, 0);
+    return { category: cat, curr, prev, delta: pctDelta(curr, prev) };
+  }).filter((r) => r.curr > 0 || r.prev > 0);
+  rows.sort((a, b) => b.curr - a.curr);
+  return { start, end, rows };
+}
+function computeReviewShortlist(budgetBreakdown) {
+  return budgetBreakdown.filter((b) => DISCRETIONARY_CATEGORIES.has(b.category) && b.percent !== null && b.percent > 0.8)
+    .sort((a, b) => b.percent - a.percent);
+}
+function computeSuspiciousDuplicates(allTxs, maxDaysApart) {
+  const flagged = [];
+  for (const g of groupByMerchant(allTxs).values()) {
+    const byAmount = new Map();
+    for (const t of g.items) {
+      const key = t.value.toFixed(2);
+      if (!byAmount.has(key)) byAmount.set(key, []);
+      byAmount.get(key).push(t);
+    }
+    for (const arr of byAmount.values()) {
+      if (arr.length < 2) continue;
+      const sorted = arr.slice().sort((a, b) => a.date - b.date);
+      for (let i = 1; i < sorted.length; i++) {
+        const days = (sorted[i].date - sorted[i - 1].date) / 86400000;
+        if (days > 0 && days <= maxDaysApart) {
+          flagged.push({ label: g.label, category: g.category, amount: sorted[i].value, date1: sorted[i - 1].date, date2: sorted[i].date, daysApart: Math.round(days) });
+        }
+      }
+    }
+  }
+  flagged.sort((a, b) => b.date2 - a.date2);
+  return flagged;
+}
+function simulateCut(name, periodAmount, pct) {
+  const cutAmount = Math.round(periodAmount * (pct / 100) * 100) / 100;
+  if (cutAmount <= 0) return;
+  addSimulation({ name: `Taglio ${pct}% ${name}`, amount: cutAmount, type: "saving", frequency: "monthly", duration: 12 });
+  switchTab("simulator");
+}
+function computeSavingsImpact(periodTxs, category, pct) {
+  const income = sumBy(periodTxs, "income");
+  const outcome = sumBy(periodTxs, "outcome");
+  const categorySpend = category ? periodTxs.filter((t) => t.type === "outcome" && t.category === category).reduce((s, t) => s + t.value, 0) : 0;
+  const cut = categorySpend * (pct / 100);
+  const newOutcome = outcome - cut;
+  const oldRate = income > 0 ? (income - outcome) / income : null;
+  const newRate = income > 0 ? (income - newOutcome) / income : null;
+  return { categorySpend, cut, oldRate, newRate, income, outcome };
+}
+function renderSavings() {
+  const periodTxs = getPeriodFiltered();
+  const allOutcomeTxs = getCategoryTypeFiltered();
+  const recurring = computeRecurringMerchants(allOutcomeTxs);
+  const priceIncreases = computePriceIncreases(recurring);
+  const topMerchants = computeTopMerchants(periodTxs, 10);
+  const ant = computeAntEffect(periodTxs, state.antThreshold);
+  const duplicates = computeSuspiciousDuplicates(allOutcomeTxs, 3).slice(0, 15);
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const reviewShortlist = computeReviewShortlist(budgetBreakdown);
+  const periodOutcome = sumBy(periodTxs, "outcome");
+  const discretionaryTotal = periodTxs.filter((t) => t.type === "outcome" && isDiscretionary(t)).reduce((s, t) => s + t.value, 0);
+  const discretionaryPct = periodOutcome > 0 ? discretionaryTotal / periodOutcome : 0;
+  const recurringMonthlyTotal = recurring.filter((r) => r.active).reduce((s, r) => s + r.avgAmount, 0);
+
+  const stats = [
+    { label: "Ricorrenti Attivi (stima/mese)", value: fmtCurrency(recurringMonthlyTotal, 2) },
+    { label: "Spesa Superflua", value: fmtPercent(discretionaryPct) },
+    { label: "Effetto Formica (periodo)", value: fmtCurrency(ant.total, 2) },
+    { label: "Doppioni Sospetti", value: String(duplicates.length) },
+  ];
+  const statStrip = document.getElementById("savingsStats");
+  statStrip.innerHTML = "";
+  for (const s of stats) {
+    const box = el("div", "stat-box");
+    box.appendChild(el("div", "sv", s.value));
+    box.appendChild(el("div", "sl", s.label));
+    statStrip.appendChild(box);
+  }
+
+  // Abbonamenti / pagamenti ricorrenti
+  const recurringList = document.getElementById("recurringList");
+  recurringList.innerHTML = "";
+  if (!recurring.length) {
+    recurringList.appendChild(el("div", "sim-empty", "Nessun pagamento ricorrente rilevato: servono almeno 3 addebiti dello stesso esercente in almeno 3 mesi diversi."));
+  }
+  for (const r of recurring) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(r.category)} ${r.label}` + (r.active ? "" : " (non più visto di recente)")));
+    desc.appendChild(el("div", "rv-count", `${r.count} addebiti in ${r.monthsSeen} mesi · ultimo il ${fmtDateFull(r.lastDate)}`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono", fmtCurrency(r.avgAmount, 2) + "/mese"));
+    const btn = el("button", "btn btn-sm", "Simula taglio");
+    btn.type = "button";
+    btn.addEventListener("click", () => simulateCut(r.label, r.avgAmount, 100));
+    row.appendChild(btn);
+    recurringList.appendChild(row);
+  }
+
+  // Aumenti di prezzo
+  const priceList = document.getElementById("priceIncreaseList");
+  priceList.innerHTML = "";
+  if (!priceIncreases.length) {
+    priceList.appendChild(el("div", "sim-empty", "Nessun aumento di prezzo rilevato sui pagamenti ricorrenti."));
+  }
+  for (const p of priceIncreases) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(p.category)} ${p.label}`));
+    desc.appendChild(el("div", "rv-count", `${fmtCurrency(p.prevAvg, 2)} → ${fmtCurrency(p.lastAmount, 2)} (+${fmtPercent(p.increase)})`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono neg", "+" + fmtCurrency(p.lastAmount - p.prevAvg, 2)));
+    priceList.appendChild(row);
+  }
+
+  // Top esercenti
+  document.getElementById("topMerchantRangeTag").textContent = periodRangeLabel();
+  const topList = document.getElementById("topMerchantList");
+  topList.innerHTML = "";
+  if (!topMerchants.length) {
+    topList.appendChild(el("div", "sim-empty", "Nessuna spesa con descrizione esercente nel periodo selezionato."));
+  }
+  const maxTotal = topMerchants.length ? topMerchants[0].total : 0;
+  for (const m of topMerchants) {
+    const row = el("div", "budget-row");
+    row.appendChild(el("div", "budget-cat", `${catIcon(m.category)} ${m.label}`));
+    row.appendChild(el("div", "budget-amounts", `${fmtCurrency(m.total, 2)} (${m.count})`));
+    const track = el("div", "track");
+    const fill = el("div", "track-fill");
+    fill.style.width = (maxTotal > 0 ? (m.total / maxTotal) * 100 : 0) + "%";
+    fill.style.background = `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`;
+    track.appendChild(fill);
+    topList.appendChild(row);
+    row.appendChild(track);
+  }
+
+  // Effetto formica
+  document.getElementById("antThresholdInput").value = state.antThreshold;
+  const antBox = document.getElementById("antEffectResult");
+  antBox.innerHTML = "";
+  if (ant.count === 0) {
+    antBox.appendChild(el("div", "sim-empty", `Nessuna spesa sotto ${fmtCurrency(state.antThreshold, 2)} nel periodo selezionato.`));
+  } else {
+    antBox.appendChild(el("p", "modal-lead", `${ant.count} spese sotto ${fmtCurrency(state.antThreshold, 2)} sommano a ${fmtCurrency(ant.total, 2)} nel periodo selezionato.`
+      + (ant.topCategory ? ` La categoria più coinvolta è ${catIcon(ant.topCategory.category)} ${ant.topCategory.category} (${fmtCurrency(ant.topCategory.total, 2)}).` : "")));
+  }
+
+  // Necessaria vs superflua
+  document.getElementById("discretionaryPctValue").textContent = fmtPercent(discretionaryPct);
+  document.getElementById("discretionaryAmountValue").textContent = `${fmtCurrency(discretionaryTotal, 2)} su ${fmtCurrency(periodOutcome, 2)} di uscite nel periodo`;
+  const trend = computeDiscretionaryTrend(allOutcomeTxs).slice(-12);
+  renderChart("chartDiscretionaryTrend", {
+    type: "bar",
+    data: {
+      labels: trend.map((m) => m.label),
+      datasets: [
+        { label: "Necessaria", data: trend.map((m) => m.total - m.discretionary), backgroundColor: cssVar("--primary"), stack: "s" },
+        { label: "Superflua", data: trend.map((m) => m.discretionary), backgroundColor: cssVar("--danger"), stack: "s" },
+      ],
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: currencyTick() } } },
+  });
+
+  // Calcolatore impatto risparmio
+  const calcSel = document.getElementById("savingsCalcCategory");
+  populateCategorySelect(calcSel, state.savingsCalc.category || undefined);
+  if (!state.savingsCalc.category && calcSel.value) state.savingsCalc.category = calcSel.value;
+  document.getElementById("savingsCalcPct").value = state.savingsCalc.pct;
+  document.getElementById("savingsCalcPctLabel").textContent = state.savingsCalc.pct + "%";
+  renderSavingsCalcResult(periodTxs);
+
+  // Confronto anno su anno
+  const yoy = computeYoYComparison();
+  const yoySection = document.getElementById("yoySection");
+  const yoyTbody = document.querySelector("#yoyTable tbody");
+  yoyTbody.innerHTML = "";
+  if (!yoy || !yoy.rows.length) {
+    yoySection.querySelector(".yoy-empty").classList.remove("hidden");
+    document.getElementById("yoyTable").classList.add("hidden");
+  } else {
+    yoySection.querySelector(".yoy-empty").classList.add("hidden");
+    document.getElementById("yoyTable").classList.remove("hidden");
+    document.getElementById("yoyRangeTag").textContent = `vs ${fmtDateFull(yoy.start)} → ${fmtDateFull(yoy.end)}`;
+    for (const r of yoy.rows) {
+      const tr = document.createElement("tr");
+      const deltaTxt = r.delta === null ? "—" : (r.delta >= 0 ? "+" : "") + fmtPercent(r.delta);
+      const deltaColor = r.delta === null ? "" : `color:${r.delta > 0 ? "var(--danger)" : "var(--primary)"}`;
+      tr.innerHTML = `<td>${catIcon(r.category)} ${r.category}</td><td class="tabular">${fmtCurrency(r.curr, 2)}</td>
+        <td class="tabular">${fmtCurrency(r.prev, 2)}</td><td class="tabular" style="${deltaColor}">${deltaTxt}</td>`;
+      yoyTbody.appendChild(tr);
+    }
+  }
+
+  // Spese da rivedere (report stampabile)
+  const reviewList = document.getElementById("reviewShortlistList");
+  reviewList.innerHTML = "";
+  if (!reviewShortlist.length) {
+    reviewList.appendChild(el("div", "sim-empty", "Nessuna categoria discrezionale vicina o sopra il budget nel periodo selezionato."));
+  }
+  for (const b of reviewShortlist) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(b.category)} ${b.category}`));
+    desc.appendChild(el("div", "rv-count", `${fmtCurrency(b.speso, 2)} su ${fmtCurrency(b.budget, 2)} di budget (${fmtPercent(b.percent)})`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "badge " + (b.percent > 1 ? "outcome" : "income"), b.percent > 1 ? "Sopra budget" : "Vicino al limite"));
+    const btn = el("button", "btn btn-sm", "Simula taglio 30%");
+    btn.type = "button";
+    btn.addEventListener("click", () => simulateCut(b.category, b.speso / monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions), 30));
+    row.appendChild(btn);
+    reviewList.appendChild(row);
+  }
+
+  // Doppioni sospetti
+  const dupList = document.getElementById("duplicatesList");
+  dupList.innerHTML = "";
+  if (!duplicates.length) {
+    dupList.appendChild(el("div", "sim-empty", "Nessun doppione sospetto rilevato: stesso importo, stesso esercente, entro 3 giorni."));
+  }
+  for (const d of duplicates) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(d.category)} ${d.label}`));
+    desc.appendChild(el("div", "rv-count", `${fmtDateFull(d.date1)} e ${fmtDateFull(d.date2)} (${d.daysApart} giorn${d.daysApart === 1 ? "o" : "i"} di distanza)`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono neg", fmtCurrency(d.amount, 2)));
+    dupList.appendChild(row);
+  }
+}
+function renderSavingsCalcResult(periodTxs) {
+  const impact = computeSavingsImpact(periodTxs, state.savingsCalc.category, state.savingsCalc.pct);
+  const box = document.getElementById("savingsCalcResult");
+  if (!state.savingsCalc.category || impact.categorySpend <= 0) {
+    box.innerHTML = `<span class="muted">Scegli una categoria con spesa nel periodo selezionato per vedere l'impatto.</span>`;
+    return;
+  }
+  const rateTxt = impact.oldRate === null
+    ? "impossibile calcolare il tasso di risparmio senza entrate nel periodo."
+    : `il tasso di risparmio passerebbe dal ${fmtPercent(impact.oldRate)} al ${fmtPercent(impact.newRate)}.`;
+  box.innerHTML = `Riducendo <strong>${state.savingsCalc.category}</strong> del <strong>${state.savingsCalc.pct}%</strong> risparmieresti
+    <strong>${fmtCurrency(impact.cut, 2)}</strong> nel periodo selezionato: ${rateTxt}`;
+}
+
 // ---------------------------------------------------------------- Analytics tab
 function renderAnalytics() {
   const periodTxs = getPeriodFiltered();
@@ -3006,6 +3460,13 @@ function openTxModal(t) {
   document.getElementById("mxAmount").textContent = (t.type === "income" ? "+" : "-") + fmtCurrency(t.value, 2);
   document.getElementById("mxAmount").style.color = t.type === "income" ? "var(--primary)" : "var(--danger)";
   populateCategorySelect(document.getElementById("mxCategorySelect"), t.category);
+  const discRow = document.getElementById("mxDiscretionaryRow");
+  if (t.type === "outcome") {
+    discRow.classList.remove("hidden");
+    document.getElementById("mxDiscretionarySelect").value = t.discretionaryOverride === true ? "true" : t.discretionaryOverride === false ? "false" : "auto";
+  } else {
+    discRow.classList.add("hidden");
+  }
   document.getElementById("mxDate").textContent = fmtDateFull(t.date);
   document.getElementById("mxType").textContent = t.type === "income" ? "Entrata" : "Uscita";
   document.getElementById("mxId").textContent = t.id;
@@ -3365,6 +3826,7 @@ function renderTab(name) {
   else if (name === "simulator") renderSimulator();
   else if (name === "analytics") renderAnalytics();
   else if (name === "transactions") renderTransactions();
+  else if (name === "savings") renderSavings();
 }
 function switchTab(name) {
   state.activeTab = name;
@@ -3628,6 +4090,12 @@ function init() {
   document.getElementById("btnCloseModal").addEventListener("click", closeTxModal);
   document.getElementById("btnSaveTxCategory").addEventListener("click", saveTxCategoryFromModal);
   document.getElementById("btnDeleteTx").addEventListener("click", deleteTxFromModal);
+  document.getElementById("mxDiscretionarySelect").addEventListener("change", (e) => {
+    if (!modalTx) return;
+    modalTx.discretionaryOverride = e.target.value === "true" ? true : e.target.value === "false" ? false : undefined;
+    persistTransactions();
+    renderTab(state.activeTab);
+  });
   document.getElementById("txModal").addEventListener("click", (e) => { if (e.target.id === "txModal") closeTxModal(); });
   document.getElementById("txModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("txModal"), e));
 
@@ -3669,6 +4137,21 @@ function init() {
   dictFileInput.addEventListener("change", (e) => {
     if (e.target.files[0]) { warnIfMultipleFiles(e.target.files); importDictionaryCSV(e.target.files[0]); }
     dictFileInput.value = "";
+  });
+
+  document.getElementById("antThresholdInput").addEventListener("input", (e) => {
+    const v = parseFloat(e.target.value);
+    state.antThreshold = isNaN(v) || v < 0 ? 0 : v;
+    renderSavings();
+  });
+  document.getElementById("savingsCalcCategory").addEventListener("change", (e) => {
+    state.savingsCalc.category = e.target.value || null;
+    renderSavingsCalcResult(getPeriodFiltered());
+  });
+  document.getElementById("savingsCalcPct").addEventListener("input", (e) => {
+    state.savingsCalc.pct = clamp(parseInt(e.target.value, 10) || 0, 0, 100);
+    document.getElementById("savingsCalcPctLabel").textContent = state.savingsCalc.pct + "%";
+    renderSavingsCalcResult(getPeriodFiltered());
   });
 
   document.addEventListener("keydown", (e) => {
