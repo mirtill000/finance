@@ -1159,7 +1159,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       </div>
 
       <h4>🔀 Sposta/unisci categoria</h4>
-      <p class="modal-lead">Sposta tutti i dati di una categoria su un'altra tra le 24 categorie disponibili: si applica a transazioni, budget e regole del dizionario.</p>
+      <p class="modal-lead">Sposta tutti i dati di una categoria su un'altra tra quelle disponibili: si applica a transazioni, budget e regole del dizionario.</p>
       <div class="rule-add-row">
         <select id="categoryRenameFrom"></select>
         <select id="categoryRenameTo"></select>
@@ -1818,24 +1818,25 @@ const SAMPLE_TRANSACTIONS_PRO = [
 
 const EXPENSE_CATEGORIES = [
   "Spesa & Alimentari", "Bollette", "Luce & Gas", "Abbonamenti & Streaming", "Cena & Ristoranti",
-  "Colazione & Caffè", "Birra & Aperitivi", "Auto & Trasporti", "Viaggi & Trasporti", "Sosta & Parcheggi",
+  "Pranzo", "Colazione & Caffè", "Birra & Aperitivi", "Auto & Trasporti", "Viaggi & Trasporti", "Sosta & Parcheggi",
   "Salute & Prevenzione", "Beauty & Benessere", "Sport & Tempo Libero", "Shopping Online",
-  "Shopping & Abbigliamento", "Animali", "Scuola & Educazione", "Libri", "Casa & Arredo",
+  "Shopping & Abbigliamento", "Animali", "Scuola & Educazione", "Libri & Fumetti", "Casa & Arredo",
   "Tasse & Rimborsi", "Carta di Credito", "Regali & Donazioni",
 ];
 const INCOME_CATEGORIES = ["Stipendio", "Giroconto"];
 const NEEDS_CATEGORY = "Da categorizzare";
-// Le uniche categorie ammesse nell'app sono queste 24 (più il segnaposto "Da categorizzare").
-// Qualunque altro nome di categoria incontrato nei dati (vecchie versioni, CSV esterni,
-// dizionari importati) viene ricondotto a una di queste o, se non riconoscibile, a NEEDS_CATEGORY.
+// Le uniche categorie ammesse nell'app sono EXPENSE_CATEGORIES + INCOME_CATEGORIES (più il
+// segnaposto "Da categorizzare"). Qualunque altro nome di categoria incontrato nei dati (vecchie
+// versioni, CSV esterni, dizionari importati) viene ricondotto a una di queste o, se non
+// riconoscibile, a NEEDS_CATEGORY.
 const CANONICAL_CATEGORIES = new Set([...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES, NEEDS_CATEGORY]);
 // Categorie considerate "discrezionali" (rinunciabili senza impatto sui bisogni essenziali) per
 // il modulo Risparmio: usate come default quando una transazione non ha una classificazione
 // manuale esplicita (t.discretionaryOverride).
 const DISCRETIONARY_CATEGORIES = new Set([
-  "Cena & Ristoranti", "Colazione & Caffè", "Birra & Aperitivi", "Abbonamenti & Streaming",
+  "Cena & Ristoranti", "Pranzo", "Colazione & Caffè", "Birra & Aperitivi", "Abbonamenti & Streaming",
   "Shopping Online", "Shopping & Abbigliamento", "Sport & Tempo Libero", "Regali & Donazioni",
-  "Libri", "Beauty & Benessere",
+  "Libri & Fumetti", "Beauty & Benessere",
 ]);
 // Le categorie sono cambiate due volte in passato (dall'inglese originale, poi da una prima
 // versione italiana all'attuale tassonomia più granulare): i dati già salvati nel browser
@@ -1869,23 +1870,25 @@ const LEGACY_CATEGORY_MIGRATION = {
   "Lavoro Autonomo": NEEDS_CATEGORY,
   "Dividendi": NEEDS_CATEGORY,
   "Rimborsi": "Tasse & Rimborsi",
+  // rinominata successivamente
+  "Libri": "Libri & Fumetti",
 };
 const CATEGORY_ICONS = {
   "Spesa & Alimentari": "🛒", "Stipendio": "💼", "Bollette": "🧾", "Luce & Gas": "💡",
-  "Abbonamenti & Streaming": "📺", "Cena & Ristoranti": "🍽️", "Colazione & Caffè": "☕",
+  "Abbonamenti & Streaming": "📺", "Cena & Ristoranti": "🍽️", "Pranzo": "🍱", "Colazione & Caffè": "☕",
   "Birra & Aperitivi": "🍻", "Auto & Trasporti": "🚗", "Viaggi & Trasporti": "🚆",
   "Sosta & Parcheggi": "🅿️", "Salute & Prevenzione": "🏥", "Beauty & Benessere": "💆",
   "Sport & Tempo Libero": "⚽", "Shopping Online": "📦", "Shopping & Abbigliamento": "👗",
-  "Animali": "🐾", "Scuola & Educazione": "🎓", "Libri": "📚", "Casa & Arredo": "🛋️",
+  "Animali": "🐾", "Scuola & Educazione": "🎓", "Libri & Fumetti": "📚", "Casa & Arredo": "🛋️",
   "Tasse & Rimborsi": "📑", "Carta di Credito": "💳", "Regali & Donazioni": "🎁", "Giroconto": "🔄",
   [NEEDS_CATEGORY]: "❓",
 };
 const DEFAULT_BUDGETS = {
   "Spesa & Alimentari": 600, "Bollette": 150, "Luce & Gas": 120, "Abbonamenti & Streaming": 40,
-  "Cena & Ristoranti": 250, "Colazione & Caffè": 60, "Birra & Aperitivi": 60, "Auto & Trasporti": 150,
+  "Cena & Ristoranti": 250, "Pranzo": 150, "Colazione & Caffè": 60, "Birra & Aperitivi": 60, "Auto & Trasporti": 150,
   "Viaggi & Trasporti": 100, "Sosta & Parcheggi": 30, "Salute & Prevenzione": 100, "Beauty & Benessere": 60,
   "Sport & Tempo Libero": 60, "Shopping Online": 100, "Shopping & Abbigliamento": 150, "Animali": 50,
-  "Scuola & Educazione": 100, "Libri": 30, "Casa & Arredo": 100, "Tasse & Rimborsi": 50,
+  "Scuola & Educazione": 100, "Libri & Fumetti": 30, "Casa & Arredo": 100, "Tasse & Rimborsi": 50,
   "Carta di Credito": 200, "Regali & Donazioni": 40,
 };
 // Regole di default per il matching esercente -> categoria (parola chiave, case/accent-insensitive, sottostringa).
@@ -1934,6 +1937,7 @@ const DEFAULT_MERCHANT_RULES = [
   { keyword: "NISHIKI", category: "Cena & Ristoranti" }, { keyword: "BUM JANG SOO", category: "Cena & Ristoranti" },
   { keyword: "SIGNORVINO", category: "Cena & Ristoranti" }, { keyword: "SANGIU", category: "Cena & Ristoranti" },
   { keyword: "TAAC-APP", category: "Cena & Ristoranti" },
+  { keyword: "JYO JAPANESE", category: "Pranzo" },
   { keyword: "BAR ", category: "Colazione & Caffè" }, { keyword: "CAFFE", category: "Colazione & Caffè" },
   { keyword: "CAFFÈ", category: "Colazione & Caffè" }, { keyword: "STARBUCKS", category: "Colazione & Caffè" },
   { keyword: "COFFEE", category: "Colazione & Caffè" }, { keyword: "PASTICCERIA", category: "Colazione & Caffè" },
@@ -1946,7 +1950,11 @@ const DEFAULT_MERCHANT_RULES = [
   { keyword: "PANE E TERNI", category: "Colazione & Caffè" }, { keyword: "PANIFICIO SALVATORI", category: "Colazione & Caffè" },
   { keyword: "ANGOLO DEL DESSERT", category: "Colazione & Caffè" }, { keyword: "ARTE DEL DOL", category: "Colazione & Caffè" },
   { keyword: "ORASESTA SPA", category: "Colazione & Caffè" }, { keyword: "THE CLOUD", category: "Colazione & Caffè" },
+  { keyword: "ATLANTIC", category: "Colazione & Caffè" }, { keyword: "BAKERY", category: "Colazione & Caffè" },
+  { keyword: "MOROSINI", category: "Colazione & Caffè" }, { keyword: "CREMERIA", category: "Colazione & Caffè" },
   { keyword: "BIRRERIA", category: "Birra & Aperitivi" }, { keyword: "APEROL", category: "Birra & Aperitivi" },
+  { keyword: "OOOPS", category: "Birra & Aperitivi" }, { keyword: "ONEST", category: "Birra & Aperitivi" },
+  { keyword: "ENOTECA", category: "Birra & Aperitivi" },
   { keyword: "NETFLIX", category: "Abbonamenti & Streaming" }, { keyword: "SPOTIFY", category: "Abbonamenti & Streaming" },
   { keyword: "DISNEY+", category: "Abbonamenti & Streaming" }, { keyword: "AMAZON PRIME", category: "Abbonamenti & Streaming" },
   { keyword: "APPLE.COM", category: "Abbonamenti & Streaming" }, { keyword: "ICLOUD", category: "Abbonamenti & Streaming" },
@@ -1971,7 +1979,8 @@ const DEFAULT_MERCHANT_RULES = [
   { keyword: "MEDIA WORLD", category: "Shopping Online" }, { keyword: "MILANO TOYS", category: "Shopping Online" },
   { keyword: "SUGAR MUSIC STORE", category: "Shopping Online" }, { keyword: "HOBBISTA", category: "Shopping Online" },
   { keyword: "COLORIFICIO FACCHINETT", category: "Casa & Arredo" },
-  { keyword: "IL FUMETTO", category: "Libri" }, { keyword: "LIBRAC", category: "Libri" }, { keyword: "MANICOMIX", category: "Libri" },
+  { keyword: "IL FUMETTO", category: "Libri & Fumetti" }, { keyword: "LIBRAC", category: "Libri & Fumetti" }, { keyword: "MANICOMIX", category: "Libri & Fumetti" },
+  { keyword: "FUMETT", category: "Libri & Fumetti" }, { keyword: "ANIME", category: "Libri & Fumetti" },
   { keyword: "LA FIORERIA", category: "Regali & Donazioni" },
   { keyword: "RETTA SCOLASTICA", category: "Scuola & Educazione" }, { keyword: "UNIVERSITA", category: "Scuola & Educazione" },
   { keyword: "GIROCONTO", category: "Giroconto" },
