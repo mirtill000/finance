@@ -341,8 +341,10 @@ button, input, select { font-family: inherit; }
   border: 1px solid var(--border); background: var(--tint-faint);
 }
 .insight .ic { font-size: 16px; line-height: 1; }
+.insight .txt { flex: 1; min-width: 0; }
 .insight .txt strong { display: block; font-size: 12.5px; margin-bottom: 2px; }
 .insight .txt span.action { display: block; margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
+.insight .insight-action-btn { flex-shrink: 0; align-self: center; white-space: nowrap; }
 .insight.danger { border-color: rgba(224,112,122,0.4); }
 .insight.danger .ic { color: var(--danger); }
 .insight.warning { border-color: rgba(224,168,56,0.4); }
@@ -542,7 +544,7 @@ table.data-table tbody tr:focus-visible { outline: 2px solid var(--secondary); o
   .topbar, .filter-bar, .sidebar, .appfooter, #btnEditBudgets, #btnEditBudgetsPriorita, #btnEditBudgetsAccordion, #btnEditBudgetsNarrativa,
   .modal-overlay, .pagination, .acc-body-actions,
   #btnExportCsv, #btnPrint, #btnSettings, #btnNewCsv, #btnResetFilters, .overview-layout-row,
-  .review-row button, #antThresholdInput, #savingsCalcCategory, #savingsCalcPct { display: none !important; }
+  .review-row button, #antThresholdInput, #savingsCalcCategory, #savingsCalcPct, .insight-action-btn { display: none !important; }
   body, #app { background: #fff !important; color: #111 !important; }
   .panel, .metric-card, .kpi-card { border: 1px solid #ccc !important; background: #fff !important; break-inside: avoid; }
   a, .metric-value, .kpi-value { color: #111 !important; }
@@ -599,8 +601,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       date,description,value,type<br>
       2025-01-15,ESSELUNGA RIPAMONTI,42.10,outcome<br>
       <br>
-      La colonna <em>value</em> accetta sia il formato anglosassone (1,234.56) sia quello europeo (1.234,56).<br>
-      La colonna <em>date</em> accetta i formati AAAA-MM-GG (es. 2025-01-15), GG/MM/AAAA e GG-MM-AA (es. 15-01-25).
+      La colonna <em>value</em> accetta sia il formato anglosassone (1,234.56) sia quello europeo (1.234,56).
     </div>
   </div>
 </div>
@@ -2071,10 +2072,9 @@ function parseDateFlexible(raw) {
   let d = null;
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) { const parsed = new Date(s.replace(" ", "T")); if (!isNaN(parsed)) d = parsed; }
   if (!d) {
-    // DD/MM/YYYY o DD-MM-YY (stesso separatore su entrambi i lati), anno a 2 o 4 cifre.
-    const m = s.match(/^(\d{1,2})([/-])(\d{1,2})\2(\d{2,4})(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?$/);
+    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?$/);
     if (m) {
-      let [, dd, , mm, yyyy] = m;
+      let [, dd, mm, yyyy] = m;
       if (yyyy.length === 2) yyyy = "20" + yyyy;
       d = new Date(+yyyy, +mm - 1, +dd);
     }
@@ -2440,10 +2440,12 @@ function computeBudgetBreakdown(periodTxs) {
     return { category: cat, speso, budget, percent, unset: budgetPerMonth === 0 };
   });
 }
+const INSIGHT_SEVERITY = { danger: 0, warning: 1, info: 2, success: 3 };
 function computeInsights(periodTxs, budgetBreakdown, withActions) {
   const insights = [];
   const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
   const savingsRate = income > 0 ? (income - outcome) / income : 0;
+  const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
   const uncategorized = periodTxs.filter((t) => t.category === NEEDS_CATEGORY);
   if (uncategorized.length) {
     insights.push({ level: "warning", icon: "🔮", title: `${uncategorized.length} transazioni da categorizzare`,
@@ -2452,14 +2454,17 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
   }
   for (const b of budgetBreakdown) {
     if (b.percent === null) continue;
+    const monthlySpend = b.speso / monthsN;
     if (b.percent > 1) {
       insights.push({ level: "danger", icon: "⚠️", title: `Budget superato: ${b.category}`,
         text: `Speso ${fmtCurrency(b.speso)} su ${fmtCurrency(b.budget)} (${fmtPercent(b.percent)}).`,
-        action: withActions ? `Riduci le uscite in ${b.category} di circa ${fmtCurrency(b.speso - b.budget)} per rientrare nel budget.` : null });
+        action: withActions ? `Riduci le uscite in ${b.category} di circa ${fmtCurrency(b.speso - b.budget)} per rientrare nel budget.` : null,
+        actionButton: withActions ? { label: "Simula taglio", run: () => simulateCut(b.category, monthlySpend, Math.min(90, Math.ceil((b.speso - b.budget) / b.speso * 100))) } : null });
     } else if (b.percent > 0.8) {
       insights.push({ level: "warning", icon: "⏳", title: `Vicino al limite: ${b.category}`,
         text: `Usato il ${fmtPercent(b.percent)} del budget.`,
-        action: withActions ? `Monitora le prossime spese in ${b.category} per non sforare.` : null });
+        action: withActions ? `Monitora le prossime spese in ${b.category} per non sforare.` : null,
+        actionButton: withActions ? { label: "Simula taglio 20%", run: () => simulateCut(b.category, monthlySpend, 20) } : null });
     }
   }
   if (income > 0 && savingsRate > state.savingsGoal) {
@@ -2475,15 +2480,77 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
     insights.push({ level: "info", icon: "📅", title: "Picco di spesa giornaliero",
       text: `Il ${fmtDateFull(new Date(peakDay))} hai speso ${fmtCurrency(peakVal)} in un solo giorno.`, action: null });
   }
-  const coffee = periodTxs.filter((t) => t.category === "Colazione & Caffè" && t.type === "outcome");
-  if (coffee.length >= 3) {
-    const total = coffee.reduce((s, t) => s + t.value, 0);
-    const monthlyAvg = total / monthsCoveredCount(periodTxs);
-    insights.push({ level: "info", icon: "☕", title: "Proiezione annuale Colazione & Caffè",
-      text: `Di questo passo spenderesti circa ${fmtCurrency(monthlyAvg * 12)} l'anno in questa categoria.`,
-      action: withActions ? "Dimezzare questa spesa libererebbe budget per altri obiettivi." : null });
+  // Proiezione annuale sulla categoria di spesa più pesante del periodo (non più fissa su
+  // "Colazione & Caffè": si adatta a qualunque categoria domini la spesa dell'utente).
+  const outcomeByCategory = {};
+  for (const t of periodTxs) { if (t.type === "outcome") outcomeByCategory[t.category] = (outcomeByCategory[t.category] || 0) + t.value; }
+  const topCatEntry = Object.entries(outcomeByCategory).sort((a, b) => b[1] - a[1])[0];
+  if (topCatEntry) {
+    const [topCat, topTotal] = topCatEntry;
+    const topCatCount = periodTxs.filter((t) => t.type === "outcome" && t.category === topCat).length;
+    if (topCatCount >= 3) {
+      const monthlyAvg = topTotal / monthsN;
+      insights.push({ level: "info", icon: catIcon(topCat), title: `Proiezione annuale ${topCat}`,
+        text: `Di questo passo spenderesti circa ${fmtCurrency(monthlyAvg * 12)} l'anno in questa categoria.`,
+        action: withActions ? "Dimezzare questa spesa libererebbe budget per altri obiettivi." : null,
+        actionButton: withActions ? { label: "Simula taglio 50%", run: () => simulateCut(topCat, monthlyAvg, 50) } : null });
+    }
+  }
+  // Spunti costruiti sulle stesse analisi del tab Risparmio (abbonamenti ricorrenti, aumenti
+  // di prezzo, effetto formica, doppioni sospetti, quota di spesa superflua): calcolati su
+  // tutto lo storico filtrato per categoria/tipo (non sul solo periodo), come nel tab Risparmio.
+  const allOutcomeTxs = getCategoryTypeFiltered();
+  const recurring = computeRecurringMerchants(allOutcomeTxs);
+  const recurringActive = recurring.filter((r) => r.active);
+  if (recurringActive.length) {
+    const total = recurringActive.reduce((s, r) => s + r.avgAmount, 0);
+    insights.push({ level: "info", icon: "🔁", title: `${recurringActive.length} pagamenti ricorrenti attivi`,
+      text: `Stimati ${fmtCurrency(total, 2)} al mese tra abbonamenti e addebiti ricorrenti.`,
+      action: withActions ? "Controlla nel tab Risparmio quali sono ancora utili." : null,
+      actionButton: withActions ? { label: "Vedi ricorrenti", run: () => switchTab("savings") } : null });
+  }
+  const priceIncreases = computePriceIncreases(recurring);
+  if (priceIncreases.length) {
+    const worst = priceIncreases[0];
+    insights.push({ level: "warning", icon: "📈", title: `Aumento di prezzo: ${worst.label}`,
+      text: `Da ${fmtCurrency(worst.prevAvg, 2)} a ${fmtCurrency(worst.lastAmount, 2)} (+${fmtPercent(worst.increase)})` + (priceIncreases.length > 1 ? ` e altri ${priceIncreases.length - 1}.` : "."),
+      action: withActions ? "Verifica se il rincaro è giustificato o conviene disdire." : null,
+      actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+  }
+  const duplicates = computeSuspiciousDuplicates(allOutcomeTxs, 3);
+  if (duplicates.length) {
+    insights.push({ level: "danger", icon: "🧾", title: `${duplicates.length} doppion${duplicates.length === 1 ? "e" : "i"} sospett${duplicates.length === 1 ? "o" : "i"}`,
+      text: "Stesso importo, stesso esercente, entro 3 giorni: possibile doppio addebito.",
+      action: withActions ? "Controlla l'estratto conto per un eventuale rimborso." : null,
+      actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+  }
+  const ant = computeAntEffect(periodTxs, state.antThreshold);
+  if (ant.total > 15) {
+    insights.push({ level: "info", icon: "🐜", title: "Effetto formica",
+      text: `${ant.count} spese sotto ${fmtCurrency(state.antThreshold, 2)} sommano a ${fmtCurrency(ant.total, 2)} nel periodo.`,
+      action: withActions ? "Piccole spese frequenti che pesano più di quanto sembri." : null,
+      actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+  }
+  const discretionaryTotal = periodTxs.filter((t) => t.type === "outcome" && isDiscretionary(t)).reduce((s, t) => s + t.value, 0);
+  const discretionaryPct = outcome > 0 ? discretionaryTotal / outcome : 0;
+  if (discretionaryPct > 0.5) {
+    insights.push({ level: "warning", icon: "⚖️", title: "Spesa prevalentemente superflua",
+      text: `Il ${fmtPercent(discretionaryPct)} delle uscite del periodo è in categorie discrezionali (${fmtCurrency(discretionaryTotal, 2)}).`,
+      action: withActions ? "Rivedi le categorie discrezionali nel tab Risparmio." : null,
+      actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+  }
+  const yoy = computeYoYComparison();
+  if (yoy && yoy.rows.length) {
+    const grown = yoy.rows.filter((r) => r.delta !== null && r.delta > 0.25 && r.curr - r.prev > 20).sort((a, b) => b.delta - a.delta)[0];
+    if (grown) {
+      insights.push({ level: "warning", icon: "📆", title: `${grown.category} in crescita`,
+        text: `${fmtCurrency(grown.curr, 2)} rispetto a ${fmtCurrency(grown.prev, 2)} nello stesso periodo dell'anno scorso (+${fmtPercent(grown.delta)}).`,
+        action: withActions ? "Controlla se è un aumento occasionale o una nuova abitudine di spesa." : null,
+        actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+    }
   }
   if (!insights.length) insights.push({ level: "success", icon: "✅", title: "Tutto in ordine", text: "Nessuna anomalia rilevata nel periodo selezionato.", action: null });
+  insights.sort((a, b) => INSIGHT_SEVERITY[a.level] - INSIGHT_SEVERITY[b.level]);
   return insights;
 }
 function computeForecastNextMonth() {
@@ -2765,6 +2832,12 @@ function renderInsightList(box, insights) {
     txt.appendChild(document.createTextNode(ins.text));
     if (ins.action) txt.appendChild(el("span", "action", "💡 " + ins.action));
     item.appendChild(txt);
+    if (ins.actionButton) {
+      const btn = el("button", "btn btn-sm insight-action-btn", ins.actionButton.label);
+      btn.type = "button";
+      btn.addEventListener("click", ins.actionButton.run);
+      item.appendChild(btn);
+    }
     box.appendChild(item);
   }
 }
