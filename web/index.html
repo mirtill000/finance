@@ -499,6 +499,39 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .review-row .rv-count { font-size: 10.5px; color: var(--text-muted); font-weight: 400; }
 .review-row select { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 6px 8px; border-radius: 6px; font-size: 12px; }
 
+/* ===================== advanced: action plan ===================== */
+.action-plan-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; cursor: pointer;
+}
+.action-plan-row:last-child { border-bottom: none; }
+.action-plan-row input[type="checkbox"] { width: 16px; height: 16px; flex: 0 0 auto; accent-color: var(--primary); }
+.action-plan-row .ap-label { flex: 1 1 auto; }
+
+/* ===================== advanced: category sparklines ===================== */
+.sparkline-row { display: grid; grid-template-columns: 1fr 140px; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.sparkline-row:last-child { border-bottom: none; }
+.sparkline-label { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.sparkline-canvas-wrap { height: 34px; width: 140px; }
+.sparkline-canvas-wrap canvas { width: 100% !important; height: 100% !important; }
+
+/* ===================== advanced: visit-change banner ===================== */
+.visit-change-banner {
+  display: flex; align-items: center; gap: 10px; background: rgba(78,168,222,0.1); border: 1px solid rgba(78,168,222,0.35);
+  color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 12.5px; margin-bottom: 16px;
+}
+.visit-change-banner .vcb-icon { font-size: 16px; flex: 0 0 auto; }
+.visit-change-banner .vcb-text { flex: 1 1 auto; }
+
+/* ===================== advanced: monthly report ===================== */
+.report-meta { color: var(--text-muted); font-size: 12px; margin: -6px 0 16px; }
+.report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 18px; }
+.report-stat { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.report-stat .report-label { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; }
+.report-stat strong { font-family: var(--font-mono); font-size: 17px; }
+.report-list { list-style: none; padding: 0; margin: 0 0 16px; display: flex; flex-direction: column; gap: 6px; }
+.report-list li { padding: 8px 10px; background: var(--card2); border: 1px solid var(--border); border-radius: 8px; font-size: 12.5px; }
+.report-footer { color: var(--text-muted); font-size: 11.5px; margin-top: 10px; }
+
 /* ===================== chart empty state ===================== */
 .chart-empty {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -548,6 +581,17 @@ table.data-table tbody tr:focus-visible { outline: 2px solid var(--secondary); o
   body, #app { background: #fff !important; color: #111 !important; }
   .panel, .metric-card, .kpi-card { border: 1px solid #ccc !important; background: #fff !important; break-inside: avoid; }
   a, .metric-value, .kpi-value { color: #111 !important; }
+  .no-print { display: none !important; }
+
+  /* Report Mensile: nasconde tutto il resto dell'app e mostra solo il contenuto del report */
+  body.printing-report .app-shell { display: none !important; }
+  body.printing-report #monthlyReportModal {
+    display: block !important; position: static !important; background: none !important; inset: auto; z-index: auto;
+  }
+  body.printing-report #monthlyReportModal .modal-box {
+    width: 100% !important; max-width: none !important; max-height: none !important; box-shadow: none !important; border: none !important; padding: 0 !important;
+  }
+  body.printing-report .report-stat, body.printing-report .report-list li { border: 1px solid #ccc !important; background: #fff !important; }
 }
 
 /* misc */
@@ -618,6 +662,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="dark">🌙 Scuro</option>
       </select>
       <button id="btnPrint" class="btn btn-ghost btn-sm" type="button" title="Stampa o esporta il tab corrente in PDF">🖨️ Stampa/PDF</button>
+      <button id="btnMonthlyReport" class="btn btn-ghost btn-sm" type="button" title="Genera un report riepilogativo del periodo selezionato">📄 Report Mensile</button>
       <button id="btnSettings" class="btn btn-ghost btn-sm" type="button">⚙ Impostazioni</button>
       <button id="btnAddCsv" class="btn btn-ghost btn-sm" type="button" title="Aggiungi le transazioni di un altro CSV a quelle già caricate">➕ Aggiungi CSV</button>
       <input type="file" id="addCsvFileInput" accept=".csv,text/csv" hidden>
@@ -679,6 +724,11 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
   <!-- ===================== OVERVIEW ===================== -->
   <section id="tab-overview" class="tab-panel active" role="tabpanel" aria-labelledby="tabbtn-overview">
+    <div id="visitChangeBanner" class="visit-change-banner hidden" role="status">
+      <span class="vcb-icon" aria-hidden="true">👋</span>
+      <span class="vcb-text"></span>
+      <button id="btnDismissVisitBanner" class="btn-icon" type="button" aria-label="Chiudi avviso">✕</button>
+    </div>
     <div class="overview-layout-row">
       <label for="overviewLayoutSelect" class="ol-label">Vista:</label>
       <select id="overviewLayoutSelect" class="theme-select">
@@ -951,6 +1001,22 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <div class="chart-box"><canvas id="chartSavingsTrend"></canvas></div>
       </div>
     </div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>🩺 Punteggio di Salute Finanziaria</h3>
+        <p class="modal-lead">Come si compone il punteggio "Salute Finanziaria" mostrato in Overview per il periodo selezionato.</p>
+        <div id="healthScoreBreakdown"></div>
+      </div>
+      <div class="panel">
+        <h3>🔮 Previsione Cashflow Avanzata <span class="panel-tag">6 mesi</span></h3>
+        <p class="modal-lead">Proiezione basata sulla media degli ultimi 3 mesi e sui pagamenti ricorrenti attivi rilevati.</p>
+        <div class="chart-box"><canvas id="chartForecast"></canvas></div>
+      </div>
+    </div>
+    <div class="panel hidden" id="memberBreakdownPanel">
+      <h3>👨‍👩‍👧‍👦 Spesa per Membro della Famiglia <span class="panel-tag" id="memberBreakdownRangeTag"></span></h3>
+      <div class="chart-box"><canvas id="chartMemberBreakdown"></canvas></div>
+    </div>
     <div class="panel">
       <h3>Insights &amp; Azioni Suggerite</h3>
       <div id="analyticsInsights" class="insight-list"></div>
@@ -971,6 +1037,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
           <option value="income">Entrate</option>
           <option value="outcome">Uscite</option>
         </select>
+      </div>
+      <div class="filter-field hidden" id="householdMemberFilterRow">
+        <label for="txFilterMember">Membro</label>
+        <select id="txFilterMember"><option value="all">Tutti</option></select>
       </div>
       <div class="filter-field" style="flex:1; min-width:200px;">
         <label for="txSearch">Ricerca</label>
@@ -1092,6 +1162,34 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <div class="review-list" id="duplicatesList"></div>
       </div>
     </div>
+
+    <div class="panel">
+      <h3>🎯 Obiettivi di Risparmio</h3>
+      <p class="modal-lead">Imposta un obiettivo concreto (es. "Vacanze estive") e traccia il saldo netto accumulato da quando l'hai creato.</p>
+      <div id="savingsGoalsList"></div>
+      <div class="rule-add-row" style="margin-top:10px;">
+        <input type="text" id="goalNameInput" placeholder="Nome obiettivo, es. Vacanze estive">
+        <input type="number" id="goalAmountInput" min="0" step="10" placeholder="Importo target (€)" style="max-width:170px;">
+        <input type="date" id="goalDeadlineInput" style="max-width:160px;">
+        <button id="btnAddGoal" class="btn btn-primary btn-sm" type="button">+ Aggiungi Obiettivo</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>✅ Piano d'Azione Combinato</h3>
+      <p class="modal-lead">Seleziona le opportunità di risparmio da mettere in pratica insieme: verrà creata una simulazione unica nel Simulatore.</p>
+      <div id="actionPlanList"></div>
+      <div class="modal-close-row-split">
+        <span class="muted">Totale selezionato: <strong id="actionPlanTotal" class="amt-mono">€0,00 / mese</strong></span>
+        <button id="btnApplyActionPlan" class="btn btn-primary btn-sm" type="button" disabled>Applica al Simulatore</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📊 Andamento per Categoria <span class="panel-tag">ultimi 6 mesi</span></h3>
+      <p class="modal-lead">Mini-grafici (sparkline) delle categorie di spesa principali del periodo selezionato.</p>
+      <div id="categorySparklines"></div>
+    </div>
   </section>
 
   </div><!-- /app-main -->
@@ -1118,6 +1216,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="true">🛑 Superflua</option>
         <option value="false">✅ Necessaria</option>
       </select>
+    </div>
+    <div class="mx-cat-edit hidden" id="mxMemberRow">
+      <label for="mxMemberSelect" class="mx-field-label">Membro della famiglia</label>
+      <select id="mxMemberSelect"></select>
     </div>
     <div class="modal-grid">
       <div class="mi"><div class="ml">Data</div><div class="mv" id="mxDate">-</div></div>
@@ -1158,6 +1260,40 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveSavingsGoal" class="btn btn-primary btn-sm" type="button">Salva Obiettivo</button>
       </div>
 
+      <h4>👨‍👩‍👧‍👦 Membri della famiglia</h4>
+      <p class="modal-lead">Aggiungi i membri della famiglia per assegnare le transazioni a chi le ha effettuate e vedere una ripartizione della spesa per persona in Analytics.</p>
+      <div id="householdMembersList"></div>
+      <div class="rule-add-row">
+        <input type="text" id="memberNameInput" placeholder="Nome membro, es. Andrea">
+        <button id="btnAddMember" class="btn btn-primary btn-sm" type="button">+ Aggiungi Membro</button>
+      </div>
+
+      <h4>⚠️ Regole di allarme personalizzabili</h4>
+      <p class="modal-lead">Ricevi un avviso quando una singola transazione supera una soglia, o quando il saldo del periodo diventa negativo.</p>
+      <div class="rule-add-row">
+        <label for="singleTxThresholdInput" style="flex:0 0 auto;">Avvisa se una spesa supera</label>
+        <input type="number" id="singleTxThresholdInput" min="0" step="10" style="max-width:120px;">
+        <span class="muted">€</span>
+      </div>
+      <div class="rule-add-row">
+        <label style="flex:0 0 auto; display:flex; align-items:center; gap:6px;">
+          <input type="checkbox" id="negativeBalanceAlertInput" style="width:auto;">
+          Avvisa se il saldo del periodo diventa negativo
+        </label>
+      </div>
+      <div class="modal-close-row" style="text-align:right;">
+        <button id="btnSaveCustomAlerts" class="btn btn-primary btn-sm" type="button">Salva Regole di Allarme</button>
+      </div>
+
+      <h4>💾 Backup completo</h4>
+      <p class="modal-lead">Esporta tutti i tuoi dati (transazioni, budget, dizionario, obiettivi, membri) in un unico file JSON, oppure ripristina un backup precedente.</p>
+      <div class="rule-import-row">
+        <button id="btnExportBackup" class="btn-ghost btn-sm" type="button">⬇️ Esporta Backup</button>
+        <button id="btnImportBackup" class="btn-ghost btn-sm" type="button">📂 Importa Backup</button>
+        <input type="file" id="backupFileInput" accept=".json,application/json" hidden>
+      </div>
+      <div id="backupImportError" class="welcome-error hidden"></div>
+
       <h4>🔀 Sposta/unisci categoria</h4>
       <p class="modal-lead">Sposta tutti i dati di una categoria su un'altra tra quelle disponibili: si applica a transazioni, budget e regole del dizionario.</p>
       <div class="rule-add-row">
@@ -1197,6 +1333,16 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <p class="modal-lead">Nessuna parola chiave del dizionario ha trovato corrispondenza. Assegna una categoria: verrà applicata a tutte le transazioni con la stessa descrizione.</p>
         <div id="reviewList" class="review-list"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="monthlyReportModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="monthlyReportContent">
+  <div class="modal-box modal-box-wide">
+    <div id="monthlyReportContent"></div>
+    <div class="modal-close-row-split no-print">
+      <button id="btnCloseMonthlyReport" class="btn-ghost btn-sm" type="button">Chiudi</button>
+      <button id="btnPrintMonthlyReport" class="btn btn-primary btn-sm" type="button">🖨️ Stampa / Esporta PDF</button>
     </div>
   </div>
 </div>
@@ -2000,6 +2146,10 @@ const LS_KEY = "ffdpro_transactions_v1";
 const LS_BUDGETS_KEY = "ffdpro_budgets_v1";
 const LS_RULES_KEY = "ffdpro_merchant_rules_v1";
 const LS_SAVINGS_GOAL_KEY = "ffdpro_savings_goal_v1";
+const LS_SAVINGS_GOALS_KEY = "ffdpro_savings_goals_v1";
+const LS_HOUSEHOLD_MEMBERS_KEY = "ffdpro_household_members_v1";
+const LS_CUSTOM_ALERTS_KEY = "ffdpro_custom_alerts_v1";
+const LS_VISIT_SNAPSHOT_KEY = "ffdpro_visit_snapshot_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
 
 const PRESETS = [
@@ -2021,7 +2171,7 @@ const state = {
   simulations: [],
   charts: {},
   txSort: { field: "date", dir: "desc" },
-  txFilters: { category: "all", type: "all", search: "" },
+  txFilters: { category: "all", type: "all", search: "", member: "all" },
   txPage: 1,
   txPageSize: 25,
   activeTab: "overview",
@@ -2029,6 +2179,11 @@ const state = {
   savingsGoal: 0.2,
   antThreshold: 5,
   savingsCalc: { category: null, pct: 20 },
+  savingsGoals: [],
+  householdMembers: [],
+  customAlerts: { singleTxThreshold: null, negativeBalanceAlert: false },
+  actionPlan: new Set(),
+  visitChangeMessage: null,
 };
 let simIdSeq = 1;
 
@@ -2209,6 +2364,7 @@ function persistTransactions() {
   const raw = state.transactions.map((t) => [
     t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
     t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "",
+    t.member || "",
   ]);
   try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
 }
@@ -2217,10 +2373,11 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto, kw, disc]) => ({
+    return arr.map(([iso, cat, type, val, desc, auto, kw, disc, member]) => ({
       date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
       autoCategorized: !!auto, matchedKeyword: kw || null,
       discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
+      member: member || null,
     }));
   } catch (e) { return null; }
 }
@@ -2255,6 +2412,33 @@ function loadSavingsGoal() {
     const raw = localStorage.getItem(LS_SAVINGS_GOAL_KEY);
     state.savingsGoal = raw ? clamp(parseFloat(raw), 0, 1) : 0.2;
   } catch (e) { state.savingsGoal = 0.2; }
+}
+function saveSavingsGoals() {
+  try { localStorage.setItem(LS_SAVINGS_GOALS_KEY, JSON.stringify(state.savingsGoals)); } catch (e) { /* ignore */ }
+}
+function loadSavingsGoals() {
+  try {
+    const raw = localStorage.getItem(LS_SAVINGS_GOALS_KEY);
+    state.savingsGoals = raw ? JSON.parse(raw) : [];
+  } catch (e) { state.savingsGoals = []; }
+}
+function saveHouseholdMembers() {
+  try { localStorage.setItem(LS_HOUSEHOLD_MEMBERS_KEY, JSON.stringify(state.householdMembers)); } catch (e) { /* ignore */ }
+}
+function loadHouseholdMembers() {
+  try {
+    const raw = localStorage.getItem(LS_HOUSEHOLD_MEMBERS_KEY);
+    state.householdMembers = raw ? JSON.parse(raw) : [];
+  } catch (e) { state.householdMembers = []; }
+}
+function saveCustomAlerts() {
+  try { localStorage.setItem(LS_CUSTOM_ALERTS_KEY, JSON.stringify(state.customAlerts)); } catch (e) { /* ignore */ }
+}
+function loadCustomAlerts() {
+  try {
+    const raw = localStorage.getItem(LS_CUSTOM_ALERTS_KEY);
+    state.customAlerts = raw ? JSON.parse(raw) : { singleTxThreshold: null, negativeBalanceAlert: false };
+  } catch (e) { state.customAlerts = { singleTxThreshold: null, negativeBalanceAlert: false }; }
 }
 function ensureBudgetKeysForTransactions() {
   const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome" && t.category !== NEEDS_CATEGORY).map((t) => t.category));
@@ -2558,6 +2742,18 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
         actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
     }
   }
+  if (state.customAlerts.singleTxThreshold) {
+    const big = periodTxs.filter((t) => t.type === "outcome" && t.value > state.customAlerts.singleTxThreshold);
+    if (big.length) {
+      const biggest = big.slice().sort((a, b) => b.value - a.value)[0];
+      insights.push({ level: "warning", icon: "🚨", title: `${big.length} spes${big.length === 1 ? "a" : "e"} sopra soglia personalizzata`,
+        text: `La più alta: ${fmtCurrency(biggest.value, 2)} (${biggest.category}), soglia impostata ${fmtCurrency(state.customAlerts.singleTxThreshold, 2)}.`, action: null });
+    }
+  }
+  if (state.customAlerts.negativeBalanceAlert && income > 0 && income - outcome < 0) {
+    insights.push({ level: "danger", icon: "🔻", title: "Saldo negativo nel periodo",
+      text: `Uscite (${fmtCurrency(outcome)}) superiori alle entrate (${fmtCurrency(income)}) di ${fmtCurrency(outcome - income)}.`, action: null });
+  }
   if (!insights.length) insights.push({ level: "success", icon: "✅", title: "Tutto in ordine", text: "Nessuna anomalia rilevata nel periodo selezionato.", action: null });
   insights.sort((a, b) => INSIGHT_SEVERITY[a.level] - INSIGHT_SEVERITY[b.level]);
   return insights;
@@ -2565,9 +2761,10 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
 function computeForecastNextMonth() {
   const series = computeMonthlySeries(getCategoryTypeFiltered());
   if (!series.length) return 0;
-  const lastN = series.slice(-3);
-  const avgNet = lastN.reduce((s, m) => s + m.net, 0) / lastN.length;
-  return series[series.length - 1].cumulative + avgNet;
+  // Proiezione basata sui pagamenti ricorrenti effettivamente rilevati (non solo una media
+  // grezza degli ultimi mesi): vedi computeAdvancedForecast per il dettaglio mese per mese.
+  const forecast = computeAdvancedForecast(1);
+  return forecast.length ? forecast[0].cumulative : series[series.length - 1].cumulative;
 }
 
 // ---------------------------------------------------------------- chart helpers
@@ -2621,21 +2818,23 @@ function computeOverviewData() {
     trendIncome = buildTrend(income, prevIncome, false);
     trendOutcome = buildTrend(outcome, prevOutcome, true);
   }
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const health = computeHealthScore(periodTxs, budgetBreakdown);
   const cards = [
     { label: "Saldo Netto", value: fmtCurrency(net), cls: net >= 0 ? "pos" : "neg", sub: periodLabel(), trend: trendNet },
     { label: "Entrate", value: fmtCurrency(income), cls: "pos", sub: `${periodTxs.filter((t) => t.type === "income").length} transazioni`, trend: trendIncome },
     { label: "Uscite", value: fmtCurrency(outcome), cls: "neg", sub: `${periodTxs.filter((t) => t.type === "outcome").length} transazioni`, trend: trendOutcome },
     { label: "Obiettivo", value: fmtPercent(savingsRate), cls: savingsRate >= state.savingsGoal ? "pos" : "warn", sub: `Target: ${fmtPercent(state.savingsGoal, 0)} di risparmio` },
     { label: "Previsione", value: fmtCurrency(forecast), cls: "acc", sub: "Saldo stimato prossimo mese" },
+    { label: "Salute Finanziaria", value: `${health.grade} (${health.total}/100)`, cls: health.total >= 75 ? "pos" : health.total >= 40 ? "warn" : "neg", sub: "Punteggio complessivo del periodo" },
   ];
   const monthlySeries = computeMonthlySeries(getCategoryTypeFiltered());
-  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
   const pieRows = budgetBreakdown.filter((b) => b.speso > 0).map((b) => ({ category: b.category, speso: b.speso })).sort((a, b) => b.speso - a.speso);
   const weekly = new Array(7).fill(0);
   for (const t of periodTxs) { if (t.type !== "outcome") continue; const dow = (t.date.getDay() + 6) % 7; weekly[dow] += t.value; }
   const insights = computeInsights(periodTxs, budgetBreakdown, false);
   const recent = periodTxs.slice().sort((a, b) => b.date - a.date).slice(0, 8);
-  return { periodTxs, income, outcome, net, savingsRate, forecast, cards, monthlySeries, budgetBreakdown, pieRows, weekly, insights, recent };
+  return { periodTxs, income, outcome, net, savingsRate, forecast, health, cards, monthlySeries, budgetBreakdown, pieRows, weekly, insights, recent };
 }
 function trendHtml(trend) {
   const cls = trend.favorable === "good" ? "pos" : trend.favorable === "bad" ? "neg" : "";
@@ -2830,6 +3029,7 @@ function renderOverview() {
   else if (layout === "accordion") renderOverviewAccordion(data);
   else if (layout === "narrativa") renderOverviewNarrativa(data);
   else renderOverviewClassica(data);
+  renderVisitChangeBanner();
 }
 function renderInsightList(box, insights) {
   box.innerHTML = "";
@@ -3383,6 +3583,10 @@ function renderSavings() {
     row.appendChild(el("div", "amt-mono neg", fmtCurrency(d.amount, 2)));
     dupList.appendChild(row);
   }
+
+  renderSavingsGoals();
+  renderActionPlan(periodTxs, budgetBreakdown);
+  renderCategorySparklines(periodTxs);
 }
 function renderSavingsCalcResult(periodTxs) {
   const impact = computeSavingsImpact(periodTxs, state.savingsCalc.category, state.savingsCalc.pct);
@@ -3396,6 +3600,443 @@ function renderSavingsCalcResult(periodTxs) {
     : `il tasso di risparmio passerebbe dal ${fmtPercent(impact.oldRate)} al ${fmtPercent(impact.newRate)}.`;
   box.innerHTML = `Riducendo <strong>${state.savingsCalc.category}</strong> del <strong>${state.savingsCalc.pct}%</strong> risparmieresti
     <strong>${fmtCurrency(impact.cut, 2)}</strong> nel periodo selezionato: ${rateTxt}`;
+}
+
+// ---------------------------------------------------------------- Advanced: Salute Finanziaria
+function computeHealthScore(periodTxs, budgetBreakdown) {
+  const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
+  const savingsRate = income > 0 ? (income - outcome) / income : 0;
+  const savingsScore = state.savingsGoal > 0 ? clamp(savingsRate / state.savingsGoal, 0, 1) * 30 : (savingsRate > 0 ? 30 : 0);
+  const budgeted = budgetBreakdown.filter((b) => !b.unset && b.percent !== null);
+  const withinBudget = budgeted.filter((b) => b.percent <= 1).length;
+  const budgetScore = budgeted.length ? (withinBudget / budgeted.length) * 25 : 25;
+  const discretionaryTotal = periodTxs.filter((t) => t.type === "outcome" && isDiscretionary(t)).reduce((s, t) => s + t.value, 0);
+  const discretionaryPct = outcome > 0 ? discretionaryTotal / outcome : 0;
+  const discretionaryScore = clamp(1 - discretionaryPct, 0, 1) * 20;
+  const allOutcomeTxs = getCategoryTypeFiltered();
+  const recurring = computeRecurringMerchants(allOutcomeTxs);
+  const hygieneIssues = computePriceIncreases(recurring).length + computeSuspiciousDuplicates(allOutcomeTxs, 3).length;
+  const hygieneScore = clamp(1 - hygieneIssues * 0.2, 0, 1) * 15;
+  const uncategorizedPct = periodTxs.length ? periodTxs.filter((t) => t.category === NEEDS_CATEGORY).length / periodTxs.length : 0;
+  const categorizationScore = clamp(1 - uncategorizedPct, 0, 1) * 10;
+  const total = Math.round(savingsScore + budgetScore + discretionaryScore + hygieneScore + categorizationScore);
+  const grade = total >= 90 ? "A" : total >= 75 ? "B" : total >= 60 ? "C" : total >= 40 ? "D" : "E";
+  return {
+    total, grade,
+    breakdown: [
+      { label: "Tasso di risparmio", score: Math.round(savingsScore), max: 30 },
+      { label: "Aderenza al budget", score: Math.round(budgetScore), max: 25 },
+      { label: "Spesa superflua sotto controllo", score: Math.round(discretionaryScore), max: 20 },
+      { label: "Nessuna anomalia (doppioni/rincari)", score: Math.round(hygieneScore), max: 15 },
+      { label: "Transazioni categorizzate", score: Math.round(categorizationScore), max: 10 },
+    ],
+  };
+}
+function renderHealthScoreBreakdown(health) {
+  const box = document.getElementById("healthScoreBreakdown");
+  if (!box) return;
+  box.innerHTML = "";
+  for (const b of health.breakdown) {
+    const row = el("div", "budget-row");
+    row.appendChild(el("div", "budget-cat", b.label));
+    row.appendChild(el("div", "budget-amounts", `${b.score} / ${b.max}`));
+    const track = el("div", "track");
+    const fill = el("div", "track-fill");
+    fill.style.width = (b.max > 0 ? (b.score / b.max) * 100 : 0) + "%";
+    fill.style.background = `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`;
+    track.appendChild(fill);
+    track.appendChild(el("div", "track-pct", `${Math.round((b.score / b.max) * 100)}%`));
+    row.appendChild(track);
+    box.appendChild(row);
+  }
+}
+
+// ---------------------------------------------------------------- Advanced: Obiettivi di risparmio
+function computeGoalProgress(goal) {
+  const created = new Date(goal.createdAt);
+  const txsSince = state.transactions.filter((t) => t.date >= created);
+  const net = sumBy(txsSince, "income") - sumBy(txsSince, "outcome");
+  const progress = clamp(net, 0, goal.targetAmount);
+  const pct = goal.targetAmount > 0 ? progress / goal.targetAmount : 0;
+  return { progress, pct };
+}
+function addSavingsGoal(name, targetAmount, deadline) {
+  state.savingsGoals.push({ id: Date.now(), name, targetAmount, deadline: deadline || null, createdAt: new Date().toISOString() });
+  saveSavingsGoals();
+}
+function removeSavingsGoal(id) {
+  state.savingsGoals = state.savingsGoals.filter((g) => g.id !== id);
+  saveSavingsGoals();
+}
+function renderSavingsGoals() {
+  const list = document.getElementById("savingsGoalsList");
+  if (!list) return;
+  list.innerHTML = "";
+  if (!state.savingsGoals.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun obiettivo di risparmio configurato. Aggiungine uno qui sotto."));
+    return;
+  }
+  for (const goal of state.savingsGoals) {
+    const { progress, pct } = computeGoalProgress(goal);
+    const row = el("div", "budget-row");
+    const catBox = el("div", "budget-cat", goal.name + (goal.deadline ? ` (entro ${fmtDateFull(new Date(goal.deadline))})` : ""));
+    row.appendChild(catBox);
+    row.appendChild(el("div", "budget-amounts", `${fmtCurrency(progress, 2)} / ${fmtCurrency(goal.targetAmount, 2)}`));
+    const track = el("div", "track");
+    const fill = el("div", "track-fill");
+    fill.style.width = clamp(pct, 0, 1) * 100 + "%";
+    fill.style.background = `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`;
+    track.appendChild(fill);
+    track.appendChild(el("div", "track-pct", fmtPercent(pct)));
+    row.appendChild(track);
+    const rm = el("button", "btn btn-sm", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", `Rimuovi obiettivo ${goal.name}`);
+    rm.addEventListener("click", () => { removeSavingsGoal(goal.id); renderSavingsGoals(); });
+    row.appendChild(rm);
+    list.appendChild(row);
+  }
+}
+
+// ---------------------------------------------------------------- Advanced: spesa per membro
+function addHouseholdMember(name) {
+  name = name.trim();
+  if (!name || state.householdMembers.includes(name)) return false;
+  state.householdMembers.push(name);
+  saveHouseholdMembers();
+  return true;
+}
+function removeHouseholdMember(name) {
+  state.householdMembers = state.householdMembers.filter((m) => m !== name);
+  for (const t of state.transactions) { if (t.member === name) t.member = null; }
+  saveHouseholdMembers();
+  persistTransactions();
+}
+function computeMemberBreakdown(periodTxs) {
+  const map = {};
+  for (const t of periodTxs) {
+    if (t.type !== "outcome") continue;
+    const key = t.member || "Non assegnato";
+    map[key] = (map[key] || 0) + t.value;
+  }
+  return Object.entries(map).sort((a, b) => b[1] - a[1]);
+}
+function renderHouseholdMembersEditor() {
+  const list = document.getElementById("householdMembersList");
+  if (!list) return;
+  list.innerHTML = "";
+  if (!state.householdMembers.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun membro configurato. Aggiungine uno per tracciare la spesa per persona."));
+  }
+  for (const name of state.householdMembers) {
+    const row = el("div", "review-row");
+    row.appendChild(el("div", "rv-desc", name));
+    const rm = el("button", "btn btn-sm", "✕");
+    rm.type = "button";
+    rm.addEventListener("click", () => { removeHouseholdMember(name); renderHouseholdMembersEditor(); populateMemberSelects(); renderTab(state.activeTab); });
+    row.appendChild(rm);
+    list.appendChild(row);
+  }
+}
+function populateMemberSelects() {
+  for (const id of ["mxMemberSelect", "txFilterMember"]) {
+    const sel = document.getElementById(id);
+    if (!sel) continue;
+    const current = sel.value;
+    sel.innerHTML = "";
+    if (id === "txFilterMember") {
+      const optAll = document.createElement("option"); optAll.value = "all"; optAll.textContent = "Tutti"; sel.appendChild(optAll);
+    } else {
+      const optNone = document.createElement("option"); optNone.value = ""; optNone.textContent = "Nessuno"; sel.appendChild(optNone);
+    }
+    for (const name of state.householdMembers) {
+      const opt = document.createElement("option"); opt.value = name; opt.textContent = name; sel.appendChild(opt);
+    }
+    if ([...sel.options].some((o) => o.value === current)) sel.value = current;
+  }
+  const row = document.getElementById("householdMemberFilterRow");
+  if (row) row.classList.toggle("hidden", state.householdMembers.length === 0);
+}
+
+// ---------------------------------------------------------------- Advanced: previsione avanzata
+function computeAdvancedForecast(months) {
+  const series = computeMonthlySeries(getCategoryTypeFiltered());
+  const allOutcomeTxs = getCategoryTypeFiltered();
+  const recurringMonthly = computeRecurringMerchants(allOutcomeTxs).filter((r) => r.active).reduce((s, r) => s + r.avgAmount, 0);
+  const last3 = series.slice(-3);
+  const avgIncome = last3.length ? last3.reduce((s, m) => s + m.income, 0) / last3.length : 0;
+  const avgOutcome = last3.length ? last3.reduce((s, m) => s + m.outcome, 0) / last3.length : 0;
+  const otherOutcome = Math.max(0, avgOutcome - recurringMonthly);
+  let cumulative = series.length ? series[series.length - 1].cumulative : 0;
+  const anchor = latestDate();
+  const rows = [];
+  for (let i = 1; i <= months; i++) {
+    const projOutcome = recurringMonthly + otherOutcome;
+    const net = avgIncome - projOutcome;
+    cumulative += net;
+    const d = new Date(anchor.getFullYear(), anchor.getMonth() + i, 1);
+    rows.push({ label: MONTH_NAMES[d.getMonth()] + " " + String(d.getFullYear()).slice(2), income: avgIncome, outcome: projOutcome, net, cumulative });
+  }
+  return rows;
+}
+function renderForecastChart() {
+  const canvas = document.getElementById("chartForecast");
+  if (!canvas) return;
+  const history = computeMonthlySeries(getCategoryTypeFiltered()).slice(-6);
+  const forecast = computeAdvancedForecast(6);
+  const labels = [...history.map((m) => m.label), ...forecast.map((f) => f.label)];
+  const histData = history.map((m) => m.cumulative);
+  const lastHist = histData.length ? histData[histData.length - 1] : 0;
+  const historyDataset = [...histData, ...forecast.map(() => null)];
+  const forecastDataset = [...history.map(() => null)];
+  forecastDataset[history.length - 1] = lastHist;
+  for (const f of forecast) forecastDataset.push(f.cumulative);
+  renderChart("chartForecast", {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        { label: "Storico", data: historyDataset, borderColor: cssVar("--primary"), backgroundColor: hexToRgba(cssVar("--primary"), 0.1), fill: true, tension: 0.25, pointRadius: 2, spanGaps: false },
+        { label: "Previsione", data: forecastDataset, borderColor: cssVar("--secondary"), borderDash: [6, 4], backgroundColor: "transparent", tension: 0.25, pointRadius: 2, spanGaps: true },
+      ],
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: currencyTick() } }, plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } } },
+  });
+}
+
+// ---------------------------------------------------------------- Advanced: piano d'azione combinato
+function computeActionPlanCandidates(periodTxs, budgetBreakdown) {
+  const allOutcomeTxs = getCategoryTypeFiltered();
+  const recurring = computeRecurringMerchants(allOutcomeTxs).filter((r) => r.active);
+  const reviewShortlist = computeReviewShortlist(budgetBreakdown);
+  const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
+  const candidates = [];
+  for (const r of recurring) candidates.push({ key: `recurring:${r.key}`, label: `Disdici/riduci: ${r.label}`, monthlyAmount: r.avgAmount });
+  for (const b of reviewShortlist) candidates.push({ key: `budget:${b.category}`, label: `Taglia 30%: ${b.category}`, monthlyAmount: (b.speso / monthsN) * 0.3 });
+  return candidates;
+}
+function renderActionPlan(periodTxs, budgetBreakdown) {
+  const list = document.getElementById("actionPlanList");
+  if (!list) return;
+  const candidates = computeActionPlanCandidates(periodTxs, budgetBreakdown);
+  const validKeys = new Set(candidates.map((c) => c.key));
+  for (const k of Array.from(state.actionPlan)) if (!validKeys.has(k)) state.actionPlan.delete(k);
+  list.innerHTML = "";
+  if (!candidates.length) {
+    list.appendChild(el("div", "sim-empty", "Nessuna opportunità di risparmio rilevata nel periodo selezionato."));
+  }
+  for (const c of candidates) {
+    const row = el("label", "action-plan-row");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = state.actionPlan.has(c.key);
+    cb.addEventListener("change", () => {
+      if (cb.checked) state.actionPlan.add(c.key); else state.actionPlan.delete(c.key);
+      renderActionPlan(periodTxs, budgetBreakdown);
+    });
+    row.appendChild(cb);
+    row.appendChild(el("span", "ap-label", c.label));
+    row.appendChild(el("span", "amt-mono", fmtCurrency(c.monthlyAmount, 2) + "/mese"));
+    list.appendChild(row);
+  }
+  const selectedTotal = candidates.filter((c) => state.actionPlan.has(c.key)).reduce((s, c) => s + c.monthlyAmount, 0);
+  const totalEl = document.getElementById("actionPlanTotal");
+  if (totalEl) totalEl.textContent = fmtCurrency(selectedTotal, 2) + " / mese";
+  const btn = document.getElementById("btnApplyActionPlan");
+  if (btn) btn.disabled = selectedTotal <= 0;
+}
+function applyActionPlan() {
+  const periodTxs = getPeriodFiltered();
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const candidates = computeActionPlanCandidates(periodTxs, budgetBreakdown);
+  const selected = candidates.filter((c) => state.actionPlan.has(c.key));
+  const total = selected.reduce((s, c) => s + c.monthlyAmount, 0);
+  if (total <= 0) return;
+  addSimulation({ name: `Piano d'azione (${selected.length} voc${selected.length === 1 ? "e" : "i"})`, amount: Math.round(total * 100) / 100, type: "saving", frequency: "monthly", duration: 12 });
+  switchTab("simulator");
+}
+
+// ---------------------------------------------------------------- Advanced: andamento per categoria (sparkline)
+function computeCategorySeries(category, months) {
+  const map = new Map();
+  for (const t of getCategoryTypeFiltered()) {
+    if (t.type !== "outcome" || t.category !== category) continue;
+    const k = monthKey(t.date);
+    map.set(k, (map.get(k) || 0) + t.value);
+  }
+  const allMonths = computeMonthlySeries(state.transactions).map((m) => m.key).slice(-months);
+  return allMonths.map((k) => map.get(k) || 0);
+}
+function renderCategorySparklines(periodTxs) {
+  const box = document.getElementById("categorySparklines");
+  if (!box) return;
+  box.innerHTML = "";
+  const totals = {};
+  for (const t of periodTxs) { if (t.type === "outcome") totals[t.category] = (totals[t.category] || 0) + t.value; }
+  const topCats = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([c]) => c);
+  if (!topCats.length) { box.appendChild(el("div", "sim-empty", "Nessuna categoria di spesa nel periodo selezionato.")); return; }
+  for (const cat of topCats) {
+    const row = el("div", "sparkline-row");
+    row.appendChild(el("div", "sparkline-label", `${catIcon(cat)} ${cat}`));
+    const canvasWrap = el("div", "sparkline-canvas-wrap");
+    const canvas = document.createElement("canvas");
+    canvas.id = "spark_" + cat.replace(/\W+/g, "_");
+    canvasWrap.appendChild(canvas);
+    row.appendChild(canvasWrap);
+    box.appendChild(row);
+  }
+  for (const cat of topCats) {
+    const data = computeCategorySeries(cat, 6);
+    renderChart("spark_" + cat.replace(/\W+/g, "_"), {
+      type: "line",
+      data: { labels: data.map((_, i) => i), datasets: [{ data, borderColor: cssVar("--secondary"), backgroundColor: "transparent", pointRadius: 0, tension: 0.3, borderWidth: 1.5 }] },
+      options: { responsive: false, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } },
+    });
+  }
+}
+
+// ---------------------------------------------------------------- Advanced: backup completo
+function downloadJSON(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportFullBackup() {
+  const backup = {
+    version: 1, exportedAt: new Date().toISOString(),
+    transactions: state.transactions.map((t) => [
+      t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
+      t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "", t.member || "",
+    ]),
+    budgets: state.budgets,
+    merchantRules: state.merchantRules,
+    savingsGoal: state.savingsGoal,
+    savingsGoals: state.savingsGoals,
+    householdMembers: state.householdMembers,
+    customAlerts: state.customAlerts,
+    antThreshold: state.antThreshold,
+    overviewLayout: state.overviewLayout,
+  };
+  downloadJSON(backup, `backup_family_finance_${Date.now()}.json`);
+}
+function importFullBackup(file) {
+  const errBox = document.getElementById("backupImportError");
+  errBox.classList.add("hidden");
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data || !Array.isArray(data.transactions)) throw new Error("Il file non è un backup valido.");
+      if (!confirm("Importare questo backup sovrascriverà tutti i dati attuali (transazioni, budget, dizionario, obiettivi, impostazioni). Continuare?")) return;
+      const rows = data.transactions.map(([iso, cat, type, val, desc, auto, kw, disc, member]) => ({
+        date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
+        autoCategorized: !!auto, matchedKeyword: kw || null,
+        discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
+        member: member || null,
+      }));
+      state.budgets = data.budgets && typeof data.budgets === "object" ? data.budgets : {};
+      state.merchantRules = Array.isArray(data.merchantRules) ? data.merchantRules : DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
+      state.savingsGoal = typeof data.savingsGoal === "number" ? clamp(data.savingsGoal, 0, 1) : 0.2;
+      state.savingsGoals = Array.isArray(data.savingsGoals) ? data.savingsGoals : [];
+      state.householdMembers = Array.isArray(data.householdMembers) ? data.householdMembers : [];
+      state.customAlerts = data.customAlerts && typeof data.customAlerts === "object" ? data.customAlerts : { singleTxThreshold: null, negativeBalanceAlert: false };
+      state.antThreshold = typeof data.antThreshold === "number" ? data.antThreshold : 5;
+      state.overviewLayout = data.overviewLayout || "classica";
+      saveBudgets(); saveMerchantRules(); saveSavingsGoal(state.savingsGoal); saveSavingsGoals(); saveHouseholdMembers(); saveCustomAlerts();
+      try { localStorage.setItem(LS_OVERVIEW_LAYOUT_KEY, state.overviewLayout); } catch (e) { /* ignore */ }
+      loadTransactions(rows, { mode: "replace" });
+      populateMemberSelects();
+      closeSettings();
+      alert("Backup importato con successo.");
+    } catch (err) {
+      errBox.classList.remove("hidden");
+      errBox.textContent = "Errore nell'importazione del backup: " + err.message;
+    }
+  };
+  reader.onerror = () => { errBox.classList.remove("hidden"); errBox.textContent = "Impossibile leggere il file."; };
+  reader.readAsText(file, "UTF-8");
+}
+
+// ---------------------------------------------------------------- Advanced: report mensile
+function computeMonthlyReport() {
+  const periodTxs = getPeriodFiltered();
+  const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
+  const net = income - outcome;
+  const savingsRate = income > 0 ? net / income : 0;
+  const byCategory = {};
+  for (const t of periodTxs) { if (t.type === "outcome") byCategory[t.category] = (byCategory[t.category] || 0) + t.value; }
+  const topCategories = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const insights = computeInsights(periodTxs, budgetBreakdown, false).slice(0, 5);
+  return { period: periodRangeLabel(), income, outcome, net, savingsRate, topCategories, insights, txCount: periodTxs.length };
+}
+function renderMonthlyReport() {
+  const r = computeMonthlyReport();
+  const box = document.getElementById("monthlyReportContent");
+  if (!box) return;
+  box.innerHTML = `
+    <h2>📄 Report Mensile</h2>
+    <p class="report-meta">${r.period} · generato il ${fmtDateFull(new Date())}</p>
+    <div class="report-grid">
+      <div class="report-stat"><span class="report-label">Entrate</span><strong>${fmtCurrency(r.income, 2)}</strong></div>
+      <div class="report-stat"><span class="report-label">Uscite</span><strong>${fmtCurrency(r.outcome, 2)}</strong></div>
+      <div class="report-stat"><span class="report-label">Saldo Netto</span><strong>${fmtCurrency(r.net, 2)}</strong></div>
+      <div class="report-stat"><span class="report-label">Tasso di Risparmio</span><strong>${fmtPercent(r.savingsRate)}</strong></div>
+    </div>
+    <h3>Categorie principali</h3>
+    <ul class="report-list">${r.topCategories.length ? r.topCategories.map(([c, v]) => `<li>${catIcon(c)} ${c} — ${fmtCurrency(v, 2)}</li>`).join("") : "<li>Nessuna spesa nel periodo.</li>"}</ul>
+    <h3>Punti salienti</h3>
+    <ul class="report-list">${r.insights.map((i) => `<li>${i.icon} <strong>${i.title}</strong> — ${i.text}</li>`).join("")}</ul>
+    <p class="report-footer">${r.txCount} transazioni nel periodo · Family Finance PRO</p>
+  `;
+}
+function openMonthlyReport() {
+  renderMonthlyReport();
+  document.getElementById("monthlyReportModal").classList.remove("hidden");
+}
+function closeMonthlyReport() {
+  document.getElementById("monthlyReportModal").classList.add("hidden");
+}
+function printMonthlyReport() {
+  document.body.classList.add("printing-report");
+  window.print();
+}
+
+// ---------------------------------------------------------------- Advanced: banner "cosa è cambiato"
+function computeVisitDiffAndSnapshot() {
+  let previous = null;
+  try { const raw = localStorage.getItem(LS_VISIT_SNAPSHOT_KEY); previous = raw ? JSON.parse(raw) : null; } catch (e) { previous = null; }
+  const budgetBreakdown = computeBudgetBreakdown(getPeriodFiltered());
+  const overBudgetCats = budgetBreakdown.filter((b) => b.percent !== null && b.percent > 1).map((b) => b.category);
+  const current = {
+    txCount: state.transactions.length,
+    uncategorizedCount: state.transactions.filter((t) => t.category === NEEDS_CATEGORY).length,
+    overBudgetCats,
+  };
+  let message = null;
+  if (previous) {
+    const newTx = current.txCount - previous.txCount;
+    const newOverBudget = overBudgetCats.filter((c) => !(previous.overBudgetCats || []).includes(c));
+    const parts = [];
+    if (newTx > 0) parts.push(`${newTx} nuove transazioni`);
+    if (newOverBudget.length) parts.push(`${newOverBudget.length} categori${newOverBudget.length === 1 ? "a" : "e"} ora sopra budget (${newOverBudget.join(", ")})`);
+    if (parts.length) message = "Da quando sei tornato: " + parts.join(" · ") + ".";
+  }
+  try { localStorage.setItem(LS_VISIT_SNAPSHOT_KEY, JSON.stringify(current)); } catch (e) { /* ignore */ }
+  return message;
+}
+function renderVisitChangeBanner() {
+  const banner = document.getElementById("visitChangeBanner");
+  if (!banner) return;
+  if (state.visitChangeMessage) {
+    banner.querySelector(".vcb-text").textContent = state.visitChangeMessage;
+    banner.classList.remove("hidden");
+  } else {
+    banner.classList.add("hidden");
+  }
 }
 
 // ---------------------------------------------------------------- Analytics tab
@@ -3444,6 +4085,23 @@ function renderAnalytics() {
 
   const budgetBreakdown = computeBudgetBreakdown(periodTxs);
   renderInsightList(document.getElementById("analyticsInsights"), computeInsights(periodTxs, budgetBreakdown, true));
+
+  renderHealthScoreBreakdown(computeHealthScore(periodTxs, budgetBreakdown));
+
+  renderForecastChart();
+
+  const memberPanel = document.getElementById("memberBreakdownPanel");
+  if (memberPanel) {
+    memberPanel.classList.toggle("hidden", state.householdMembers.length === 0);
+    if (state.householdMembers.length) {
+      const memberData = computeMemberBreakdown(periodTxs);
+      renderChart("chartMemberBreakdown", {
+        type: "bar",
+        data: { labels: memberData.map(([m]) => m), datasets: [{ label: "Uscite", data: memberData.map(([, v]) => v), backgroundColor: CHART_PALETTE, borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: currencyTick() } } },
+      });
+    }
+  }
 }
 
 // ---------------------------------------------------------------- Transactions tab
@@ -3451,6 +4109,7 @@ function getTxFiltered() {
   let txs = state.transactions.filter((t) => {
     if (state.txFilters.category !== "all" && t.category !== state.txFilters.category) return false;
     if (state.txFilters.type !== "all" && t.type !== state.txFilters.type) return false;
+    if (state.txFilters.member && state.txFilters.member !== "all" && (t.member || null) !== state.txFilters.member) return false;
     if (state.txFilters.search) {
       const q = state.txFilters.search.toLowerCase();
       const typeLabel = t.type === "income" ? "entrata" : "uscita";
@@ -3484,6 +4143,7 @@ function exportTransactionsCSV() {
   downloadCSV(lines.join("\n"), `transazioni_export_${Date.now()}.csv`);
 }
 function renderTransactions() {
+  populateMemberSelects();
   const tbody = document.querySelector("#txTable tbody");
   tbody.innerHTML = "";
   const allRows = getTxFiltered();
@@ -3565,6 +4225,14 @@ function openTxModal(t) {
     document.getElementById("mxDiscretionarySelect").value = t.discretionaryOverride === true ? "true" : t.discretionaryOverride === false ? "false" : "auto";
   } else {
     discRow.classList.add("hidden");
+  }
+  const memberRow = document.getElementById("mxMemberRow");
+  if (state.householdMembers.length) {
+    memberRow.classList.remove("hidden");
+    populateMemberSelects();
+    document.getElementById("mxMemberSelect").value = t.member || "";
+  } else {
+    memberRow.classList.add("hidden");
   }
   document.getElementById("mxDate").textContent = fmtDateFull(t.date);
   document.getElementById("mxType").textContent = t.type === "income" ? "Entrata" : "Uscita";
@@ -3725,6 +4393,9 @@ function openSettings() {
   populateCategoryRenameSelect();
   populateCategoryRenameToSelect();
   document.getElementById("savingsGoalInput").value = Math.round(state.savingsGoal * 100);
+  renderHouseholdMembersEditor();
+  document.getElementById("singleTxThresholdInput").value = state.customAlerts.singleTxThreshold || "";
+  document.getElementById("negativeBalanceAlertInput").checked = !!state.customAlerts.negativeBalanceAlert;
   document.getElementById("settingsModal").classList.remove("hidden");
   requestAnimationFrame(() => document.getElementById("closeSettings").focus());
 }
@@ -4111,6 +4782,10 @@ function init() {
   loadBudgets();
   loadMerchantRules();
   loadSavingsGoal();
+  loadSavingsGoals();
+  loadHouseholdMembers();
+  loadCustomAlerts();
+  populateMemberSelects();
 
   const dropzone = document.getElementById("dropzone");
   const fileInput = document.getElementById("fileInput");
@@ -4195,6 +4870,12 @@ function init() {
     persistTransactions();
     renderTab(state.activeTab);
   });
+  document.getElementById("mxMemberSelect").addEventListener("change", (e) => {
+    if (!modalTx) return;
+    modalTx.member = e.target.value || null;
+    persistTransactions();
+    renderTab(state.activeTab);
+  });
   document.getElementById("txModal").addEventListener("click", (e) => { if (e.target.id === "txModal") closeTxModal(); });
   document.getElementById("txModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("txModal"), e));
 
@@ -4253,8 +4934,74 @@ function init() {
     renderSavingsCalcResult(getPeriodFiltered());
   });
 
+  // Obiettivi di risparmio
+  document.getElementById("btnAddGoal").addEventListener("click", () => {
+    const name = document.getElementById("goalNameInput").value.trim();
+    const amount = parseFloat(document.getElementById("goalAmountInput").value);
+    const deadline = document.getElementById("goalDeadlineInput").value || null;
+    if (!name) { alert("Inserisci un nome per l'obiettivo."); return; }
+    if (isNaN(amount) || amount <= 0) { alert("Inserisci un importo target valido."); return; }
+    addSavingsGoal(name, amount, deadline);
+    document.getElementById("goalNameInput").value = "";
+    document.getElementById("goalAmountInput").value = "";
+    document.getElementById("goalDeadlineInput").value = "";
+    renderSavingsGoals();
+  });
+
+  // Piano d'azione combinato
+  document.getElementById("btnApplyActionPlan").addEventListener("click", applyActionPlan);
+
+  // Membri della famiglia
+  document.getElementById("btnAddMember").addEventListener("click", () => {
+    const input = document.getElementById("memberNameInput");
+    if (addHouseholdMember(input.value)) {
+      input.value = "";
+      renderHouseholdMembersEditor();
+      populateMemberSelects();
+      renderTab(state.activeTab);
+    }
+  });
+  document.getElementById("txFilterMember").addEventListener("change", (e) => {
+    state.txFilters.member = e.target.value;
+    state.txPage = 1;
+    renderTransactions();
+  });
+
+  // Regole di allarme personalizzabili
+  document.getElementById("btnSaveCustomAlerts").addEventListener("click", () => {
+    const raw = document.getElementById("singleTxThresholdInput").value;
+    const v = raw === "" ? null : parseFloat(raw);
+    state.customAlerts.singleTxThreshold = v !== null && !isNaN(v) && v > 0 ? v : null;
+    state.customAlerts.negativeBalanceAlert = document.getElementById("negativeBalanceAlertInput").checked;
+    saveCustomAlerts();
+    renderTab(state.activeTab);
+    alert("Regole di allarme aggiornate.");
+  });
+
+  // Backup completo
+  document.getElementById("btnExportBackup").addEventListener("click", exportFullBackup);
+  const backupFileInput = document.getElementById("backupFileInput");
+  document.getElementById("btnImportBackup").addEventListener("click", () => backupFileInput.click());
+  backupFileInput.addEventListener("change", (e) => {
+    if (e.target.files[0]) importFullBackup(e.target.files[0]);
+    backupFileInput.value = "";
+  });
+
+  // Report mensile
+  document.getElementById("btnMonthlyReport").addEventListener("click", openMonthlyReport);
+  document.getElementById("btnCloseMonthlyReport").addEventListener("click", closeMonthlyReport);
+  document.getElementById("btnPrintMonthlyReport").addEventListener("click", printMonthlyReport);
+  document.getElementById("monthlyReportModal").addEventListener("click", (e) => { if (e.target.id === "monthlyReportModal") closeMonthlyReport(); });
+  window.addEventListener("afterprint", () => document.body.classList.remove("printing-report"));
+
+  // Banner "cosa è cambiato"
+  document.getElementById("btnDismissVisitBanner").addEventListener("click", () => {
+    state.visitChangeMessage = null;
+    renderVisitChangeBanner();
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeTxModal(); closeSettings(); }
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); }
   });
 
   document.getElementById("liveClock").textContent = new Date().toLocaleString("it-IT", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
@@ -4262,7 +5009,11 @@ function init() {
   window.addEventListener("resize", () => renderTab(state.activeTab));
 
   const persisted = loadPersisted();
-  if (persisted && persisted.length) loadTransactions(persisted);
+  if (persisted && persisted.length) {
+    loadTransactions(persisted);
+    state.visitChangeMessage = computeVisitDiffAndSnapshot();
+    renderVisitChangeBanner();
+  }
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
