@@ -1968,7 +1968,7 @@ const EXPENSE_CATEGORIES = [
   "Pranzo", "Colazione & Caffè", "Birra & Aperitivi", "Auto & Trasporti", "Viaggi & Trasporti", "Sosta & Parcheggi",
   "Salute & Prevenzione", "Beauty & Benessere", "Sport & Tempo Libero", "Shopping Online",
   "Shopping & Abbigliamento", "Animali", "Scuola & Educazione", "Libri & Fumetti", "Casa & Arredo",
-  "Tasse & Rimborsi", "Carta di Credito", "Regali & Donazioni",
+  "Tasse & Rimborsi", "Carta di Credito", "Regali & Donazioni", "Assicurazioni & Polizze",
 ];
 const INCOME_CATEGORIES = ["Stipendio", "Giroconto"];
 const NEEDS_CATEGORY = "Da categorizzare";
@@ -2028,6 +2028,7 @@ const CATEGORY_ICONS = {
   "Sport & Tempo Libero": "⚽", "Shopping Online": "📦", "Shopping & Abbigliamento": "👗",
   "Animali": "🐾", "Scuola & Educazione": "🎓", "Libri & Fumetti": "📚", "Casa & Arredo": "🛋️",
   "Tasse & Rimborsi": "📑", "Carta di Credito": "💳", "Regali & Donazioni": "🎁", "Giroconto": "🔄",
+  "Assicurazioni & Polizze": "🛡️",
   [NEEDS_CATEGORY]: "❓",
 };
 const DEFAULT_BUDGETS = {
@@ -2036,7 +2037,7 @@ const DEFAULT_BUDGETS = {
   "Viaggi & Trasporti": 100, "Sosta & Parcheggi": 30, "Salute & Prevenzione": 100, "Beauty & Benessere": 60,
   "Sport & Tempo Libero": 60, "Shopping Online": 100, "Shopping & Abbigliamento": 150, "Animali": 50,
   "Scuola & Educazione": 100, "Libri & Fumetti": 30, "Casa & Arredo": 100, "Tasse & Rimborsi": 50,
-  "Carta di Credito": 200, "Regali & Donazioni": 40,
+  "Carta di Credito": 200, "Regali & Donazioni": 40, "Assicurazioni & Polizze": 50,
 };
 // Regole di default per il matching esercente -> categoria (parola chiave, case/accent-insensitive, sottostringa).
 const DEFAULT_MERCHANT_RULES = [
@@ -2136,14 +2137,14 @@ const DEFAULT_MERCHANT_RULES = [
   { keyword: "ENEL", category: "Luce & Gas" }, { keyword: "ENI GAS", category: "Luce & Gas" },
   { keyword: "TIM ", category: "Bollette" }, { keyword: "VODAFONE", category: "Bollette" },
   { keyword: "WINDTRE", category: "Bollette" }, { keyword: "FASTWEB", category: "Bollette" },
-  { keyword: "CONDOMINIO", category: "Bollette" },
+  { keyword: "CONDOMINIO", category: "Casa & Arredo" },
   { keyword: "STIPENDIO", category: "Stipendio" }, { keyword: "SALARY", category: "Stipendio" },
   { keyword: "PAYROLL", category: "Stipendio" },
   // Importate dal dizionario keyword->categoria fornito dall'utente (dizionario_categorie.csv)
   { keyword: "APPLE", category: "Abbonamenti & Streaming" }, { keyword: "GOOGLE", category: "Abbonamenti & Streaming" }, { keyword: "SITLY", category: "Abbonamenti & Streaming" },
   { keyword: "ANIMALIAMO", category: "Animali" }, { keyword: "Veterinario", category: "Animali" },
   { keyword: "wash-mi", category: "Auto & Trasporti" }, { keyword: "Autolavaggio", category: "Auto & Trasporti" },
-  { keyword: "TREATWELL", category: "Beauty & Benessere" }, { keyword: "Lavanderia", category: "Beauty & Benessere" },
+  { keyword: "TREATWELL", category: "Beauty & Benessere" },
   { keyword: "UFO", category: "Birra & Aperitivi" }, { keyword: "WE ARE YOU", category: "Birra & Aperitivi" },
   { keyword: "ADDEBITO FASTWEB", category: "Bollette" },
   { keyword: "Carta di Credito", category: "Carta di Credito" },
@@ -2162,6 +2163,21 @@ const DEFAULT_MERCHANT_RULES = [
   { keyword: "SPORT", category: "Sport & Tempo Libero" },
   { keyword: "ACCREDITO COMPETENZE", category: "Stipendio" },
   { keyword: "CLESS TICKET ATM", category: "Viaggi & Trasporti" },
+  // Seconda importazione dal dizionario aggiornato dell'utente: nuova categoria "Assicurazioni &
+  // Polizze" + nuove keyword. "LAVANDERIA" è stata spostata qui da Beauty & Benessere (la nuova
+  // versione del file non ha più l'ambiguità della volta scorsa).
+  { keyword: "POLIZZA", category: "Assicurazioni & Polizze" },
+  { keyword: "ENI", category: "Auto & Trasporti" },
+  { keyword: "DHOLEMILANO", category: "Birra & Aperitivi" }, { keyword: "ITER", category: "Birra & Aperitivi" },
+  { keyword: "82001", category: "Carta di Credito" },
+  { keyword: "LAANKEE", category: "Colazione & Caffè" },
+  { keyword: "CONTO FAMIGLIA", category: "Giroconto" },
+  { keyword: "FANTAMAGUS", category: "Libri & Fumetti" },
+  { keyword: "COMPLEANNO", category: "Regali & Donazioni" },
+  { keyword: "LAVANDERIA", category: "Shopping & Abbigliamento" },
+  { keyword: "EASYPARK", category: "Sosta & Parcheggi" },
+  { keyword: "CANONE", category: "Tasse & Rimborsi" },
+  { keyword: "HOTEL", category: "Viaggi & Trasporti" }, { keyword: "ZANDAAM", category: "Viaggi & Trasporti" }, { keyword: "WOLFSEND ZAANDIJK", category: "Viaggi & Trasporti" },
 ];
 const DAY_NAMES = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 const MONTH_NAMES = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
