@@ -2222,6 +2222,13 @@ const DISCRETIONARY_CATEGORIES = new Set([
   "Shopping Online", "Shopping & Abbigliamento", "Sport & Tempo Libero", "Regali & Donazioni",
   "Libri & Fumetti", "Beauty & Benessere",
 ]);
+// "Carta di Credito" rappresenta l'addebito riepilogativo dell'estratto conto della carta (es.
+// "Addebito Spese Carta di Credito"): le singole spese che lo compongono sono già registrate
+// (e già contate) come transazioni separate nelle rispettive categorie, quindi includere anche
+// questo addebito aggregato conterebbe la stessa spesa due volte. Va quindi escluso da ogni
+// calcolo/totale (resta comunque visibile e modificabile nel tab Transazioni).
+const EXCLUDED_TOTAL_CATEGORIES = new Set(["Carta di Credito"]);
+function isCountedTx(t) { return !EXCLUDED_TOTAL_CATEGORIES.has(t.category); }
 // Le categorie sono cambiate due volte in passato (dall'inglese originale, poi da una prima
 // versione italiana all'attuale tassonomia più granulare): i dati già salvati nel browser
 // (localStorage) di chi ha usato l'app in precedenza contengono ancora i vecchi nomi. Questa
@@ -2925,6 +2932,7 @@ function validateCustomRange() {
 }
 function getCategoryTypeFiltered() {
   return state.transactions.filter((t) =>
+    isCountedTx(t) &&
     (state.filters.category === "all" || t.category === state.filters.category) &&
     (state.filters.type === "all" || t.type === state.filters.type)
   );
@@ -3014,7 +3022,7 @@ function computeRolloverBalance(category, periodStart) {
 function computeBudgetBreakdown(periodTxs) {
   const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
   const [periodStart] = getPeriodRange();
-  return getBudgetCategories().map((cat) => {
+  return getBudgetCategories().filter((cat) => !EXCLUDED_TOTAL_CATEGORIES.has(cat)).map((cat) => {
     const speso = periodTxs.filter((t) => t.type === "outcome" && t.category === cat).reduce((s, t) => s + t.value, 0);
     const budgetPerMonth = state.budgets[cat] || 0;
     const rollover = computeRolloverBalance(cat, periodStart);
@@ -3500,7 +3508,7 @@ function simMonthlyContribution(sim, monthIndex) {
 }
 function buildProjection() {
   const months = getMonthsForward(12);
-  const series = computeMonthlySeries(state.transactions);
+  const series = computeMonthlySeries(state.transactions.filter(isCountedTx));
   const last3 = series.slice(-3);
   const baseIncome = last3.length ? last3.reduce((s, m) => s + m.income, 0) / last3.length : 0;
   const baseOutcome = last3.length ? last3.reduce((s, m) => s + m.outcome, 0) / last3.length : 0;
@@ -4090,7 +4098,7 @@ function renderHealthScoreBreakdown(health) {
 // ---------------------------------------------------------------- Advanced: Obiettivi di risparmio
 function computeGoalProgress(goal) {
   const created = new Date(goal.createdAt);
-  const txsSince = state.transactions.filter((t) => t.date >= created);
+  const txsSince = state.transactions.filter((t) => t.date >= created && isCountedTx(t));
   const net = sumBy(txsSince, "income") - sumBy(txsSince, "outcome");
   const progress = clamp(net, 0, goal.targetAmount);
   const pct = goal.targetAmount > 0 ? progress / goal.targetAmount : 0;
@@ -4947,7 +4955,7 @@ function renderDebtPlanner() {
 
 // ---------------------------------------------------------------- Simulazione Monte Carlo Fondo Emergenza
 function computeMonteCarloProjection(months, runs) {
-  const series = computeMonthlySeries(state.transactions);
+  const series = computeMonthlySeries(state.transactions.filter(isCountedTx));
   const history = series.map((m) => m.net);
   if (history.length < 2) return null;
   const mean = history.reduce((s, v) => s + v, 0) / history.length;
