@@ -532,6 +532,48 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .report-list li { padding: 8px 10px; background: var(--card2); border: 1px solid var(--border); border-radius: 8px; font-size: 12.5px; }
 .report-footer { color: var(--text-muted); font-size: 11.5px; margin-top: 10px; }
 
+/* ===================== budget con riporto ===================== */
+.rollover-badge {
+  display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 100px; font-size: 10px; font-weight: 700;
+  vertical-align: middle;
+}
+.rollover-badge.pos { background: rgba(79,209,165,0.15); color: var(--primary); }
+.rollover-badge.neg { background: rgba(224,112,122,0.15); color: var(--danger); }
+
+/* ===================== etichette (tag) ===================== */
+.tag-chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--card2); border: 1px solid var(--border);
+  border-radius: 100px; padding: 3px 6px 3px 10px; font-size: 11.5px; color: var(--text);
+}
+.tag-chip-remove {
+  background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;
+  width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.tag-chip-remove:hover { color: var(--danger); background: rgba(224,112,122,0.12); }
+
+/* ===================== patrimonio netto ===================== */
+.networth-value-input {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 8px; border-radius: 6px; font-size: 12px; width: 110px; font-family: var(--font-mono); text-align: right;
+}
+
+/* ===================== command palette ===================== */
+.cmdp-box { width: min(560px, 92vw); padding: 0; overflow: hidden; align-self: flex-start; margin-top: 10vh; }
+.cmdp-input {
+  width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text);
+  padding: 16px 20px; font-size: 15px; outline: none;
+}
+.cmdp-list { max-height: 50vh; overflow-y: auto; padding: 6px; }
+.cmdp-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none;
+  color: var(--text); padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 13px;
+}
+.cmdp-item.active, .cmdp-item:hover { background: var(--hover-bg); }
+.cmdp-icon { flex: 0 0 auto; width: 20px; text-align: center; }
+.cmdp-label { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmdp-hint { padding: 8px 16px; border-top: 1px solid var(--border); font-size: 10.5px; color: var(--text-muted); }
+
 /* ===================== chart empty state ===================== */
 .chart-empty {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -662,6 +704,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="light">☀️ Chiaro</option>
         <option value="dark">🌙 Scuro</option>
       </select>
+      <button id="btnQuickAdd" class="btn btn-ghost btn-sm" type="button" title="Aggiungi una singola transazione manualmente">⚡ Aggiungi Rapida</button>
       <button id="btnPrint" class="btn btn-ghost btn-sm" type="button" title="Stampa o esporta il tab corrente in PDF">🖨️ Stampa/PDF</button>
       <button id="btnMonthlyReport" class="btn btn-ghost btn-sm" type="button" title="Genera un report riepilogativo del periodo selezionato">📄 Report Mensile</button>
       <button id="btnSettings" class="btn btn-ghost btn-sm" type="button">⚙ Impostazioni</button>
@@ -719,6 +762,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <button id="tabbtn-analytics" class="side-nav-item" data-tab="analytics" type="button" role="tab" aria-selected="false" aria-controls="tab-analytics" title="Analytics"><span class="sni-icon" aria-hidden="true">📈</span><span class="sni-label">Analytics</span></button>
     <button id="tabbtn-transactions" class="side-nav-item" data-tab="transactions" type="button" role="tab" aria-selected="false" aria-controls="tab-transactions" title="Transazioni"><span class="sni-icon" aria-hidden="true">📋</span><span class="sni-label">Transazioni</span></button>
     <button id="tabbtn-savings" class="side-nav-item" data-tab="savings" type="button" role="tab" aria-selected="false" aria-controls="tab-savings" title="Risparmio"><span class="sni-icon" aria-hidden="true">🐷</span><span class="sni-label">Risparmio</span></button>
+    <button id="tabbtn-networth" class="side-nav-item" data-tab="networth" type="button" role="tab" aria-selected="false" aria-controls="tab-networth" title="Patrimonio"><span class="sni-icon" aria-hidden="true">🏦</span><span class="sni-label">Patrimonio</span></button>
   </nav>
 
   <div class="app-main">
@@ -1043,6 +1087,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <label for="txFilterMember">Membro</label>
         <select id="txFilterMember"><option value="all">Tutti</option></select>
       </div>
+      <div class="filter-field hidden" id="tagFilterRow">
+        <label for="txFilterTag">Etichetta</label>
+        <select id="txFilterTag"><option value="all">Tutte</option></select>
+      </div>
       <div class="filter-field" style="flex:1; min-width:200px;">
         <label for="txSearch">Ricerca</label>
         <input type="text" id="txSearch" placeholder="Cerca per categoria, importo, tipo o data...">
@@ -1193,6 +1241,65 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     </div>
   </section>
 
+  <!-- ===================== PATRIMONIO ===================== -->
+  <section id="tab-networth" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-networth">
+    <div class="panel">
+      <h3>🏦 Patrimonio Netto</h3>
+      <p class="modal-lead">Attivo (risparmi, investimenti, altri beni) meno passivo (mutuo, prestiti e i debiti registrati qui sotto), per un bilancio patrimoniale oltre al semplice flusso di cassa.</p>
+      <div class="metric-grid" id="netWorthSummary"></div>
+      <div id="netWorthEntriesList"></div>
+      <div class="rule-add-row" style="margin-top:10px;">
+        <input type="text" id="nwNameInput" placeholder="Nome, es. Conto risparmio, Investimenti, Mutuo residuo">
+        <select id="nwTypeInput">
+          <option value="asset">💰 Attivo</option>
+          <option value="liability">📉 Passivo</option>
+        </select>
+        <input type="number" id="nwValueInput" min="0" step="10" placeholder="Valore (€)" style="max-width:150px;">
+        <button id="btnAddNetWorthEntry" class="btn btn-primary btn-sm" type="button">+ Aggiungi Voce</button>
+      </div>
+      <div class="hidden" id="netWorthChartPanel" style="margin-top:16px;">
+        <h4 style="margin:0 0 8px;">Andamento nel tempo</h4>
+        <div class="chart-box"><canvas id="chartNetWorth"></canvas></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📉 Pianificatore Estinzione Debiti</h3>
+      <p class="modal-lead">Registra i tuoi debiti (prestiti, carte, mutuo) e simula il piano di estinzione con il metodo Valanga (tasso più alto prima) o Palla di Neve (saldo più basso prima).</p>
+      <div id="debtsList"></div>
+      <div class="rule-add-row" style="margin-top:10px;">
+        <input type="text" id="debtNameInput" placeholder="Nome, es. Prestito auto">
+        <input type="number" id="debtBalanceInput" min="0" step="10" placeholder="Saldo residuo (€)" style="max-width:150px;">
+        <input type="number" id="debtAprInput" min="0" step="0.1" placeholder="Tasso APR %" style="max-width:120px;">
+        <input type="number" id="debtMinPaymentInput" min="0" step="5" placeholder="Min. mensile (€)" style="max-width:150px;">
+        <button id="btnAddDebt" class="btn btn-primary btn-sm" type="button">+ Aggiungi Debito</button>
+      </div>
+      <div class="rule-add-row" style="margin-top:12px;">
+        <label for="debtStrategySelect" style="flex:0 0 auto;">Strategia</label>
+        <select id="debtStrategySelect">
+          <option value="avalanche">🏔️ Valanga (tasso più alto prima)</option>
+          <option value="snowball">⛄ Palla di Neve (saldo più basso prima)</option>
+        </select>
+        <label for="debtExtraPaymentInput" style="flex:0 0 auto;">Extra mensile</label>
+        <input type="number" id="debtExtraPaymentInput" min="0" step="10" style="max-width:120px;">
+        <span class="muted">€</span>
+      </div>
+      <div class="metric-grid" id="debtPlannerSummary" style="margin-top:12px;"></div>
+      <div class="hidden" id="debtPlannerChartPanel" style="margin-top:16px;">
+        <h4 style="margin:0 0 8px;">Saldo residuo totale nel tempo</h4>
+        <div class="chart-box"><canvas id="chartDebtPayoff"></canvas></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🎲 Simulazione Monte Carlo — Fondo Emergenza</h3>
+      <p class="modal-lead">Proiezione probabilistica del saldo nei prossimi 12 mesi (basata sulla variabilità storica di entrate e uscite), invece di un'unica linea lineare.</p>
+      <p id="monteCarloEmptyMsg" class="modal-lead hidden">Servono almeno due mesi di storico transazioni per calcolare la variabilità e generare la proiezione.</p>
+      <div class="chart-box"><canvas id="chartMonteCarlo"></canvas></div>
+      <p id="monteCarloSummary" class="modal-lead"></p>
+    </div>
+  </section>
+
   </div><!-- /app-main -->
   </div><!-- /app-shell -->
 
@@ -1222,6 +1329,15 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <label for="mxMemberSelect" class="mx-field-label">Membro della famiglia</label>
       <select id="mxMemberSelect"></select>
     </div>
+    <div class="mx-cat-edit">
+      <label for="mxNewTagInput" class="mx-field-label">Etichette</label>
+      <div id="mxTagsList" class="tag-chip-list"></div>
+      <div class="rule-add-row" style="margin-top:6px;">
+        <input type="text" id="mxNewTagInput" list="mxTagSuggestions" placeholder="Aggiungi etichetta, es. Viaggio Giappone">
+        <datalist id="mxTagSuggestions"></datalist>
+        <button id="btnAddTag" class="btn-ghost btn-sm" type="button">+ Aggiungi</button>
+      </div>
+    </div>
     <div class="modal-grid">
       <div class="mi"><div class="ml">Data</div><div class="mv" id="mxDate">-</div></div>
       <div class="mi"><div class="ml">Tipo</div><div class="mv" id="mxType">-</div></div>
@@ -1248,6 +1364,12 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <h4>Budget per categoria</h4>
       <p class="modal-lead">Imposta il budget mensile per ogni categoria di spesa. Le categorie provenienti dal tuo CSV che non hanno ancora un budget sono evidenziate.</p>
       <div id="budgetEditor" class="budget-editor"></div>
+      <div class="rule-add-row">
+        <label style="flex:0 0 auto; display:flex; align-items:center; gap:6px;">
+          <input type="checkbox" id="budgetRolloverInput" style="width:auto;">
+          🗂️ Budget con riporto: l'avanzo o lo sforamento di un mese si somma al budget del mese successivo
+        </label>
+      </div>
       <div class="modal-close-row modal-close-row-split">
         <button id="btnResetBudgets" class="btn-ghost btn-sm" type="button">Ripristina default</button>
         <button id="btnSaveBudgets" class="btn btn-primary btn-sm" type="button">Salva Budget</button>
@@ -1345,6 +1467,54 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <button id="btnCloseMonthlyReport" class="btn-ghost btn-sm" type="button">Chiudi</button>
       <button id="btnPrintMonthlyReport" class="btn btn-primary btn-sm" type="button">🖨️ Stampa / Esporta PDF</button>
     </div>
+  </div>
+</div>
+
+<div id="quickAddModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="quickAddTitle">
+  <div class="modal-box">
+    <div class="modal-head-row">
+      <h3 id="quickAddTitle">⚡ Aggiungi Transazione Rapida</h3>
+      <button id="btnCloseQuickAdd" class="btn-icon" type="button" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="field">
+      <label for="qaDate">Data</label>
+      <input type="date" id="qaDate">
+    </div>
+    <div class="field">
+      <label for="qaDescription">Descrizione / Esercente</label>
+      <input type="text" id="qaDescription" list="qaDescriptionSuggestions" placeholder="Es. Esselunga Ripamonti">
+      <datalist id="qaDescriptionSuggestions"></datalist>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="qaValue">Importo (€)</label>
+        <input type="number" id="qaValue" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div class="field">
+        <label for="qaType">Tipo</label>
+        <select id="qaType">
+          <option value="outcome">Uscita</option>
+          <option value="income">Entrata</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="qaCategory">Categoria</label>
+      <select id="qaCategory"></select>
+    </div>
+    <div id="qaError" class="welcome-error hidden"></div>
+    <div class="modal-close-row-split">
+      <button id="btnCancelQuickAdd" class="btn-ghost btn-sm" type="button">Annulla</button>
+      <button id="btnSubmitQuickAdd" class="btn btn-primary btn-sm" type="button">💾 Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<div id="commandPaletteModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Ricerca comandi">
+  <div class="modal-box cmdp-box">
+    <input type="text" id="commandPaletteInput" class="cmdp-input" placeholder="Cerca un comando, un tab o una transazione…" aria-label="Ricerca comandi">
+    <div id="commandPaletteList" class="cmdp-list"></div>
+    <div class="cmdp-hint">↑↓ per navigare · Invio per selezionare · Esc per chiudere</div>
   </div>
 </div>
 
@@ -2199,6 +2369,9 @@ const LS_SAVINGS_GOALS_KEY = "ffdpro_savings_goals_v1";
 const LS_HOUSEHOLD_MEMBERS_KEY = "ffdpro_household_members_v1";
 const LS_CUSTOM_ALERTS_KEY = "ffdpro_custom_alerts_v1";
 const LS_VISIT_SNAPSHOT_KEY = "ffdpro_visit_snapshot_v1";
+const LS_BUDGET_ROLLOVER_KEY = "ffdpro_budget_rollover_v1";
+const LS_DEBTS_KEY = "ffdpro_debts_v1";
+const LS_NET_WORTH_KEY = "ffdpro_net_worth_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
 
 const PRESETS = [
@@ -2220,7 +2393,7 @@ const state = {
   simulations: [],
   charts: {},
   txSort: { field: "date", dir: "desc" },
-  txFilters: { category: "all", type: "all", search: "", member: "all" },
+  txFilters: { category: "all", type: "all", search: "", member: "all", tag: "all" },
   txPage: 1,
   txPageSize: 25,
   activeTab: "overview",
@@ -2233,6 +2406,13 @@ const state = {
   customAlerts: { singleTxThreshold: null, negativeBalanceAlert: false },
   actionPlan: new Set(),
   visitChangeMessage: null,
+  budgetRolloverEnabled: false,
+  debts: [],
+  debtStrategy: "avalanche",
+  debtExtraPayment: 0,
+  netWorthEntries: [],
+  netWorthHistory: [],
+  commandPaletteOpen: false,
 };
 let simIdSeq = 1;
 
@@ -2321,6 +2501,7 @@ function parseCSV(text) {
     desc: header.findIndex((h) => h.includes("descr") || h.includes("merchant") || h.includes("esercente") || h.includes("presso") || h.includes("memo") || h.includes("note")),
     val: header.findIndex((h) => h.includes("value") || h.includes("valor") || h.includes("amount") || h.includes("importo")),
     type: header.findIndex((h) => h.includes("type") || h.includes("tipo")),
+    tags: header.findIndex((h) => h.includes("tag") || h.includes("etichett")),
   };
   if (idx.date < 0 || idx.val < 0 || idx.type < 0) {
     throw new Error("Colonne obbligatorie mancanti. Servono: datetime, value, type.");
@@ -2347,7 +2528,8 @@ function parseCSV(text) {
       matchedKeyword = guess ? guess.keyword : null;
       autoCategorized = true;
     }
-    rows.push({ date: d, category, type, value: Math.abs(v), description: desc || null, autoCategorized, matchedKeyword });
+    const tags = idx.tags >= 0 && parts[idx.tags] ? parts[idx.tags].split("|").map((s) => s.trim()).filter(Boolean) : [];
+    rows.push({ date: d, category, type, value: Math.abs(v), description: desc || null, autoCategorized, matchedKeyword, tags });
   }
   if (!rows.length) throw new Error("Nessuna riga valida trovata nel file.");
   return rows;
@@ -2414,7 +2596,7 @@ function persistTransactions() {
   const raw = state.transactions.map((t) => [
     t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
     t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "",
-    t.member || "",
+    t.member || "", (t.tags || []).join("|"),
   ]);
   try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
 }
@@ -2423,11 +2605,12 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto, kw, disc, member]) => ({
+    return arr.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags]) => ({
       date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
       autoCategorized: !!auto, matchedKeyword: kw || null,
       discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
       member: member || null,
+      tags: tags ? tags.split("|").filter(Boolean) : [],
     }));
   } catch (e) { return null; }
 }
@@ -2489,6 +2672,38 @@ function loadCustomAlerts() {
     const raw = localStorage.getItem(LS_CUSTOM_ALERTS_KEY);
     state.customAlerts = raw ? JSON.parse(raw) : { singleTxThreshold: null, negativeBalanceAlert: false };
   } catch (e) { state.customAlerts = { singleTxThreshold: null, negativeBalanceAlert: false }; }
+}
+function saveBudgetRolloverEnabled() {
+  try { localStorage.setItem(LS_BUDGET_ROLLOVER_KEY, JSON.stringify(state.budgetRolloverEnabled)); } catch (e) { /* ignore */ }
+}
+function loadBudgetRolloverEnabled() {
+  try {
+    const raw = localStorage.getItem(LS_BUDGET_ROLLOVER_KEY);
+    state.budgetRolloverEnabled = raw ? JSON.parse(raw) : false;
+  } catch (e) { state.budgetRolloverEnabled = false; }
+}
+function saveDebts() {
+  try { localStorage.setItem(LS_DEBTS_KEY, JSON.stringify({ debts: state.debts, strategy: state.debtStrategy, extraPayment: state.debtExtraPayment })); } catch (e) { /* ignore */ }
+}
+function loadDebts() {
+  try {
+    const raw = localStorage.getItem(LS_DEBTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    state.debts = parsed && Array.isArray(parsed.debts) ? parsed.debts : [];
+    state.debtStrategy = parsed && parsed.strategy === "snowball" ? "snowball" : "avalanche";
+    state.debtExtraPayment = parsed && typeof parsed.extraPayment === "number" ? parsed.extraPayment : 0;
+  } catch (e) { state.debts = []; state.debtStrategy = "avalanche"; state.debtExtraPayment = 0; }
+}
+function saveNetWorth() {
+  try { localStorage.setItem(LS_NET_WORTH_KEY, JSON.stringify({ entries: state.netWorthEntries, history: state.netWorthHistory })); } catch (e) { /* ignore */ }
+}
+function loadNetWorth() {
+  try {
+    const raw = localStorage.getItem(LS_NET_WORTH_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    state.netWorthEntries = parsed && Array.isArray(parsed.entries) ? parsed.entries : [];
+    state.netWorthHistory = parsed && Array.isArray(parsed.history) ? parsed.history : [];
+  } catch (e) { state.netWorthEntries = []; state.netWorthHistory = []; }
 }
 function ensureBudgetKeysForTransactions() {
   const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome" && t.category !== NEEDS_CATEGORY).map((t) => t.category));
@@ -2683,14 +2898,50 @@ function computeMonthlySeries(txs) {
   for (const m of arr) { m.net = m.income - m.outcome; cum += m.net; m.cumulative = cum; }
   return arr;
 }
+// ---------------------------------------------------------------- Budget con riporto (envelope budgeting)
+// Quando attivo, l'avanzo (o lo sforamento) di budget di un mese si somma al budget effettivo del
+// mese successivo, invece di azzerarsi. computeRolloverBalance calcola il saldo accumulato di tutti
+// i mesi calendario precedenti l'inizio del periodo attualmente visualizzato (mesi senza transazioni
+// contano comunque come avanzo pieno, essendo "budget non speso").
+function computeMonthlyActualsForCategory(category) {
+  const map = new Map();
+  for (const t of state.transactions) {
+    if (t.type !== "outcome" || t.category !== category) continue;
+    const k = monthKey(t.date);
+    map.set(k, (map.get(k) || 0) + t.value);
+  }
+  return map;
+}
+function computeRolloverBalance(category, periodStart) {
+  if (!state.budgetRolloverEnabled || !periodStart || !state.transactions.length) return 0;
+  const budgetPerMonth = state.budgets[category] || 0;
+  if (!budgetPerMonth) return 0;
+  const earliest = state.transactions.reduce((mn, t) => (t.date < mn ? t.date : mn), state.transactions[0].date);
+  let cursor = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+  const endExclusive = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
+  if (cursor >= endExclusive) return 0;
+  const actuals = computeMonthlyActualsForCategory(category);
+  let balance = 0;
+  while (cursor < endExclusive) {
+    balance += budgetPerMonth - (actuals.get(monthKey(cursor)) || 0);
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+  }
+  return balance;
+}
 function computeBudgetBreakdown(periodTxs) {
   const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
+  const [periodStart] = getPeriodRange();
   return getBudgetCategories().map((cat) => {
     const speso = periodTxs.filter((t) => t.type === "outcome" && t.category === cat).reduce((s, t) => s + t.value, 0);
     const budgetPerMonth = state.budgets[cat] || 0;
-    const budget = budgetPerMonth * monthsN;
-    const percent = budget > 0 ? speso / budget : null;
-    return { category: cat, speso, budget, percent, unset: budgetPerMonth === 0 };
+    const rollover = computeRolloverBalance(cat, periodStart);
+    const budgetBase = budgetPerMonth * monthsN;
+    const budget = budgetBase + rollover;
+    let percent;
+    if (budgetPerMonth === 0) percent = null;
+    else if (budget > 0) percent = speso / budget;
+    else percent = speso > 0 ? 2 : 1.01;
+    return { category: cat, speso, budget, budgetBase, rollover, percent, unset: budgetPerMonth === 0 };
   });
 }
 const INSIGHT_SEVERITY = { danger: 0, warning: 1, info: 2, success: 3 };
@@ -2968,7 +3219,16 @@ function renderBudgetList(containerId, budgetBreakdown) {
   }
   for (const b of visibleBudgetRows) {
     const row = el("div", "budget-row");
-    row.appendChild(el("div", "budget-cat", `${catIcon(b.category)} ${b.category}`));
+    const catBox = el("div", "budget-cat", `${catIcon(b.category)} ${b.category}`);
+    if (state.budgetRolloverEnabled && !b.unset && Math.abs(b.rollover) >= 0.01) {
+      const badge = el("span", "rollover-badge" + (b.rollover >= 0 ? " pos" : " neg"),
+        (b.rollover >= 0 ? "+" : "") + fmtCurrency(b.rollover, 0) + " riportati");
+      badge.title = b.rollover >= 0
+        ? "Avanzo accumulato dai mesi precedenti, sommato al budget di questo periodo."
+        : "Sforamento accumulato dai mesi precedenti, sottratto al budget di questo periodo.";
+      catBox.appendChild(badge);
+    }
+    row.appendChild(catBox);
     if (b.unset) {
       row.appendChild(el("div", "budget-amounts", fmtCurrency(b.speso)));
       const hint = el("div", "muted", "Budget non impostato — ");
@@ -3969,7 +4229,7 @@ function exportFullBackup() {
     version: 1, exportedAt: new Date().toISOString(),
     transactions: state.transactions.map((t) => [
       t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
-      t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "", t.member || "",
+      t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "", t.member || "", (t.tags || []).join("|"),
     ]),
     budgets: state.budgets,
     merchantRules: state.merchantRules,
@@ -3979,6 +4239,12 @@ function exportFullBackup() {
     customAlerts: state.customAlerts,
     antThreshold: state.antThreshold,
     overviewLayout: state.overviewLayout,
+    budgetRolloverEnabled: state.budgetRolloverEnabled,
+    debts: state.debts,
+    debtStrategy: state.debtStrategy,
+    debtExtraPayment: state.debtExtraPayment,
+    netWorthEntries: state.netWorthEntries,
+    netWorthHistory: state.netWorthHistory,
   };
   downloadJSON(backup, `backup_family_finance_${Date.now()}.json`);
 }
@@ -3991,11 +4257,12 @@ function importFullBackup(file) {
       const data = JSON.parse(reader.result);
       if (!data || !Array.isArray(data.transactions)) throw new Error("Il file non è un backup valido.");
       if (!confirm("Importare questo backup sovrascriverà tutti i dati attuali (transazioni, budget, dizionario, obiettivi, impostazioni). Continuare?")) return;
-      const rows = data.transactions.map(([iso, cat, type, val, desc, auto, kw, disc, member]) => ({
+      const rows = data.transactions.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags]) => ({
         date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
         autoCategorized: !!auto, matchedKeyword: kw || null,
         discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
         member: member || null,
+        tags: tags ? tags.split("|").filter(Boolean) : [],
       }));
       state.budgets = data.budgets && typeof data.budgets === "object" ? data.budgets : {};
       state.merchantRules = Array.isArray(data.merchantRules) ? data.merchantRules : DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
@@ -4005,7 +4272,14 @@ function importFullBackup(file) {
       state.customAlerts = data.customAlerts && typeof data.customAlerts === "object" ? data.customAlerts : { singleTxThreshold: null, negativeBalanceAlert: false };
       state.antThreshold = typeof data.antThreshold === "number" ? data.antThreshold : 5;
       state.overviewLayout = data.overviewLayout || "classica";
+      state.budgetRolloverEnabled = !!data.budgetRolloverEnabled;
+      state.debts = Array.isArray(data.debts) ? data.debts : [];
+      state.debtStrategy = data.debtStrategy === "snowball" ? "snowball" : "avalanche";
+      state.debtExtraPayment = typeof data.debtExtraPayment === "number" ? data.debtExtraPayment : 0;
+      state.netWorthEntries = Array.isArray(data.netWorthEntries) ? data.netWorthEntries : [];
+      state.netWorthHistory = Array.isArray(data.netWorthHistory) ? data.netWorthHistory : [];
       saveBudgets(); saveMerchantRules(); saveSavingsGoal(state.savingsGoal); saveSavingsGoals(); saveHouseholdMembers(); saveCustomAlerts();
+      saveBudgetRolloverEnabled(); saveDebts(); saveNetWorth();
       try { localStorage.setItem(LS_OVERVIEW_LAYOUT_KEY, state.overviewLayout); } catch (e) { /* ignore */ }
       loadTransactions(rows, { mode: "replace" });
       populateMemberSelects();
@@ -4099,6 +4373,427 @@ function renderVisitChangeBanner() {
   }
 }
 
+// ---------------------------------------------------------------- Inserimento rapido manuale
+function openQuickAddModal() {
+  const modal = document.getElementById("quickAddModal");
+  if (!modal || !state.transactions.length) return;
+  document.getElementById("qaError").classList.add("hidden");
+  const today = new Date();
+  document.getElementById("qaDate").value = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+  document.getElementById("qaDescription").value = "";
+  document.getElementById("qaValue").value = "";
+  document.getElementById("qaType").value = "outcome";
+  populateCategorySelect(document.getElementById("qaCategory"), EXPENSE_CATEGORIES[0]);
+  const dl = document.getElementById("qaDescriptionSuggestions");
+  if (dl) {
+    dl.innerHTML = "";
+    const seen = new Set();
+    for (const t of state.transactions) {
+      if (!t.description || seen.has(t.description)) continue;
+      seen.add(t.description);
+      const opt = document.createElement("option"); opt.value = t.description; dl.appendChild(opt);
+    }
+  }
+  modal.classList.remove("hidden");
+  requestAnimationFrame(() => document.getElementById("qaDescription").focus());
+}
+function closeQuickAddModal() {
+  const modal = document.getElementById("quickAddModal");
+  if (modal) modal.classList.add("hidden");
+}
+function quickAddAutofillFromDescription() {
+  const desc = document.getElementById("qaDescription").value.trim();
+  if (!desc) return;
+  const past = state.transactions.filter((t) => t.description && t.description.toLowerCase() === desc.toLowerCase());
+  if (past.length) {
+    const mostRecent = past.reduce((mx, t) => (t.date > mx.date ? t : mx), past[0]);
+    document.getElementById("qaCategory").value = mostRecent.category;
+    document.getElementById("qaType").value = mostRecent.type;
+    return;
+  }
+  const guess = guessCategory(desc);
+  if (guess) document.getElementById("qaCategory").value = guess.category;
+}
+function submitQuickAdd() {
+  const errBox = document.getElementById("qaError");
+  errBox.classList.add("hidden");
+  const dateStr = document.getElementById("qaDate").value;
+  const desc = document.getElementById("qaDescription").value.trim();
+  const value = parseFloat(document.getElementById("qaValue").value);
+  const type = document.getElementById("qaType").value;
+  const category = document.getElementById("qaCategory").value;
+  if (!dateStr) { errBox.textContent = "Inserisci una data."; errBox.classList.remove("hidden"); return; }
+  if (isNaN(value) || value <= 0) { errBox.textContent = "Inserisci un importo valido maggiore di zero."; errBox.classList.remove("hidden"); return; }
+  if (!category) { errBox.textContent = "Seleziona una categoria."; errBox.classList.remove("hidden"); return; }
+  const date = new Date(dateStr + "T00:00:00");
+  if (isNaN(date)) { errBox.textContent = "Data non valida."; errBox.classList.remove("hidden"); return; }
+  const row = { date, category, type, value: Math.round(Math.abs(value) * 100) / 100, description: desc || null, autoCategorized: false, matchedKeyword: null, tags: [] };
+  loadTransactions([row], { mode: "append" });
+  closeQuickAddModal();
+}
+
+// ---------------------------------------------------------------- Command palette (Ctrl+K)
+function commandPaletteActions() {
+  return [
+    { label: "Vai a Overview", icon: "📊", run: () => switchTab("overview") },
+    { label: "Vai a Simulatore", icon: "🧪", run: () => switchTab("simulator") },
+    { label: "Vai a Analytics", icon: "📈", run: () => switchTab("analytics") },
+    { label: "Vai a Transazioni", icon: "📋", run: () => switchTab("transactions") },
+    { label: "Vai a Risparmio", icon: "🐷", run: () => switchTab("savings") },
+    { label: "Apri Impostazioni", icon: "⚙", run: () => openSettings() },
+    { label: "Aggiungi transazione rapida", icon: "⚡", run: () => openQuickAddModal() },
+    { label: "Aggiungi CSV", icon: "➕", run: () => document.getElementById("addCsvFileInput").click() },
+    { label: "Report Mensile", icon: "📄", run: () => openMonthlyReport() },
+    { label: "Esporta Transazioni CSV", icon: "⬇️", run: () => exportTransactionsCSV() },
+    { label: "Stampa / Esporta PDF", icon: "🖨️", run: () => window.print() },
+    { label: "Reset filtri", icon: "✕", run: () => document.getElementById("btnResetFilters").click() },
+  ];
+}
+let commandPaletteResults = [];
+function renderCommandPalette(query) {
+  const list = document.getElementById("commandPaletteList");
+  if (!list) return;
+  const q = query.trim().toLowerCase();
+  const staticMatches = commandPaletteActions().filter((a) => !q || a.label.toLowerCase().includes(q));
+  const txMatches = [];
+  if (q.length >= 2) {
+    for (const t of state.transactions) {
+      if (txMatches.length >= 6) break;
+      const haystack = `${t.category} ${t.description || ""}`.toLowerCase();
+      if (haystack.includes(q)) {
+        txMatches.push({
+          label: `${t.description || t.category} — ${fmtCurrency(t.value, 2)} (${fmtDateShort(t.date)})`,
+          icon: catIcon(t.category),
+          run: () => openTxModal(t),
+        });
+      }
+    }
+  }
+  commandPaletteResults = [...staticMatches, ...txMatches];
+  list.innerHTML = "";
+  if (!commandPaletteResults.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun risultato."));
+    return;
+  }
+  commandPaletteResults.forEach((action, i) => {
+    const item = el("button", "cmdp-item" + (i === 0 ? " active" : ""), "");
+    item.type = "button";
+    item.appendChild(el("span", "cmdp-icon", action.icon));
+    item.appendChild(el("span", "cmdp-label", action.label));
+    item.addEventListener("click", () => runCommandPaletteAction(i));
+    item.addEventListener("mouseenter", () => setCommandPaletteActive(i));
+    list.appendChild(item);
+  });
+}
+function setCommandPaletteActive(idx) {
+  const items = document.querySelectorAll("#commandPaletteList .cmdp-item");
+  items.forEach((it, i) => it.classList.toggle("active", i === idx));
+}
+function getCommandPaletteActiveIndex() {
+  const items = Array.from(document.querySelectorAll("#commandPaletteList .cmdp-item"));
+  return items.findIndex((it) => it.classList.contains("active"));
+}
+function runCommandPaletteAction(idx) {
+  const action = commandPaletteResults[idx];
+  if (!action) return;
+  closeCommandPalette();
+  action.run();
+}
+function openCommandPalette() {
+  const modal = document.getElementById("commandPaletteModal");
+  if (!modal) return;
+  state.commandPaletteOpen = true;
+  const input = document.getElementById("commandPaletteInput");
+  input.value = "";
+  renderCommandPalette("");
+  modal.classList.remove("hidden");
+  requestAnimationFrame(() => input.focus());
+}
+function closeCommandPalette() {
+  const modal = document.getElementById("commandPaletteModal");
+  if (modal) modal.classList.add("hidden");
+  state.commandPaletteOpen = false;
+}
+
+// ---------------------------------------------------------------- Patrimonio Netto
+function addNetWorthEntry(name, type, value) {
+  state.netWorthEntries.push({ id: Date.now() + Math.random(), name, type, value });
+  recordNetWorthSnapshot();
+  saveNetWorth();
+}
+function removeNetWorthEntry(id) {
+  state.netWorthEntries = state.netWorthEntries.filter((e) => e.id !== id);
+  recordNetWorthSnapshot();
+  saveNetWorth();
+}
+function updateNetWorthEntryValue(id, value) {
+  const entry = state.netWorthEntries.find((e) => e.id === id);
+  if (entry) entry.value = value;
+  recordNetWorthSnapshot();
+  saveNetWorth();
+}
+function computeNetWorthTotals() {
+  const assets = state.netWorthEntries.filter((e) => e.type === "asset").reduce((s, e) => s + e.value, 0);
+  const liabilitiesFromEntries = state.netWorthEntries.filter((e) => e.type === "liability").reduce((s, e) => s + e.value, 0);
+  const liabilitiesFromDebts = state.debts.reduce((s, d) => s + d.balance, 0);
+  const liabilities = liabilitiesFromEntries + liabilitiesFromDebts;
+  return { assets, liabilities, netWorth: assets - liabilities };
+}
+function recordNetWorthSnapshot() {
+  const { netWorth, assets, liabilities } = computeNetWorthTotals();
+  const key = monthKey(new Date());
+  const snapshot = { monthKey: key, assets, liabilities, netWorth };
+  const existingIdx = state.netWorthHistory.findIndex((h) => h.monthKey === key);
+  if (existingIdx >= 0) state.netWorthHistory[existingIdx] = snapshot;
+  else state.netWorthHistory.push(snapshot);
+  state.netWorthHistory.sort((a, b) => a.monthKey.localeCompare(b.monthKey));
+}
+function renderNetWorthEntries() {
+  const list = document.getElementById("netWorthEntriesList");
+  if (!list) return;
+  list.innerHTML = "";
+  if (!state.netWorthEntries.length) {
+    list.appendChild(el("div", "sim-empty", "Nessuna voce patrimoniale. Aggiungi risparmi, investimenti o altri beni/debiti qui sotto."));
+  }
+  for (const entry of state.netWorthEntries) {
+    const row = el("div", "review-row");
+    row.appendChild(el("div", "rv-desc", `${entry.type === "asset" ? "💰" : "📉"} ${entry.name}`));
+    const valInput = document.createElement("input");
+    valInput.type = "number"; valInput.min = "0"; valInput.step = "1"; valInput.value = entry.value;
+    valInput.className = "networth-value-input";
+    valInput.setAttribute("aria-label", `Valore di ${entry.name}`);
+    valInput.addEventListener("change", () => { updateNetWorthEntryValue(entry.id, Math.max(0, parseFloat(valInput.value) || 0)); renderNetWorthTab(); });
+    row.appendChild(valInput);
+    const rm = el("button", "btn btn-sm", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", `Rimuovi ${entry.name}`);
+    rm.addEventListener("click", () => { removeNetWorthEntry(entry.id); renderNetWorthTab(); });
+    row.appendChild(rm);
+    list.appendChild(row);
+  }
+}
+function renderNetWorthChart() {
+  const canvas = document.getElementById("chartNetWorth");
+  if (!canvas) return;
+  const history = state.netWorthHistory;
+  if (history.length < 2) return;
+  renderChart("chartNetWorth", {
+    type: "line",
+    data: {
+      labels: history.map((h) => monthLabel(h.monthKey)),
+      datasets: [
+        { label: "Patrimonio Netto", data: history.map((h) => h.netWorth), borderColor: cssVar("--primary"), backgroundColor: hexToRgba(cssVar("--primary"), 0.12), fill: true, tension: 0.3, pointRadius: 3 },
+      ],
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: currencyTick() } }, plugins: { tooltip: { callbacks: { label: (c) => fmtCurrency(c.parsed.y) } } } },
+  });
+}
+function renderNetWorth() {
+  const { assets, liabilities, netWorth } = computeNetWorthTotals();
+  const box = document.getElementById("netWorthSummary");
+  if (box) {
+    box.innerHTML = "";
+    const cards = [
+      { label: "Attivo", value: fmtCurrency(assets, 2), cls: "pos" },
+      { label: "Passivo", value: fmtCurrency(liabilities, 2), cls: "neg" },
+      { label: "Patrimonio Netto", value: fmtCurrency(netWorth, 2), cls: netWorth >= 0 ? "pos" : "neg" },
+    ];
+    for (const c of cards) {
+      const card = el("div", "metric-card");
+      card.appendChild(el("div", "metric-label", c.label));
+      card.appendChild(el("div", `metric-value ${c.cls}`, c.value));
+      box.appendChild(card);
+    }
+  }
+  renderNetWorthEntries();
+  const chartPanel = document.getElementById("netWorthChartPanel");
+  if (chartPanel) chartPanel.classList.toggle("hidden", state.netWorthHistory.length < 2);
+  renderNetWorthChart();
+}
+
+// ---------------------------------------------------------------- Pianificatore Estinzione Debiti
+function addDebt(name, balance, apr, minPayment) {
+  state.debts.push({ id: Date.now() + Math.random(), name, balance, apr, minPayment });
+  saveDebts();
+}
+function removeDebt(id) {
+  state.debts = state.debts.filter((d) => d.id !== id);
+  saveDebts();
+}
+function simulateDebtPayoff(debtsInput, strategy, extraPayment) {
+  const debts = debtsInput.map((d) => ({ ...d, remaining: d.balance }));
+  const result = { months: 0, totalInterest: 0, schedule: [{ month: 0, totalRemaining: debts.reduce((s, d) => s + d.remaining, 0) }], neverPaysOff: false };
+  if (!debts.length) return result;
+  const maxMonths = 600;
+  let month = 0, totalInterest = 0;
+  while (debts.some((d) => d.remaining > 0.01) && month < maxMonths) {
+    month++;
+    for (const d of debts) {
+      if (d.remaining <= 0.01) continue;
+      const interest = d.remaining * (d.apr / 100 / 12);
+      d.remaining += interest;
+      totalInterest += interest;
+    }
+    for (const d of debts) {
+      if (d.remaining <= 0.01) continue;
+      d.remaining -= Math.min(d.minPayment, d.remaining);
+    }
+    let pool = extraPayment;
+    const order = debts.filter((d) => d.remaining > 0.01).sort((a, b) => strategy === "avalanche" ? b.apr - a.apr : a.remaining - b.remaining);
+    for (const d of order) {
+      if (pool <= 0) break;
+      const pay = Math.min(pool, d.remaining);
+      d.remaining -= pay;
+      pool -= pay;
+    }
+    result.schedule.push({ month, totalRemaining: debts.reduce((s, d) => s + Math.max(0, d.remaining), 0) });
+  }
+  result.months = month;
+  result.totalInterest = totalInterest;
+  result.neverPaysOff = month >= maxMonths && debts.some((d) => d.remaining > 0.01);
+  return result;
+}
+function renderDebtList() {
+  const list = document.getElementById("debtsList");
+  if (!list) return;
+  list.innerHTML = "";
+  if (!state.debts.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun debito registrato. Aggiungine uno qui sotto per iniziare a pianificare l'estinzione."));
+    return;
+  }
+  for (const d of state.debts) {
+    const row = el("div", "review-row");
+    row.appendChild(el("div", "rv-desc", `${d.name} — ${fmtCurrency(d.balance, 2)} al ${d.apr}% APR, min. ${fmtCurrency(d.minPayment, 2)}/mese`));
+    const rm = el("button", "btn btn-sm", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", `Rimuovi debito ${d.name}`);
+    rm.addEventListener("click", () => { removeDebt(d.id); renderDebtPlanner(); });
+    row.appendChild(rm);
+    list.appendChild(row);
+  }
+}
+function renderDebtPlannerChart(withExtra, baseline) {
+  renderChart("chartDebtPayoff", {
+    type: "line",
+    data: {
+      labels: withExtra.schedule.map((s) => s.month),
+      datasets: [
+        { label: "Solo pagamenti minimi", data: baseline.schedule.map((s) => s.totalRemaining), borderColor: cssVar("--text-muted"), backgroundColor: "transparent", borderDash: [5, 4], pointRadius: 0, tension: 0.2 },
+        { label: `Con piano (${state.debtStrategy === "avalanche" ? "Valanga" : "Palla di Neve"})`, data: withExtra.schedule.map((s) => s.totalRemaining), borderColor: cssVar("--primary"), backgroundColor: hexToRgba(cssVar("--primary"), 0.12), fill: true, pointRadius: 0, tension: 0.2 },
+      ],
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: "Mesi" } }, y: { ticks: currencyTick(), beginAtZero: true } }, plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } } },
+  });
+}
+function renderDebtPlanner() {
+  renderDebtList();
+  const summary = document.getElementById("debtPlannerSummary");
+  const chartPanel = document.getElementById("debtPlannerChartPanel");
+  if (!state.debts.length) {
+    if (summary) summary.innerHTML = "";
+    if (chartPanel) chartPanel.classList.add("hidden");
+    return;
+  }
+  if (chartPanel) chartPanel.classList.remove("hidden");
+  const withExtra = simulateDebtPayoff(state.debts, state.debtStrategy, state.debtExtraPayment);
+  const baseline = simulateDebtPayoff(state.debts, state.debtStrategy, 0);
+  const interestSaved = baseline.totalInterest - withExtra.totalInterest;
+  const monthsSaved = baseline.months - withExtra.months;
+  if (summary) {
+    summary.innerHTML = "";
+    const anchor = new Date();
+    const payoffDate = withExtra.neverPaysOff ? null : new Date(anchor.getFullYear(), anchor.getMonth() + withExtra.months, 1);
+    const cards = [
+      { label: "Libero dai debiti tra", value: withExtra.neverPaysOff ? "mai (min. insufficienti)" : `${withExtra.months} mesi` },
+      { label: "Data prevista", value: payoffDate ? monthLabel(monthKey(payoffDate)) : "-" },
+      { label: "Interessi totali stimati", value: fmtCurrency(withExtra.totalInterest, 2) },
+      { label: "Risparmio vs. solo minimi", value: `${fmtCurrency(Math.max(0, interestSaved), 2)} · ${Math.max(0, monthsSaved)} mesi prima` },
+    ];
+    for (const c of cards) {
+      const card = el("div", "metric-card");
+      card.appendChild(el("div", "metric-label", c.label));
+      card.appendChild(el("div", "metric-value", c.value));
+      summary.appendChild(card);
+    }
+  }
+  renderDebtPlannerChart(withExtra, baseline);
+}
+
+// ---------------------------------------------------------------- Simulazione Monte Carlo Fondo Emergenza
+function computeMonteCarloProjection(months, runs) {
+  const series = computeMonthlySeries(state.transactions);
+  const history = series.map((m) => m.net);
+  if (history.length < 2) return null;
+  const mean = history.reduce((s, v) => s + v, 0) / history.length;
+  const variance = history.reduce((s, v) => s + (v - mean) ** 2, 0) / history.length;
+  const stdDev = Math.sqrt(variance);
+  const startBalance = series.length ? series[series.length - 1].cumulative : 0;
+  function gaussianRandom() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  const allRuns = [];
+  for (let r = 0; r < runs; r++) {
+    let bal = startBalance;
+    const path = [bal];
+    for (let m = 1; m <= months; m++) {
+      bal += mean + (stdDev > 0 ? gaussianRandom() * stdDev : 0);
+      path.push(bal);
+    }
+    allRuns.push(path);
+  }
+  const percentiles = { p10: [], p50: [], p90: [] };
+  for (let m = 0; m <= months; m++) {
+    const valuesAtMonth = allRuns.map((path) => path[m]).sort((a, b) => a - b);
+    percentiles.p10.push(valuesAtMonth[Math.floor(runs * 0.1)]);
+    percentiles.p50.push(valuesAtMonth[Math.floor(runs * 0.5)]);
+    percentiles.p90.push(valuesAtMonth[Math.floor(runs * 0.9)]);
+  }
+  return { months, startBalance, mean, stdDev, percentiles };
+}
+function renderMonteCarloChart() {
+  const canvas = document.getElementById("chartMonteCarlo");
+  if (!canvas) return;
+  const proj = computeMonteCarloProjection(12, 300);
+  const emptyMsg = document.getElementById("monteCarloEmptyMsg");
+  const summary = document.getElementById("monteCarloSummary");
+  if (!proj) {
+    if (emptyMsg) emptyMsg.classList.remove("hidden");
+    canvas.classList.add("hidden");
+    if (summary) summary.textContent = "";
+    return;
+  }
+  if (emptyMsg) emptyMsg.classList.add("hidden");
+  canvas.classList.remove("hidden");
+  const labels = Array.from({ length: proj.months + 1 }, (_, i) => (i === 0 ? "Oggi" : `+${i}m`));
+  renderChart("chartMonteCarlo", {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        { label: "Scenario ottimistico (90°perc.)", data: proj.percentiles.p90, borderColor: cssVar("--primary"), backgroundColor: "transparent", borderDash: [4, 3], pointRadius: 0, tension: 0.25 },
+        { label: "Scenario mediano", data: proj.percentiles.p50, borderColor: cssVar("--secondary"), backgroundColor: hexToRgba(cssVar("--secondary"), 0.12), fill: "-1", pointRadius: 0, tension: 0.25 },
+        { label: "Scenario pessimistico (10°perc.)", data: proj.percentiles.p10, borderColor: cssVar("--danger"), backgroundColor: hexToRgba(cssVar("--danger"), 0.1), fill: "-1", pointRadius: 0, tension: 0.25 },
+      ],
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: currencyTick() } }, plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } } },
+  });
+  if (summary) {
+    const worstCase = proj.percentiles.p10[proj.percentiles.p10.length - 1];
+    const medianCase = proj.percentiles.p50[proj.percentiles.p50.length - 1];
+    summary.textContent = `Tra 12 mesi, nel 90% degli scenari simulati il saldo sarà di almeno ${fmtCurrency(worstCase, 2)}; lo scenario mediano prevede ${fmtCurrency(medianCase, 2)}.`;
+  }
+}
+
+// ---------------------------------------------------------------- Tab Patrimonio (dispatcher)
+function renderNetWorthTab() {
+  renderNetWorth();
+  renderDebtPlanner();
+  renderMonteCarloChart();
+}
+
 // ---------------------------------------------------------------- Analytics tab
 function renderAnalytics() {
   const periodTxs = getPeriodFiltered();
@@ -4170,13 +4865,15 @@ function getTxFiltered() {
     if (state.txFilters.category !== "all" && t.category !== state.txFilters.category) return false;
     if (state.txFilters.type !== "all" && t.type !== state.txFilters.type) return false;
     if (state.txFilters.member && state.txFilters.member !== "all" && (t.member || null) !== state.txFilters.member) return false;
+    if (state.txFilters.tag && state.txFilters.tag !== "all" && !(t.tags || []).includes(state.txFilters.tag)) return false;
     if (state.txFilters.search) {
       const q = state.txFilters.search.toLowerCase();
       const typeLabel = t.type === "income" ? "entrata" : "uscita";
       const amountFormatted = fmtCurrency(t.value, 2);
       const amountPlain = t.value.toFixed(2).replace(".", ",");
       const dateStr = fmtDateShort(t.date).toLowerCase();
-      const haystack = `${t.category} ${t.description || ""} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr}`.toLowerCase();
+      const tagsStr = (t.tags || []).join(" ");
+      const haystack = `${t.category} ${t.description || ""} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr} ${tagsStr}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -4195,15 +4892,67 @@ function csvEscape(v) { const s = String(v); return /[",;\n]/.test(s) ? '"' + s.
 function exportTransactionsCSV() {
   const rows = getTxFiltered();
   if (!rows.length) { alert("Nessuna transazione da esportare con i filtri correnti."); return; }
-  const lines = ["date,category,value,type,description"];
+  const lines = ["date,category,value,type,description,tags"];
   for (const t of rows) {
     const iso = `${t.date.getFullYear()}-${pad2(t.date.getMonth() + 1)}-${pad2(t.date.getDate())}`;
-    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type, csvEscape(t.description || "")].join(","));
+    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type, csvEscape(t.description || ""), csvEscape((t.tags || []).join("|"))].join(","));
   }
   downloadCSV(lines.join("\n"), `transazioni_export_${Date.now()}.csv`);
 }
+// ---------------------------------------------------------------- Etichette libere (tag)
+function getAllTags() {
+  const set = new Set();
+  for (const t of state.transactions) for (const tag of t.tags || []) set.add(tag);
+  return Array.from(set).sort((a, b) => a.localeCompare(b, "it"));
+}
+function populateTagFilter() {
+  const sel = document.getElementById("txFilterTag");
+  if (!sel) return;
+  const current = sel.value;
+  const tags = getAllTags();
+  sel.innerHTML = "";
+  const optAll = document.createElement("option"); optAll.value = "all"; optAll.textContent = "Tutte"; sel.appendChild(optAll);
+  for (const tag of tags) { const opt = document.createElement("option"); opt.value = tag; opt.textContent = tag; sel.appendChild(opt); }
+  if ([...sel.options].some((o) => o.value === current)) sel.value = current;
+  const row = document.getElementById("tagFilterRow");
+  if (row) row.classList.toggle("hidden", tags.length === 0);
+}
+function addTagToTransaction(t, rawTag) {
+  const tag = (rawTag || "").trim();
+  if (!tag) return false;
+  t.tags = t.tags || [];
+  if (t.tags.some((x) => x.toLowerCase() === tag.toLowerCase())) return false;
+  t.tags.push(tag);
+  return true;
+}
+function renderTxTagEditor(t) {
+  const box = document.getElementById("mxTagsList");
+  if (!box) return;
+  box.innerHTML = "";
+  for (const tag of t.tags || []) {
+    const chip = el("span", "tag-chip", "");
+    chip.appendChild(document.createTextNode(tag));
+    const rm = el("button", "tag-chip-remove", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", `Rimuovi etichetta ${tag}`);
+    rm.addEventListener("click", () => {
+      t.tags = (t.tags || []).filter((x) => x !== tag);
+      persistTransactions();
+      renderTxTagEditor(t);
+      renderTab(state.activeTab);
+    });
+    chip.appendChild(rm);
+    box.appendChild(chip);
+  }
+  const dl = document.getElementById("mxTagSuggestions");
+  if (dl) {
+    dl.innerHTML = "";
+    for (const tag of getAllTags()) { const opt = document.createElement("option"); opt.value = tag; dl.appendChild(opt); }
+  }
+}
 function renderTransactions() {
   populateMemberSelects();
+  populateTagFilter();
   const tbody = document.querySelector("#txTable tbody");
   tbody.innerHTML = "";
   const allRows = getTxFiltered();
@@ -4297,6 +5046,8 @@ function openTxModal(t) {
   document.getElementById("mxDate").textContent = fmtDateFull(t.date);
   document.getElementById("mxType").textContent = t.type === "income" ? "Entrata" : "Uscita";
   document.getElementById("mxId").textContent = t.id;
+  renderTxTagEditor(t);
+  document.getElementById("mxNewTagInput").value = "";
   const descRow = document.getElementById("mxDescRow");
   if (t.description) {
     let suffix = "";
@@ -4456,6 +5207,7 @@ function openSettings() {
   renderHouseholdMembersEditor();
   document.getElementById("singleTxThresholdInput").value = state.customAlerts.singleTxThreshold || "";
   document.getElementById("negativeBalanceAlertInput").checked = !!state.customAlerts.negativeBalanceAlert;
+  document.getElementById("budgetRolloverInput").checked = !!state.budgetRolloverEnabled;
   document.getElementById("settingsModal").classList.remove("hidden");
   requestAnimationFrame(() => document.getElementById("closeSettings").focus());
 }
@@ -4657,6 +5409,7 @@ function renderTab(name) {
   else if (name === "analytics") renderAnalytics();
   else if (name === "transactions") renderTransactions();
   else if (name === "savings") renderSavings();
+  else if (name === "networth") renderNetWorthTab();
 }
 function switchTab(name) {
   state.activeTab = name;
@@ -4845,6 +5598,9 @@ function init() {
   loadSavingsGoals();
   loadHouseholdMembers();
   loadCustomAlerts();
+  loadBudgetRolloverEnabled();
+  loadDebts();
+  loadNetWorth();
   populateMemberSelects();
 
   const dropzone = document.getElementById("dropzone");
@@ -5026,6 +5782,27 @@ function init() {
     state.txPage = 1;
     renderTransactions();
   });
+  document.getElementById("txFilterTag").addEventListener("change", (e) => {
+    state.txFilters.tag = e.target.value;
+    state.txPage = 1;
+    renderTransactions();
+  });
+
+  // Etichette libere (tag) nel modale transazione
+  const addTagFromModal = () => {
+    if (!modalTx) return;
+    const input = document.getElementById("mxNewTagInput");
+    if (addTagToTransaction(modalTx, input.value)) {
+      input.value = "";
+      persistTransactions();
+      renderTxTagEditor(modalTx);
+      renderTab(state.activeTab);
+    }
+  };
+  document.getElementById("btnAddTag").addEventListener("click", addTagFromModal);
+  document.getElementById("mxNewTagInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); addTagFromModal(); }
+  });
 
   // Regole di allarme personalizzabili
   document.getElementById("btnSaveCustomAlerts").addEventListener("click", () => {
@@ -5036,6 +5813,13 @@ function init() {
     saveCustomAlerts();
     renderTab(state.activeTab);
     alert("Regole di allarme aggiornate.");
+  });
+
+  // Budget con riporto
+  document.getElementById("budgetRolloverInput").addEventListener("change", (e) => {
+    state.budgetRolloverEnabled = e.target.checked;
+    saveBudgetRolloverEnabled();
+    renderTab(state.activeTab);
   });
 
   // Backup completo
@@ -5060,8 +5844,75 @@ function init() {
     renderVisitChangeBanner();
   });
 
+  // Patrimonio Netto
+  document.getElementById("btnAddNetWorthEntry").addEventListener("click", () => {
+    const nameInput = document.getElementById("nwNameInput");
+    const typeInput = document.getElementById("nwTypeInput");
+    const valueInput = document.getElementById("nwValueInput");
+    const name = nameInput.value.trim();
+    const value = parseFloat(valueInput.value);
+    if (!name) { alert("Inserisci un nome per la voce."); return; }
+    if (isNaN(value) || value < 0) { alert("Inserisci un valore valido."); return; }
+    addNetWorthEntry(name, typeInput.value, value);
+    nameInput.value = ""; valueInput.value = "";
+    renderNetWorthTab();
+  });
+
+  // Pianificatore Estinzione Debiti
+  document.getElementById("btnAddDebt").addEventListener("click", () => {
+    const nameInput = document.getElementById("debtNameInput");
+    const balanceInput = document.getElementById("debtBalanceInput");
+    const aprInput = document.getElementById("debtAprInput");
+    const minPaymentInput = document.getElementById("debtMinPaymentInput");
+    const name = nameInput.value.trim();
+    const balance = parseFloat(balanceInput.value);
+    const apr = parseFloat(aprInput.value);
+    const minPayment = parseFloat(minPaymentInput.value);
+    if (!name) { alert("Inserisci un nome per il debito."); return; }
+    if (isNaN(balance) || balance <= 0) { alert("Inserisci un saldo residuo valido."); return; }
+    if (isNaN(apr) || apr < 0) { alert("Inserisci un tasso APR valido."); return; }
+    if (isNaN(minPayment) || minPayment <= 0) { alert("Inserisci un pagamento minimo mensile valido."); return; }
+    addDebt(name, balance, apr, minPayment);
+    nameInput.value = ""; balanceInput.value = ""; aprInput.value = ""; minPaymentInput.value = "";
+    renderDebtPlanner();
+  });
+  document.getElementById("debtStrategySelect").addEventListener("change", (e) => {
+    state.debtStrategy = e.target.value === "snowball" ? "snowball" : "avalanche";
+    saveDebts();
+    renderDebtPlanner();
+  });
+  document.getElementById("debtExtraPaymentInput").addEventListener("input", (e) => {
+    state.debtExtraPayment = Math.max(0, parseFloat(e.target.value) || 0);
+    saveDebts();
+    renderDebtPlanner();
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); }
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeQuickAddModal(); closeCommandPalette(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (state.commandPaletteOpen) closeCommandPalette(); else openCommandPalette();
+    }
+  });
+
+  // Inserimento rapido manuale
+  document.getElementById("btnQuickAdd").addEventListener("click", openQuickAddModal);
+  document.getElementById("btnCloseQuickAdd").addEventListener("click", closeQuickAddModal);
+  document.getElementById("btnCancelQuickAdd").addEventListener("click", closeQuickAddModal);
+  document.getElementById("btnSubmitQuickAdd").addEventListener("click", submitQuickAdd);
+  document.getElementById("quickAddModal").addEventListener("click", (e) => { if (e.target.id === "quickAddModal") closeQuickAddModal(); });
+  document.getElementById("qaDescription").addEventListener("change", quickAddAutofillFromDescription);
+
+  // Command palette
+  document.getElementById("commandPaletteModal").addEventListener("click", (e) => { if (e.target.id === "commandPaletteModal") closeCommandPalette(); });
+  document.getElementById("commandPaletteInput").addEventListener("input", (e) => renderCommandPalette(e.target.value));
+  document.getElementById("commandPaletteInput").addEventListener("keydown", (e) => {
+    const items = document.querySelectorAll("#commandPaletteList .cmdp-item");
+    if (!items.length) return;
+    let idx = getCommandPaletteActiveIndex();
+    if (e.key === "ArrowDown") { e.preventDefault(); setCommandPaletteActive((idx + 1) % items.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setCommandPaletteActive((idx - 1 + items.length) % items.length); }
+    else if (e.key === "Enter") { e.preventDefault(); runCommandPaletteAction(Math.max(0, idx)); }
   });
 
   document.getElementById("liveClock").textContent = new Date().toLocaleString("it-IT", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
