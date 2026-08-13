@@ -2634,7 +2634,9 @@ function fmtCurrency(v, decimals = 0) {
   const sign = v < 0 ? "-" : "";
   return sign + "€" + Math.abs(v).toLocaleString("it-IT", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
-function fmtPercent(v, decimals = 1) { return (v * 100).toFixed(decimals) + "%"; }
+function fmtPercent(v, decimals = 1) {
+  return (v * 100).toLocaleString("it-IT", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + "%";
+}
 function pad2(n) { return String(n).padStart(2, "0"); }
 function fmtDateFull(d) { return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`; }
 function fmtDateShort(d) { return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}`; }
@@ -5186,7 +5188,7 @@ function renderNetWorthEntries() {
       if (catKey === "investimenti" && entry.isQuoted) {
         const gainPct = entry.purchasePricePerUnit ? (entry.pricePerUnit - entry.purchasePricePerUnit) / entry.purchasePricePerUnit : null;
         extra = `${entry.quantity} × ${fmtCurrency(entry.pricePerUnit, 2)}` + (entry.ticker ? ` (${entry.ticker})` : "")
-          + (gainPct !== null ? ` · ${gainPct >= 0 ? "+" : ""}${(gainPct * 100).toFixed(1)}%` : "");
+          + (gainPct !== null ? ` · ${gainPct >= 0 ? "+" : ""}${fmtPercent(gainPct)}` : "");
       } else if (catKey === "immobili" && entry.purchaseValue) {
         const gain = value - entry.purchaseValue;
         extra = `acquisto ${fmtCurrency(entry.purchaseValue, 0)} · ${gain >= 0 ? "+" : ""}${fmtCurrency(gain, 0)}`
