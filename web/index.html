@@ -498,6 +498,22 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .review-row .rv-desc { font-size: 12px; font-weight: 600; }
 .review-row .rv-count { font-size: 10.5px; color: var(--text-muted); font-weight: 400; }
 .review-row select { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 6px 8px; border-radius: 6px; font-size: 12px; }
+.review-row.clickable { cursor: pointer; }
+.review-row.clickable:hover { border-color: var(--primary); background: rgba(79,209,165,0.08); }
+.review-list.scrollable { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+
+/* ===================== salute finanziaria: scaglioni e suggerimenti ===================== */
+.health-grade-scale { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.grade-chip {
+  flex: 1 1 100px; text-align: center; padding: 8px 6px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface-sunken); font-size: 11px; color: var(--text-muted);
+}
+.grade-chip .gc-letter { display: block; font-family: var(--font-mono); font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+.grade-chip .gc-range { display: block; font-size: 10px; }
+.grade-chip.active { border-color: var(--primary); background: rgba(79,209,165,0.12); color: var(--text); }
+.grade-chip.active .gc-letter { color: var(--primary); }
+.health-suggestions { margin-top: 16px; }
+.health-suggestions h4 { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; }
 
 /* ===================== advanced: action plan ===================== */
 .action-plan-row {
@@ -1061,8 +1077,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="grid-2">
       <div class="panel">
         <h3>🩺 Punteggio di Salute Finanziaria</h3>
-        <p class="modal-lead">Come si compone il punteggio "Salute Finanziaria" mostrato in Overview per il periodo selezionato.</p>
+        <p class="modal-lead">Come si compone il punteggio "Salute Finanziaria" mostrato in Overview per il periodo selezionato, con i motivi dietro ad ogni voce.</p>
         <div id="healthScoreBreakdown"></div>
+        <div id="healthScoreGradeScale" class="health-grade-scale"></div>
+        <div id="healthScoreSuggestions" class="health-suggestions"></div>
       </div>
       <div class="panel">
         <h3>🔮 Previsione Cashflow Avanzata <span class="panel-tag">6 mesi</span></h3>
@@ -1185,6 +1203,16 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         </div>
       </div>
       <div class="chart-box short"><canvas id="chartDiscretionaryTrend"></canvas></div>
+      <div class="grid-2" style="margin-top:16px;">
+        <div>
+          <h4 style="margin:0 0 8px;">Per categoria</h4>
+          <div class="review-list" id="discretionaryCategoryList"></div>
+        </div>
+        <div>
+          <h4 style="margin:0 0 8px;">Transazioni superflue <span class="muted" id="discretionaryTxCountTag" style="font-weight:400;"></span></h4>
+          <div class="review-list scrollable" id="discretionaryTxList"></div>
+        </div>
+      </div>
     </div>
 
     <div class="panel">
@@ -3751,6 +3779,20 @@ function computeDiscretionaryTrend(allTxs) {
   }
   return Array.from(map.values()).sort((a, b) => a.key.localeCompare(b.key));
 }
+function computeDiscretionaryDetail(periodTxs) {
+  const txs = periodTxs.filter((t) => t.type === "outcome" && isDiscretionary(t));
+  const total = txs.reduce((s, t) => s + t.value, 0);
+  const byCategory = new Map();
+  for (const t of txs) {
+    if (!byCategory.has(t.category)) byCategory.set(t.category, { category: t.category, total: 0, count: 0 });
+    const g = byCategory.get(t.category);
+    g.total += t.value;
+    g.count += 1;
+  }
+  const categories = Array.from(byCategory.values()).sort((a, b) => b.total - a.total);
+  const transactions = txs.slice().sort((a, b) => b.value - a.value);
+  return { total, categories, transactions };
+}
 function getSameRangeLastYear() {
   const [start, end] = getPeriodRange();
   if (!start || !end) return [null, null];
@@ -3929,6 +3971,49 @@ function renderSavings() {
     options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: currencyTick() } } },
   });
 
+  // Dettaglio spese superflue: per categoria e per singola transazione (click per riclassificare)
+  const discretionaryDetail = computeDiscretionaryDetail(periodTxs);
+  const discCatList = document.getElementById("discretionaryCategoryList");
+  discCatList.innerHTML = "";
+  if (!discretionaryDetail.categories.length) {
+    discCatList.appendChild(el("div", "sim-empty", "Nessuna spesa superflua rilevata nel periodo selezionato."));
+  }
+  for (const c of discretionaryDetail.categories) {
+    const row = el("div", "budget-row");
+    row.appendChild(el("div", "budget-cat", `${catIcon(c.category)} ${c.category}`));
+    row.appendChild(el("div", "budget-amounts", `${fmtCurrency(c.total, 2)} (${c.count})`));
+    const track = el("div", "track");
+    const fill = el("div", "track-fill");
+    fill.style.width = (discretionaryDetail.total > 0 ? (c.total / discretionaryDetail.total) * 100 : 0) + "%";
+    fill.style.background = `linear-gradient(90deg,${cssVar("--danger")},${cssVar("--warning")})`;
+    track.appendChild(fill);
+    track.appendChild(el("div", "track-pct", fmtPercent(discretionaryDetail.total > 0 ? c.total / discretionaryDetail.total : 0)));
+    row.appendChild(track);
+    discCatList.appendChild(row);
+  }
+  document.getElementById("discretionaryTxCountTag").textContent = discretionaryDetail.transactions.length
+    ? `${discretionaryDetail.transactions.length} transazioni`
+    : "";
+  const discTxList = document.getElementById("discretionaryTxList");
+  discTxList.innerHTML = "";
+  if (!discretionaryDetail.transactions.length) {
+    discTxList.appendChild(el("div", "sim-empty", "Nessuna transazione superflua nel periodo selezionato."));
+  }
+  for (const t of discretionaryDetail.transactions) {
+    const row = el("div", "review-row clickable");
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    row.setAttribute("aria-label", `Apri dettaglio transazione ${t.category}`);
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(t.category)} ${t.description || t.category}`));
+    desc.appendChild(el("div", "rv-count", `${t.category} · ${fmtDateFull(t.date)}`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono neg", fmtCurrency(t.value, 2)));
+    row.addEventListener("click", () => openTxModal(t));
+    row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTxModal(t); } });
+    discTxList.appendChild(row);
+  }
+
   // Calcolatore impatto risparmio
   const calcSel = document.getElementById("savingsCalcCategory");
   populateCategorySelect(calcSel, state.savingsCalc.category || undefined);
@@ -4047,11 +4132,20 @@ function renderOpportunityCostResult(periodTxs) {
 }
 
 // ---------------------------------------------------------------- Advanced: Salute Finanziaria
+const HEALTH_GRADE_SCALE = [
+  { grade: "A", min: 90, max: 100 },
+  { grade: "B", min: 75, max: 89 },
+  { grade: "C", min: 60, max: 74 },
+  { grade: "D", min: 40, max: 59 },
+  { grade: "E", min: 0, max: 39 },
+];
+const DISCRETIONARY_TARGET_PCT = 0.3;
 function computeHealthScore(periodTxs, budgetBreakdown) {
   const income = sumBy(periodTxs, "income"), outcome = sumBy(periodTxs, "outcome");
   const savingsRate = income > 0 ? (income - outcome) / income : 0;
   const savingsScore = state.savingsGoal > 0 ? clamp(savingsRate / state.savingsGoal, 0, 1) * 30 : (savingsRate > 0 ? 30 : 0);
   const budgeted = budgetBreakdown.filter((b) => !b.unset && b.percent !== null);
+  const overBudget = budgeted.filter((b) => b.percent > 1).sort((a, b) => (b.speso - b.budget) - (a.speso - a.budget));
   const withinBudget = budgeted.filter((b) => b.percent <= 1).length;
   const budgetScore = budgeted.length ? (withinBudget / budgeted.length) * 25 : 25;
   const discretionaryTotal = periodTxs.filter((t) => t.type === "outcome" && isDiscretionary(t)).reduce((s, t) => s + t.value, 0);
@@ -4059,21 +4153,67 @@ function computeHealthScore(periodTxs, budgetBreakdown) {
   const discretionaryScore = clamp(1 - discretionaryPct, 0, 1) * 20;
   const allOutcomeTxs = getCategoryTypeFiltered();
   const recurring = computeRecurringMerchants(allOutcomeTxs);
-  const hygieneIssues = computePriceIncreases(recurring).length + computeSuspiciousDuplicates(allOutcomeTxs, 3).length;
+  const priceIncreases = computePriceIncreases(recurring);
+  const duplicates = computeSuspiciousDuplicates(allOutcomeTxs, 3);
+  const hygieneIssues = priceIncreases.length + duplicates.length;
   const hygieneScore = clamp(1 - hygieneIssues * 0.2, 0, 1) * 15;
-  const uncategorizedPct = periodTxs.length ? periodTxs.filter((t) => t.category === NEEDS_CATEGORY).length / periodTxs.length : 0;
+  const uncategorized = periodTxs.filter((t) => t.category === NEEDS_CATEGORY);
+  const uncategorizedPct = periodTxs.length ? uncategorized.length / periodTxs.length : 0;
   const categorizationScore = clamp(1 - uncategorizedPct, 0, 1) * 10;
   const total = Math.round(savingsScore + budgetScore + discretionaryScore + hygieneScore + categorizationScore);
   const grade = total >= 90 ? "A" : total >= 75 ? "B" : total >= 60 ? "C" : total >= 40 ? "D" : "E";
+
+  // Suggerimenti quantificati: cosa tagliare per far salire il punteggio, un elemento per componente
+  // sotto il massimo, ordinati per impatto economico stimato decrescente.
+  const suggestions = [];
+  if (savingsScore < 30) {
+    if (income <= 0) {
+      suggestions.push({ icon: "💰", title: "Tasso di risparmio", text: "Nessuna entrata registrata nel periodo: aggiungi le entrate per poter calcolare il tasso di risparmio.", amount: 0 });
+    } else if (state.savingsGoal > 0) {
+      const cut = outcome - income * (1 - state.savingsGoal);
+      if (cut > 0) suggestions.push({ icon: "💰", title: "Tasso di risparmio", text: `Sei al ${fmtPercent(savingsRate)} contro l'obiettivo del ${fmtPercent(state.savingsGoal)}: riduci le uscite di circa ${fmtCurrency(cut, 2)} nel periodo per raggiungerlo.`, amount: cut });
+    } else if (savingsRate <= 0) {
+      const cut = outcome - income;
+      suggestions.push({ icon: "💰", title: "Tasso di risparmio", text: `Le uscite superano le entrate di ${fmtCurrency(cut, 2)}: taglia questa cifra per tornare in territorio positivo.`, amount: cut });
+    }
+  }
+  if (budgetScore < 25 && overBudget.length) {
+    const totalOver = overBudget.reduce((s, b) => s + (b.speso - b.budget), 0);
+    const top = overBudget.slice(0, 3).map((b) => `${b.category} (+${fmtCurrency(b.speso - b.budget, 2)})`).join(", ");
+    suggestions.push({ icon: "📊", title: "Aderenza al budget", text: `${overBudget.length} categori${overBudget.length === 1 ? "a" : "e"} oltre budget per ${fmtCurrency(totalOver, 2)} in totale: ${top}.`, amount: totalOver });
+  }
+  if (discretionaryScore < 20 && discretionaryPct > DISCRETIONARY_TARGET_PCT) {
+    const cut = discretionaryTotal - outcome * DISCRETIONARY_TARGET_PCT;
+    if (cut > 0) suggestions.push({ icon: "⚖️", title: "Spesa superflua", text: `La spesa superflua è il ${fmtPercent(discretionaryPct)} delle uscite (${fmtCurrency(discretionaryTotal, 2)}): portala sotto il ${fmtPercent(DISCRETIONARY_TARGET_PCT)} tagliando circa ${fmtCurrency(cut, 2)}.`, amount: cut });
+  }
+  if (hygieneScore < 15 && hygieneIssues > 0) {
+    const dupTotal = duplicates.reduce((s, d) => s + d.amount, 0);
+    const incTotal = priceIncreases.reduce((s, p) => s + (p.lastAmount - p.prevAvg), 0);
+    const parts = [];
+    if (priceIncreases.length) parts.push(`${priceIncreases.length} rincar${priceIncreases.length === 1 ? "o" : "i"} su ricorrenti (+${fmtCurrency(incTotal, 2)}/mese)`);
+    if (duplicates.length) parts.push(`${duplicates.length} doppion${duplicates.length === 1 ? "e" : "i"} sospett${duplicates.length === 1 ? "o" : "i"} (${fmtCurrency(dupTotal, 2)})`);
+    suggestions.push({ icon: "🧾", title: "Anomalie da controllare", text: `${parts.join(" e ")}: verificali nel tab Risparmio.`, amount: dupTotal + incTotal });
+  }
+  if (categorizationScore < 10 && uncategorized.length) {
+    suggestions.push({ icon: "🔮", title: "Transazioni categorizzate", text: `${uncategorized.length} transazion${uncategorized.length === 1 ? "e" : "i"} non ${uncategorized.length === 1 ? "categorizzata" : "categorizzate"}: assegna una categoria per migliorare il punteggio e le analisi.`, amount: 0 });
+  }
+  suggestions.sort((a, b) => b.amount - a.amount);
+
   return {
     total, grade,
     breakdown: [
-      { label: "Tasso di risparmio", score: Math.round(savingsScore), max: 30 },
-      { label: "Aderenza al budget", score: Math.round(budgetScore), max: 25 },
-      { label: "Spesa superflua sotto controllo", score: Math.round(discretionaryScore), max: 20 },
-      { label: "Nessuna anomalia (doppioni/rincari)", score: Math.round(hygieneScore), max: 15 },
-      { label: "Transazioni categorizzate", score: Math.round(categorizationScore), max: 10 },
+      { label: "Tasso di risparmio", score: Math.round(savingsScore), max: 30,
+        reason: income <= 0 ? "Nessuna entrata nel periodo selezionato." : `Tasso di risparmio attuale: ${fmtPercent(savingsRate)}` + (state.savingsGoal > 0 ? `, obiettivo ${fmtPercent(state.savingsGoal)}.` : " (nessun obiettivo impostato).") },
+      { label: "Aderenza al budget", score: Math.round(budgetScore), max: 25,
+        reason: budgeted.length ? `${withinBudget} su ${budgeted.length} categorie con budget rispettate nel periodo.` : "Nessuna categoria con budget impostato nel periodo selezionato." },
+      { label: "Spesa superflua sotto controllo", score: Math.round(discretionaryScore), max: 20,
+        reason: `${fmtPercent(discretionaryPct)} delle uscite è in categorie discrezionali (${fmtCurrency(discretionaryTotal, 2)}).` },
+      { label: "Nessuna anomalia (doppioni/rincari)", score: Math.round(hygieneScore), max: 15,
+        reason: hygieneIssues ? `${priceIncreases.length} rincari e ${duplicates.length} doppioni sospetti rilevati sui pagamenti ricorrenti.` : "Nessun rincaro o doppione sospetto rilevato." },
+      { label: "Transazioni categorizzate", score: Math.round(categorizationScore), max: 10,
+        reason: uncategorized.length ? `${uncategorized.length} transazioni non categorizzate nel periodo selezionato.` : "Tutte le transazioni del periodo sono categorizzate." },
     ],
+    suggestions,
   };
 }
 function renderHealthScoreBreakdown(health) {
@@ -4092,7 +4232,44 @@ function renderHealthScoreBreakdown(health) {
     track.appendChild(el("div", "track-pct", `${Math.round((b.score / b.max) * 100)}%`));
     row.appendChild(track);
     box.appendChild(row);
+    if (b.reason) box.appendChild(el("div", "metric-sub", b.reason));
   }
+}
+function renderHealthGradeScale(health) {
+  const box = document.getElementById("healthScoreGradeScale");
+  if (!box) return;
+  box.innerHTML = "";
+  for (const g of HEALTH_GRADE_SCALE) {
+    const chip = el("div", "grade-chip" + (g.grade === health.grade ? " active" : ""));
+    chip.appendChild(el("span", "gc-letter", g.grade));
+    chip.appendChild(el("span", "gc-range", g.max === 100 ? `${g.min}-100` : `${g.min}-${g.max}`));
+    box.appendChild(chip);
+  }
+}
+function renderHealthSuggestions(health) {
+  const box = document.getElementById("healthScoreSuggestions");
+  if (!box) return;
+  box.innerHTML = "";
+  if (health.grade === "A" && !health.suggestions.length) {
+    box.appendChild(el("h4", null, "Cosa tagliare per migliorare il punteggio"));
+    box.appendChild(el("div", "sim-empty", "Punteggio già ottimo: nessun taglio necessario in questo periodo."));
+    return;
+  }
+  box.appendChild(el("h4", null, "Cosa tagliare per migliorare il punteggio"));
+  const list = el("div", "insight-list");
+  if (!health.suggestions.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun suggerimento di taglio: le voci con margine di miglioramento non hanno importi da ridurre nel periodo."));
+  }
+  for (const s of health.suggestions) {
+    const item = el("div", "insight warning");
+    item.appendChild(el("div", "ic", s.icon));
+    const txt = el("div", "txt");
+    txt.appendChild(el("strong", null, s.title));
+    txt.appendChild(el("span", null, s.text));
+    item.appendChild(txt);
+    list.appendChild(item);
+  }
+  box.appendChild(list);
 }
 
 // ---------------------------------------------------------------- Advanced: Obiettivi di risparmio
@@ -5076,7 +5253,10 @@ function renderAnalytics() {
   const budgetBreakdown = computeBudgetBreakdown(periodTxs);
   renderInsightList(document.getElementById("analyticsInsights"), computeInsights(periodTxs, budgetBreakdown, true));
 
-  renderHealthScoreBreakdown(computeHealthScore(periodTxs, budgetBreakdown));
+  const health = computeHealthScore(periodTxs, budgetBreakdown);
+  renderHealthScoreBreakdown(health);
+  renderHealthGradeScale(health);
+  renderHealthSuggestions(health);
 
   renderForecastChart();
 
