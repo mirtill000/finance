@@ -5564,7 +5564,10 @@ function renderAnalytics() {
 
 // ---------------------------------------------------------------- Transactions tab
 function getTxFiltered() {
+  const [periodStart, periodEnd] = getPeriodRange();
   let txs = state.transactions.filter((t) => {
+    if (periodStart && t.date < periodStart) return false;
+    if (periodEnd && t.date > periodEnd) return false;
     if (state.txFilters.category !== "all" && t.category !== state.txFilters.category) return false;
     if (state.txFilters.type !== "all" && t.type !== state.txFilters.type) return false;
     if (state.txFilters.member && state.txFilters.member !== "all" && (t.member || null) !== state.txFilters.member) return false;
