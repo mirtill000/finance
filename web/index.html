@@ -1170,6 +1170,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <span id="txCount" class="metric-sub" style="margin:0;"></span>
       </div>
     </div>
+    <div class="stat-strip" id="txStats"></div>
     <div class="panel">
       <div class="table-wrap">
         <table class="data-table" id="txTable">
@@ -5452,6 +5453,25 @@ function renderTransactions() {
   document.getElementById("txCount").textContent = allRows.length
     ? `${startIdx + 1}–${Math.min(startIdx + rows.length, allRows.length)} di ${allRows.length} transazioni`
     : "0 transazioni";
+
+  // Totale sempre visibile su TUTTE le transazioni filtrate (non solo la pagina corrente),
+  // qualunque combinazione di filtri/ricerca sia attiva: categoria, tipo, membro, etichetta, testo.
+  const txTotalIncome = allRows.filter((t) => t.type === "income").reduce((s, t) => s + t.value, 0);
+  const txTotalOutcome = allRows.filter((t) => t.type === "outcome").reduce((s, t) => s + t.value, 0);
+  const txNetTotal = txTotalIncome - txTotalOutcome;
+  const txStats = document.getElementById("txStats");
+  txStats.innerHTML = "";
+  const txStatDefs = [
+    { label: "Entrate (filtrate)", value: fmtCurrency(txTotalIncome, 2), cls: "pos" },
+    { label: "Uscite (filtrate)", value: fmtCurrency(txTotalOutcome, 2), cls: "neg" },
+    { label: "Totale (saldo netto)", value: fmtCurrency(txNetTotal, 2), cls: txNetTotal >= 0 ? "pos" : "neg" },
+  ];
+  for (const s of txStatDefs) {
+    const box = el("div", "stat-box");
+    box.appendChild(el("div", "sv " + s.cls, s.value));
+    box.appendChild(el("div", "sl", s.label));
+    txStats.appendChild(box);
+  }
 
   if (!rows.length) {
     const tr = document.createElement("tr");
