@@ -195,8 +195,22 @@ button, input, select { font-family: inherit; }
 }
 .topbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; letter-spacing: 0.3px; }
 .topbar-brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 8px var(--primary); }
-.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
 #liveClock { font-family: var(--font-mono); color: var(--text-muted); font-size: 12.5px; }
+
+.topbar-more { position: relative; }
+#btnMoreActions { font-size: 16px; font-weight: 800; line-height: 1; padding: 6px 12px; }
+.topbar-more-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; min-width: 200px; z-index: 40;
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.28); padding: 6px; display: flex; flex-direction: column; gap: 2px;
+}
+.topbar-more-menu.hidden { display: none; }
+.topbar-more-item {
+  all: unset; box-sizing: border-box; width: 100%; cursor: pointer; padding: 9px 10px; border-radius: 6px;
+  font-size: 12.5px; color: var(--text); white-space: nowrap;
+}
+.topbar-more-item:hover, .topbar-more-item:focus-visible { background: var(--hover-bg); outline: none; }
 
 .filter-bar {
   display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
@@ -233,11 +247,17 @@ button, input, select { font-family: inherit; }
 
 .tab-panel { display: none; padding: 20px 22px 0; }
 .tab-panel.active { display: block; }
+.tab-filter-note {
+  margin: 0 0 16px; padding: 8px 12px; border-radius: 8px; font-size: 11.5px; color: var(--text-muted);
+  background: var(--tint-faint); border: 1px solid var(--border);
+}
 
-@media (max-width: 1024px) {
-  .sidebar { flex-basis: 64px; padding: 14px 8px; }
-  .sni-label { display: none; }
-  .side-nav-item { justify-content: center; padding: 12px 0; }
+@media (max-width: 1024px) and (min-width: 641px) {
+  /* Tablet: etichette abbreviate leggibili, non solo icone + title (che non funziona al tocco). */
+  .sidebar { flex-basis: 78px; padding: 14px 6px; }
+  .side-nav-item { flex-direction: column; justify-content: center; gap: 4px; padding: 10px 4px; text-align: center; }
+  .sni-icon { width: auto; }
+  .sni-label { display: block; white-space: normal; font-size: 9.5px; line-height: 1.15; font-weight: 700; hyphens: auto; }
 }
 @media (max-width: 640px) {
   .app-shell { flex-direction: column; }
@@ -498,6 +518,12 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .review-row .rv-desc { font-size: 12px; font-weight: 600; }
 .review-row .rv-count { font-size: 10.5px; color: var(--text-muted); font-weight: 400; }
 .review-row select { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 6px 8px; border-radius: 6px; font-size: 12px; }
+.list-search {
+  width: 100%; box-sizing: border-box; margin-bottom: 10px; background: var(--card2); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 10px; border-radius: 7px; font-size: 12.5px;
+}
+.list-search.hidden { display: none; }
+.list-search:focus { outline: 1.5px solid var(--secondary); }
 .review-row.clickable { cursor: pointer; }
 .review-row.clickable:hover { border-color: var(--primary); background: rgba(79,209,165,0.08); }
 .review-list.scrollable { max-height: 320px; overflow-y: auto; padding-right: 4px; }
@@ -733,16 +759,21 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="dark">🌙 Scuro</option>
       </select>
       <button id="btnQuickAdd" class="btn btn-ghost btn-sm" type="button" title="Aggiungi una singola transazione manualmente">⚡ Aggiungi Rapida</button>
-      <button id="btnPrint" class="btn btn-ghost btn-sm" type="button" title="Stampa o esporta il tab corrente in PDF">🖨️ Stampa/PDF</button>
-      <button id="btnMonthlyReport" class="btn btn-ghost btn-sm" type="button" title="Genera un report riepilogativo del periodo selezionato">📄 Report Mensile</button>
       <button id="btnSettings" class="btn btn-ghost btn-sm" type="button">⚙ Impostazioni</button>
-      <button id="btnAddCsv" class="btn btn-ghost btn-sm" type="button" title="Aggiungi le transazioni di un altro CSV a quelle già caricate">➕ Aggiungi CSV</button>
+      <div class="topbar-more">
+        <button id="btnMoreActions" class="btn btn-ghost btn-sm" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="moreActionsMenu" title="Altre azioni">⋯</button>
+        <div id="moreActionsMenu" class="topbar-more-menu hidden" role="menu" aria-label="Altre azioni">
+          <button id="btnPrint" class="topbar-more-item" type="button" role="menuitem">🖨️ Stampa/PDF</button>
+          <button id="btnMonthlyReport" class="topbar-more-item" type="button" role="menuitem">📄 Report Mensile</button>
+          <button id="btnAddCsv" class="topbar-more-item" type="button" role="menuitem">➕ Aggiungi CSV</button>
+          <button id="btnNewCsv" class="topbar-more-item" type="button" role="menuitem">🔄 Nuovo CSV</button>
+        </div>
+      </div>
       <input type="file" id="addCsvFileInput" accept=".csv,text/csv" hidden>
-      <button id="btnNewCsv" class="btn btn-ghost btn-sm" type="button" title="Cancella tutti i dati e ricomincia da capo">🔄 Nuovo CSV</button>
     </div>
   </header>
 
-  <div class="filter-bar">
+  <div class="filter-bar" id="filterBar">
     <div class="filter-field">
       <label for="filterPeriod">Periodo</label>
       <select id="filterPeriod">
@@ -1165,6 +1196,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="panel">
         <h3>🔁 Abbonamenti e Pagamenti Ricorrenti</h3>
         <p class="modal-lead">Esercenti addebitati con importo simile in almeno 3 mesi diversi.</p>
+        <label for="recurringSearch" class="sr-only">Cerca tra i pagamenti ricorrenti</label>
+        <input type="search" id="recurringSearch" class="list-search hidden" placeholder="🔎 Cerca per esercente o categoria...">
         <div class="review-list" id="recurringList"></div>
       </div>
       <div class="panel">
@@ -1178,6 +1211,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="panel">
         <h3>🏆 Top Esercenti <span class="panel-tag" id="topMerchantRangeTag"></span></h3>
         <p class="modal-lead">Spesa cumulata per singolo esercente nel periodo selezionato (non solo per categoria).</p>
+        <label for="topMerchantSearch" class="sr-only">Cerca tra i top esercenti</label>
+        <input type="search" id="topMerchantSearch" class="list-search hidden" placeholder="🔎 Cerca per esercente o categoria...">
         <div id="topMerchantList"></div>
       </div>
       <div class="panel">
@@ -1210,6 +1245,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         </div>
         <div>
           <h4 style="margin:0 0 8px;">Transazioni superflue <span class="muted" id="discretionaryTxCountTag" style="font-weight:400;"></span></h4>
+          <label for="discretionaryTxSearch" class="sr-only">Cerca tra le transazioni superflue</label>
+          <input type="search" id="discretionaryTxSearch" class="list-search hidden" placeholder="🔎 Cerca per descrizione o categoria...">
           <div class="review-list scrollable" id="discretionaryTxList"></div>
         </div>
       </div>
@@ -1297,6 +1334,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
   <!-- ===================== PATRIMONIO ===================== -->
   <section id="tab-networth" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-networth">
+    <p class="tab-filter-note">ℹ️ I filtri di periodo/categoria non si applicano qui: il Patrimonio mostra sempre i valori più aggiornati e l'intero storico delle transazioni.</p>
     <div class="panel">
       <h3>🏛️ Gestione Patrimoniale</h3>
       <p class="modal-lead">Attivo (immobili, investimenti, liquidità, fondo pensione, cripto, altri beni) meno passivo (mutuo, prestiti e i debiti registrati nel pianificatore qui sotto), per un bilancio patrimoniale oltre al semplice flusso di cassa.</p>
@@ -3857,6 +3895,29 @@ function computeSavingsImpact(periodTxs, category, pct) {
   const newRate = income > 0 ? (income - newOutcome) / income : null;
   return { categorySpend, cut, oldRate, newRate, income, outcome };
 }
+const LIST_SEARCH_MIN_ROWS = 6;
+// Filtra i figli diretti di una lista in base al testo digitato nella search box associata,
+// riusando le righe già renderizzate (nessun ricalcolo): utile per le liste del tab Risparmio
+// che possono crescere molto (ricorrenti, top esercenti, spese superflue).
+function applyListFilter(inputId, listId) {
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  if (!input || !list) return;
+  const q = normalizeForMatch(input.value);
+  let anyVisible = false;
+  Array.from(list.children).forEach((row) => {
+    if (row.classList.contains("list-search-empty")) { row.remove(); return; }
+    if (row.classList.contains("sim-empty")) { row.classList.toggle("hidden", !!q); return; }
+    const match = !q || normalizeForMatch(row.textContent).includes(q);
+    row.classList.toggle("hidden", !match);
+    if (match) anyVisible = true;
+  });
+  if (q && !anyVisible) list.appendChild(el("div", "sim-empty list-search-empty", "Nessun risultato per la ricerca."));
+}
+function toggleListSearchVisibility(inputId, itemCount) {
+  const input = document.getElementById(inputId);
+  if (input) input.classList.toggle("hidden", itemCount < LIST_SEARCH_MIN_ROWS);
+}
 function renderSavings() {
   const periodTxs = getPeriodFiltered();
   const allOutcomeTxs = getCategoryTypeFiltered();
@@ -3906,6 +3967,8 @@ function renderSavings() {
     row.appendChild(btn);
     recurringList.appendChild(row);
   }
+  toggleListSearchVisibility("recurringSearch", recurring.length);
+  applyListFilter("recurringSearch", "recurringList");
 
   // Aumenti di prezzo
   const priceList = document.getElementById("priceIncreaseList");
@@ -3938,11 +4001,14 @@ function renderSavings() {
     const track = el("div", "track");
     const fill = el("div", "track-fill");
     fill.style.width = (maxTotal > 0 ? (m.total / maxTotal) * 100 : 0) + "%";
-    fill.style.background = `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`;
+    // Blu neutro (--secondary), non verde: è un ranking di spesa, non un indicatore "positivo".
+    fill.style.background = `linear-gradient(90deg,${hexToRgba(cssVar("--secondary"), 0.55)},${cssVar("--secondary")})`;
     track.appendChild(fill);
     topList.appendChild(row);
     row.appendChild(track);
   }
+  toggleListSearchVisibility("topMerchantSearch", topMerchants.length);
+  applyListFilter("topMerchantSearch", "topMerchantList");
 
   // Effetto formica
   document.getElementById("antThresholdInput").value = state.antThreshold;
@@ -4013,6 +4079,8 @@ function renderSavings() {
     row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTxModal(t); } });
     discTxList.appendChild(row);
   }
+  toggleListSearchVisibility("discretionaryTxSearch", discretionaryDetail.transactions.length);
+  applyListFilter("discretionaryTxSearch", "discretionaryTxList");
 
   // Calcolatore impatto risparmio
   const calcSel = document.getElementById("savingsCalcCategory");
@@ -4226,10 +4294,14 @@ function renderHealthScoreBreakdown(health) {
     row.appendChild(el("div", "budget-amounts", `${b.score} / ${b.max}`));
     const track = el("div", "track");
     const fill = el("div", "track-fill");
-    fill.style.width = (b.max > 0 ? (b.score / b.max) * 100 : 0) + "%";
-    fill.style.background = `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`;
+    const ratio = b.max > 0 ? b.score / b.max : 1;
+    fill.style.width = ratio * 100 + "%";
+    // Colore = gravità (rosso/arancio/verde), non solo estetica: coerente col resto della UI
+    // dove rosso significa "da correggere" e verde "in ordine".
+    const barVar = ratio >= 0.75 ? "--primary" : ratio >= 0.4 ? "--warning" : "--danger";
+    fill.style.background = `linear-gradient(90deg,${hexToRgba(cssVar(barVar), 0.6)},${cssVar(barVar)})`;
     track.appendChild(fill);
-    track.appendChild(el("div", "track-pct", `${Math.round((b.score / b.max) * 100)}%`));
+    track.appendChild(el("div", "track-pct", `${Math.round(ratio * 100)}%`));
     row.appendChild(track);
     box.appendChild(row);
     if (b.reason) box.appendChild(el("div", "metric-sub", b.reason));
@@ -5834,6 +5906,8 @@ function switchTab(name) {
     b.setAttribute("aria-selected", active ? "true" : "false");
   });
   document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === "tab-" + name));
+  const filterBar = document.getElementById("filterBar");
+  if (filterBar) filterBar.classList.toggle("hidden", name === "networth");
   requestAnimationFrame(() => renderTab(name));
 }
 function populateCategoryFilters() {
@@ -6041,6 +6115,24 @@ function init() {
     if (e.target.files[0]) { warnIfMultipleFiles(e.target.files); handleFile(e.target.files[0], "append"); }
     addCsvFileInput.value = "";
   });
+
+  function closeMoreActionsMenu() {
+    document.getElementById("moreActionsMenu").classList.add("hidden");
+    document.getElementById("btnMoreActions").setAttribute("aria-expanded", "false");
+  }
+  const moreActionsBtn = document.getElementById("btnMoreActions");
+  const moreActionsMenu = document.getElementById("moreActionsMenu");
+  moreActionsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = moreActionsMenu.classList.contains("hidden");
+    moreActionsMenu.classList.toggle("hidden", !willOpen);
+    moreActionsBtn.setAttribute("aria-expanded", String(willOpen));
+  });
+  moreActionsMenu.querySelectorAll(".topbar-more-item").forEach((item) => item.addEventListener("click", closeMoreActionsMenu));
+  document.addEventListener("click", (e) => { if (!e.target.closest(".topbar-more")) closeMoreActionsMenu(); });
+
+  [["recurringSearch", "recurringList"], ["topMerchantSearch", "topMerchantList"], ["discretionaryTxSearch", "discretionaryTxList"]]
+    .forEach(([inputId, listId]) => document.getElementById(inputId).addEventListener("input", () => applyListFilter(inputId, listId)));
 
   document.querySelectorAll(".side-nav-item").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
@@ -6339,7 +6431,7 @@ function init() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeQuickAddModal(); closeCommandPalette(); }
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeQuickAddModal(); closeCommandPalette(); closeMoreActionsMenu(); }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       if (state.commandPaletteOpen) closeCommandPalette(); else openCommandPalette();
