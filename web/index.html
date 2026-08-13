@@ -454,6 +454,16 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 
 /* ===================== modal ===================== */
 .modal-overlay { position: fixed; inset: 0; background: rgba(5,8,14,0.7); display: flex; align-items: center; justify-content: center; z-index: 60; }
+
+/* ===================== undo toast ===================== */
+.undo-toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 70;
+  display: flex; align-items: center; gap: 12px; max-width: min(480px, calc(100vw - 32px));
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.35); font-size: 12.5px;
+}
+.undo-toast.hidden { display: none; }
+.undo-toast #undoToastMessage { flex: 1 1 auto; }
 .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; width: min(420px, 92vw); padding: 22px; }
 .modal-box .mx-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px; }
 .modal-box .mx-amount { text-align: center; font-family: var(--font-mono); font-size: 26px; font-weight: 800; margin-bottom: 4px; }
@@ -1210,6 +1220,19 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
     <div class="grid-2">
       <div class="panel">
+        <h3>📅 Prossimi Addebiti Attesi</h3>
+        <p class="modal-lead">Pagamenti ricorrenti attesi nei prossimi 14 giorni, in base all'intervallo medio tra gli addebiti passati.</p>
+        <div class="review-list" id="upcomingRecurringList"></div>
+      </div>
+      <div class="panel">
+        <h3>⚠️ Pagamenti Ricorrenti in Ritardo</h3>
+        <p class="modal-lead">Ricorrenti che non si sono più ripresentati oltre il loro intervallo abituale: possibile disdetta, mancato addebito o carta scaduta.</p>
+        <div class="review-list" id="missingRecurringList"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
         <h3>🏆 Top Esercenti <span class="panel-tag" id="topMerchantRangeTag"></span></h3>
         <p class="modal-lead">Spesa cumulata per singolo esercente nel periodo selezionato (non solo per categoria).</p>
         <label for="topMerchantSearch" class="sr-only">Cerca tra i top esercenti</label>
@@ -1286,6 +1309,31 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <div class="table-wrap">
         <table class="data-table hidden" id="yoyTable">
           <thead><tr><th>Categoria</th><th>Periodo attuale</th><th>Stesso periodo anno scorso</th><th>Variazione</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="customCompareSection">
+      <h3>🆚 Confronto Periodo Personalizzato</h3>
+      <p class="modal-lead">Confronta due intervalli di date qualsiasi (es. questo trimestre vs il precedente), non solo lo stesso periodo dell'anno scorso come sopra.</p>
+      <div class="rule-add-row">
+        <label for="compareAStart" style="flex:0 0 auto;">Periodo A</label>
+        <input type="date" id="compareAStart" aria-label="Periodo A - data inizio">
+        <input type="date" id="compareAEnd" aria-label="Periodo A - data fine">
+        <label for="compareBStart" style="flex:0 0 auto;">Periodo B</label>
+        <input type="date" id="compareBStart" aria-label="Periodo B - data inizio">
+        <input type="date" id="compareBEnd" aria-label="Periodo B - data fine">
+      </div>
+      <div class="rule-add-row">
+        <button id="btnCompareThisVsLastMonth" class="btn-ghost btn-sm" type="button">Mese corrente vs precedente</button>
+        <button id="btnRunCustomCompare" class="btn btn-primary btn-sm" type="button">Confronta</button>
+      </div>
+      <span id="customCompareWarning" class="custom-range-warning hidden" role="alert">⚠️ In ciascun periodo la data "Al" deve essere successiva alla data "Dal"</span>
+      <p class="modal-lead" id="customCompareSummary">Seleziona due intervalli di date e premi Confronta.</p>
+      <div class="table-wrap">
+        <table class="data-table hidden" id="customCompareTable">
+          <thead><tr><th>Categoria</th><th>Periodo A</th><th>Periodo B</th><th>Variazione</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -1499,6 +1547,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <p class="modal-lead">Imposta il budget mensile per ogni categoria di spesa. Le categorie provenienti dal tuo CSV che non hanno ancora un budget sono evidenziate.</p>
       <div id="budgetEditor" class="budget-editor"></div>
       <div class="rule-add-row">
+        <button id="btnSuggestBudgets" class="btn-ghost btn-sm" type="button">📊 Suggerisci dallo storico</button>
+        <span id="budgetSuggestMsg" class="muted" style="font-size:11.5px;"></span>
+      </div>
+      <div class="rule-add-row">
         <label style="flex:0 0 auto; display:flex; align-items:center; gap:6px;">
           <input type="checkbox" id="budgetRolloverInput" style="width:auto;">
           🗂️ Budget con riporto: l'avanzo o lo sforamento di un mese si somma al budget del mese successivo
@@ -1650,6 +1702,12 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div id="commandPaletteList" class="cmdp-list"></div>
     <div class="cmdp-hint">↑↓ per navigare · Invio per selezionare · Esc per chiudere</div>
   </div>
+</div>
+
+<div id="undoToast" class="undo-toast hidden" role="status" aria-live="polite">
+  <span id="undoToastMessage"></span>
+  <button id="btnUndoToast" class="btn btn-sm" type="button">Annulla</button>
+  <button id="btnDismissUndoToast" class="btn-icon" type="button" aria-label="Chiudi notifica">✕</button>
 </div>
 
 <script>
@@ -2555,6 +2613,7 @@ const state = {
   antThreshold: 5,
   savingsCalc: { category: null, pct: 20 },
   opportunityCost: { returnPct: 5, years: 10 },
+  customCompare: { aStart: null, aEnd: null, bStart: null, bEnd: null },
   savingsGoals: [],
   householdMembers: [],
   customAlerts: { singleTxThreshold: null, negativeBalanceAlert: false },
@@ -3179,6 +3238,14 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
       action: withActions ? "Verifica se il rincaro è giustificato o conviene disdire." : null,
       actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
   }
+  const missingRecurring = computeMissingRecurring(recurring);
+  if (missingRecurring.length) {
+    const worst = missingRecurring[0];
+    insights.push({ level: "warning", icon: "⚠️", title: `Ricorrente in ritardo: ${worst.label}`,
+      text: `Atteso da ${Math.abs(worst.daysUntilNext)} giorni (di solito ogni ~${Math.round(worst.avgIntervalDays)} giorni)` + (missingRecurring.length > 1 ? ` e altri ${missingRecurring.length - 1}.` : "."),
+      action: withActions ? "Possibile disdetta, mancato addebito o carta scaduta: verifica nel tab Risparmio." : null,
+      actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+  }
   const duplicates = computeSuspiciousDuplicates(allOutcomeTxs, 3);
   if (duplicates.length) {
     insights.push({ level: "danger", icon: "🧾", title: `${duplicates.length} doppion${duplicates.length === 1 ? "e" : "i"} sospett${duplicates.length === 1 ? "o" : "i"}`,
@@ -3777,6 +3844,32 @@ function computeRecurringMerchants(allTxs) {
   result.sort((a, b) => b.avgAmount - a.avgAmount);
   return result;
 }
+// Proietta la prossima data attesa per ogni ricorrente in base all'intervallo medio tra gli
+// addebiti passati, per segnalare sia i pagamenti imminenti sia quelli che sono "in ritardo"
+// rispetto alla loro cadenza abituale (possibile disdetta, mancato addebito, carta scaduta).
+function computeRecurringForecast(recurringList) {
+  const today = latestDate();
+  return recurringList.map((r) => {
+    const intervals = [];
+    for (let i = 1; i < r.items.length; i++) intervals.push((r.items[i].date - r.items[i - 1].date) / 86400000);
+    const avgIntervalDays = intervals.reduce((s, v) => s + v, 0) / intervals.length;
+    const daysSinceLast = (today - r.lastDate) / 86400000;
+    const toleranceDays = Math.max(avgIntervalDays * 0.5, 5);
+    const daysUntilNext = Math.round(avgIntervalDays - daysSinceLast);
+    const isMissing = daysSinceLast > avgIntervalDays + toleranceDays;
+    return { ...r, avgIntervalDays, daysUntilNext, isMissing };
+  });
+}
+function computeUpcomingRecurring(recurringList, horizonDays) {
+  return computeRecurringForecast(recurringList)
+    .filter((r) => !r.isMissing && r.daysUntilNext <= horizonDays)
+    .sort((a, b) => a.daysUntilNext - b.daysUntilNext);
+}
+function computeMissingRecurring(recurringList) {
+  return computeRecurringForecast(recurringList)
+    .filter((r) => r.isMissing)
+    .sort((a, b) => a.daysUntilNext - b.daysUntilNext);
+}
 function computePriceIncreases(recurringList) {
   const flagged = [];
   for (const r of recurringList) {
@@ -3852,6 +3945,86 @@ function computeYoYComparison() {
   }).filter((r) => r.curr > 0 || r.prev > 0);
   rows.sort((a, b) => b.curr - a.curr);
   return { start, end, rows };
+}
+// ---------------------------------------------------------------- Confronto periodo personalizzato
+// Come computeYoYComparison ma tra due intervalli di date qualsiasi scelti dall'utente, non solo
+// lo stesso periodo dell'anno precedente.
+function computeCustomPeriodComparison(aStart, aEnd, bStart, bEnd) {
+  if (!aStart || !aEnd || !bStart || !bEnd) return null;
+  const allOutcomeTxs = getCategoryTypeFiltered().filter((t) => t.type === "outcome");
+  const aTxs = allOutcomeTxs.filter((t) => t.date >= aStart && t.date <= aEnd);
+  const bTxs = allOutcomeTxs.filter((t) => t.date >= bStart && t.date <= bEnd);
+  const cats = new Set([...aTxs.map((t) => t.category), ...bTxs.map((t) => t.category)]);
+  const rows = Array.from(cats).map((cat) => {
+    const a = aTxs.filter((t) => t.category === cat).reduce((s, t) => s + t.value, 0);
+    const b = bTxs.filter((t) => t.category === cat).reduce((s, t) => s + t.value, 0);
+    return { category: cat, a, b, delta: pctDelta(a, b) };
+  }).filter((r) => r.a > 0 || r.b > 0);
+  rows.sort((x, y) => y.a - x.a);
+  const totalA = aTxs.reduce((s, t) => s + t.value, 0);
+  const totalB = bTxs.reduce((s, t) => s + t.value, 0);
+  return { rows, totalA, totalB, deltaTotal: pctDelta(totalA, totalB) };
+}
+function validateCustomCompareRange() {
+  const { aStart, aEnd, bStart, bEnd } = state.customCompare;
+  const invalid = !!((aStart && aEnd && aStart > aEnd) || (bStart && bEnd && bStart > bEnd));
+  document.getElementById("customCompareWarning").classList.toggle("hidden", !invalid);
+  return !invalid;
+}
+function renderCustomPeriodComparison() {
+  const table = document.getElementById("customCompareTable");
+  const tbody = document.querySelector("#customCompareTable tbody");
+  const summary = document.getElementById("customCompareSummary");
+  tbody.innerHTML = "";
+  const { aStart, aEnd, bStart, bEnd } = state.customCompare;
+  if (!validateCustomCompareRange()) {
+    table.classList.add("hidden");
+    summary.textContent = "Correggi gli intervalli di date sopra per vedere il confronto.";
+    return;
+  }
+  const result = computeCustomPeriodComparison(
+    aStart ? new Date(aStart + "T00:00:00") : null,
+    aEnd ? new Date(aEnd + "T23:59:59.999") : null,
+    bStart ? new Date(bStart + "T00:00:00") : null,
+    bEnd ? new Date(bEnd + "T23:59:59.999") : null
+  );
+  if (!result) {
+    table.classList.add("hidden");
+    summary.textContent = "Seleziona due intervalli di date e premi Confronta.";
+    return;
+  }
+  const deltaTxt = result.deltaTotal === null ? "—" : (result.deltaTotal >= 0 ? "+" : "") + fmtPercent(result.deltaTotal);
+  summary.textContent = `Uscite periodo A: ${fmtCurrency(result.totalA, 2)} · Uscite periodo B: ${fmtCurrency(result.totalB, 2)} · Variazione: ${deltaTxt}`;
+  if (!result.rows.length) {
+    table.classList.add("hidden");
+    return;
+  }
+  table.classList.remove("hidden");
+  for (const r of result.rows) {
+    const tr = document.createElement("tr");
+    const dTxt = r.delta === null ? "—" : (r.delta >= 0 ? "+" : "") + fmtPercent(r.delta);
+    const dColor = r.delta === null ? "" : `color:${r.delta > 0 ? "var(--danger)" : "var(--primary)"}`;
+    tr.innerHTML = `<td>${catIcon(r.category)} ${r.category}</td><td class="tabular">${fmtCurrency(r.a, 2)}</td>
+      <td class="tabular">${fmtCurrency(r.b, 2)}</td><td class="tabular" style="${dColor}">${dTxt}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+function setCustomComparePreset(aStart, aEnd, bStart, bEnd) {
+  state.customCompare = { aStart, aEnd, bStart, bEnd };
+  document.getElementById("compareAStart").value = aStart;
+  document.getElementById("compareAEnd").value = aEnd;
+  document.getElementById("compareBStart").value = bStart;
+  document.getElementById("compareBEnd").value = bEnd;
+  renderCustomPeriodComparison();
+}
+function compareThisVsLastMonth() {
+  const anchor = latestDate();
+  const toIso = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const aStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const aEnd = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0);
+  const bStart = new Date(anchor.getFullYear(), anchor.getMonth() - 1, 1);
+  const bEnd = new Date(anchor.getFullYear(), anchor.getMonth(), 0);
+  setCustomComparePreset(toIso(aStart), toIso(aEnd), toIso(bStart), toIso(bEnd));
 }
 function computeReviewShortlist(budgetBreakdown) {
   return budgetBreakdown.filter((b) => DISCRETIONARY_CATEGORIES.has(b.category) && b.percent !== null && b.percent > 0.8)
@@ -3987,6 +4160,41 @@ function renderSavings() {
     priceList.appendChild(row);
   }
 
+  // Prossimi addebiti attesi (entro 14 giorni, in base all'intervallo medio tra gli addebiti passati)
+  const upcomingRecurring = computeUpcomingRecurring(recurring, 14);
+  const upcomingList = document.getElementById("upcomingRecurringList");
+  upcomingList.innerHTML = "";
+  if (!upcomingRecurring.length) {
+    upcomingList.appendChild(el("div", "sim-empty", "Nessun pagamento ricorrente atteso nei prossimi 14 giorni."));
+  }
+  for (const r of upcomingRecurring) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(r.category)} ${r.label}`));
+    const whenTxt = r.daysUntilNext <= 0 ? "atteso a breve" : r.daysUntilNext === 1 ? "atteso domani" : `atteso tra ${r.daysUntilNext} giorni`;
+    desc.appendChild(el("div", "rv-count", `${whenTxt} · ogni ~${Math.round(r.avgIntervalDays)} giorni`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono", fmtCurrency(r.avgAmount, 2)));
+    upcomingList.appendChild(row);
+  }
+
+  // Pagamenti ricorrenti in ritardo rispetto alla loro cadenza abituale (possibile disdetta/mancato addebito)
+  const missingRecurring = computeMissingRecurring(recurring);
+  const missingList = document.getElementById("missingRecurringList");
+  missingList.innerHTML = "";
+  if (!missingRecurring.length) {
+    missingList.appendChild(el("div", "sim-empty", "Nessun pagamento ricorrente in ritardo rispetto alla sua cadenza abituale."));
+  }
+  for (const r of missingRecurring) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(r.category)} ${r.label}`));
+    desc.appendChild(el("div", "rv-count", `atteso da ${Math.abs(r.daysUntilNext)} giorni · ultimo il ${fmtDateFull(r.lastDate)} · ogni ~${Math.round(r.avgIntervalDays)} giorni`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono neg", fmtCurrency(r.avgAmount, 2)));
+    missingList.appendChild(row);
+  }
+
   // Top esercenti
   document.getElementById("topMerchantRangeTag").textContent = periodRangeLabel();
   const topList = document.getElementById("topMerchantList");
@@ -4115,6 +4323,13 @@ function renderSavings() {
       yoyTbody.appendChild(tr);
     }
   }
+
+  // Confronto periodo personalizzato: gli input riflettono l'ultima selezione della sessione
+  document.getElementById("compareAStart").value = state.customCompare.aStart || "";
+  document.getElementById("compareAEnd").value = state.customCompare.aEnd || "";
+  document.getElementById("compareBStart").value = state.customCompare.bStart || "";
+  document.getElementById("compareBEnd").value = state.customCompare.bEnd || "";
+  renderCustomPeriodComparison();
 
   // Spese da rivedere (report stampabile)
   const reviewList = document.getElementById("reviewShortlistList");
@@ -5615,14 +5830,44 @@ function saveTxCategoryFromModal() {
   }
   closeTxModal();
 }
+// ---------------------------------------------------------------- Undo azioni distruttive
+// Toast temporaneo (si autochiude dopo 8s) per recuperare l'ultima azione irreversibile:
+// eliminazione transazione, ripristino budget/dizionario predefiniti, unione categorie.
+let undoToastTimer = null;
+let pendingUndo = null;
+function showUndoToast(message, undoFn) {
+  clearTimeout(undoToastTimer);
+  pendingUndo = undoFn;
+  document.getElementById("undoToastMessage").textContent = message;
+  document.getElementById("undoToast").classList.remove("hidden");
+  undoToastTimer = setTimeout(hideUndoToast, 8000);
+}
+function hideUndoToast() {
+  clearTimeout(undoToastTimer);
+  pendingUndo = null;
+  document.getElementById("undoToast").classList.add("hidden");
+}
+function runPendingUndo() {
+  if (!pendingUndo) return;
+  const fn = pendingUndo;
+  hideUndoToast();
+  fn();
+}
 function deleteTxFromModal() {
   if (!modalTx) return;
-  if (!confirm("Eliminare definitivamente questa transazione? L'operazione non può essere annullata.")) return;
-  state.transactions = state.transactions.filter((t) => t.id !== modalTx.id);
+  if (!confirm('Eliminare questa transazione? Potrai annullare subito dopo con il pulsante "Annulla" in basso.')) return;
+  const deleted = modalTx;
+  state.transactions = state.transactions.filter((t) => t.id !== deleted.id);
   persistTransactions();
   populateCategoryFilters();
   closeTxModal();
   renderTab(state.activeTab);
+  showUndoToast(`Transazione "${deleted.description || deleted.category}" eliminata.`, () => {
+    state.transactions.push(deleted);
+    persistTransactions();
+    populateCategoryFilters();
+    renderTab(state.activeTab);
+  });
 }
 
 // ---------------------------------------------------------------- settings / budget editor
@@ -5676,20 +5921,23 @@ function renameCategory() {
   const to = document.getElementById("categoryRenameTo").value;
   if (!from || !to) return;
   if (to === from) { alert("Seleziona una categoria di destinazione diversa da quella di partenza."); return; }
-  const msg = `Spostare tutti i dati di "${from}" su "${to}"? Tutte le transazioni, il budget e le regole del dizionario verranno spostati su "${to}" e "${from}" verrà rimossa.`;
+  const msg = `Spostare tutti i dati di "${from}" su "${to}"? Tutte le transazioni, il budget e le regole del dizionario verranno spostati su "${to}" e "${from}" verrà rimossa. Potrai annullare subito dopo dal messaggio in basso.`;
   if (!confirm(msg)) return;
 
-  let txCount = 0;
-  for (const t of state.transactions) { if (t.category === from) { t.category = to; txCount++; } }
+  const affectedTxIds = [];
+  for (const t of state.transactions) { if (t.category === from) { t.category = to; affectedTxIds.push(t.id); } }
 
-  if (from in state.budgets) {
-    const oldBudget = state.budgets[from];
+  const hadFromBudget = from in state.budgets;
+  const oldFromBudget = state.budgets[from];
+  const toBudgetExistedBefore = to in state.budgets;
+  const oldToBudget = state.budgets[to];
+  if (hadFromBudget) {
     delete state.budgets[from];
-    if (!(to in state.budgets)) state.budgets[to] = oldBudget;
+    if (!toBudgetExistedBefore) state.budgets[to] = oldFromBudget;
   }
 
-  let ruleCount = 0;
-  for (const r of state.merchantRules) { if (r.category === from) { r.category = to; ruleCount++; } }
+  const affectedRuleKeywords = [];
+  for (const r of state.merchantRules) { if (r.category === from) { r.category = to; affectedRuleKeywords.push(r.keyword); } }
 
   persistTransactions();
   saveBudgets();
@@ -5701,11 +5949,28 @@ function renameCategory() {
   renderBudgetEditor();
   renderRuleEditor();
   renderTab(state.activeTab);
-  alert(`Fatto: ${txCount} transazioni e ${ruleCount} regole del dizionario aggiornate.`);
+  showUndoToast(`"${from}" unita a "${to}": ${affectedTxIds.length} transazioni e ${affectedRuleKeywords.length} regole spostate.`, () => {
+    for (const t of state.transactions) { if (affectedTxIds.includes(t.id)) t.category = from; }
+    for (const r of state.merchantRules) { if (affectedRuleKeywords.includes(r.keyword)) r.category = from; }
+    if (hadFromBudget) {
+      state.budgets[from] = oldFromBudget;
+      if (toBudgetExistedBefore) state.budgets[to] = oldToBudget; else delete state.budgets[to];
+    }
+    persistTransactions();
+    saveBudgets();
+    saveMerchantRules();
+    populateCategoryFilters();
+    populateCategoryRenameSelect();
+    populateCategoryRenameToSelect();
+    renderBudgetEditor();
+    renderRuleEditor();
+    renderTab(state.activeTab);
+  });
 }
 function openSettings() {
   lastFocusedBeforeModal = document.activeElement;
   renderBudgetEditor();
+  document.getElementById("budgetSuggestMsg").textContent = "";
   renderRuleEditor();
   renderReviewSection();
   populateCategoryRenameSelect();
@@ -5730,13 +5995,51 @@ function saveBudgetsFromModal() {
   closeSettings();
   renderTab(state.activeTab);
 }
+// Budget suggerito dallo storico: media mensile di spesa per categoria negli ultimi N mesi,
+// per proporre valori di partenza sensati invece di dover impostare tutto a mano.
+const BUDGET_SUGGEST_MONTHS = 6;
+function computeSuggestedBudgets(monthsBack) {
+  const cutoff = new Date(latestDate());
+  cutoff.setMonth(cutoff.getMonth() - monthsBack);
+  const txs = state.transactions.filter((t) => t.type === "outcome" && isCountedTx(t) && t.date >= cutoff);
+  const monthsUsed = monthsCoveredCount(txs);
+  const byCategory = new Map();
+  for (const t of txs) byCategory.set(t.category, (byCategory.get(t.category) || 0) + t.value);
+  const suggestions = {};
+  for (const [cat, total] of byCategory.entries()) suggestions[cat] = Math.round((total / monthsUsed) * 100) / 100;
+  return { suggestions, monthsUsed, txCount: txs.length };
+}
+function suggestBudgetsFromHistory() {
+  const { suggestions, monthsUsed, txCount } = computeSuggestedBudgets(BUDGET_SUGGEST_MONTHS);
+  const msgBox = document.getElementById("budgetSuggestMsg");
+  if (!txCount) {
+    if (msgBox) msgBox.textContent = "Nessuno storico di spesa sufficiente per suggerire un budget.";
+    return;
+  }
+  const inputs = document.querySelectorAll("#budgetEditor input");
+  let updated = 0;
+  inputs.forEach((inp) => {
+    const cat = inp.dataset.category;
+    if (cat in suggestions) { inp.value = suggestions[cat]; updated++; }
+  });
+  if (msgBox) msgBox.textContent = updated
+    ? `${updated} categorie aggiornate in base alla media di spesa degli ultimi ${monthsUsed} mes${monthsUsed === 1 ? "e" : "i"}. Rivedi i valori prima di salvare.`
+    : "Nessuna categoria con storico di spesa recente da suggerire.";
+}
 function resetBudgetsToDefault() {
-  if (!confirm("Ripristinare i budget predefiniti per tutte le categorie? Le personalizzazioni verranno perse.")) return;
+  if (!confirm("Ripristinare i budget predefiniti per tutte le categorie? Potrai annullare subito dopo dal messaggio in basso.")) return;
+  const previousBudgets = { ...state.budgets };
   state.budgets = { ...DEFAULT_BUDGETS };
   ensureBudgetKeysForTransactions();
   saveBudgets();
   renderBudgetEditor();
   renderTab(state.activeTab);
+  showUndoToast("Budget ripristinati ai valori predefiniti.", () => {
+    state.budgets = previousBudgets;
+    saveBudgets();
+    renderBudgetEditor();
+    renderTab(state.activeTab);
+  });
 }
 
 // ---------------------------------------------------------------- settings / dictionary editor
@@ -5847,11 +6150,17 @@ function downloadCSV(text, filename) {
   URL.revokeObjectURL(url);
 }
 function resetDictionaryToDefault() {
-  if (!confirm("Ripristinare il dizionario predefinito? Le regole personalizzate aggiunte finora verranno perse.")) return;
+  if (!confirm("Ripristinare il dizionario predefinito? Potrai annullare subito dopo dal messaggio in basso.")) return;
+  const previousRules = state.merchantRules.map((r) => ({ ...r }));
   cancelRuleEdit();
   state.merchantRules = DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
   saveMerchantRules();
   renderRuleEditor();
+  showUndoToast("Dizionario ripristinato ai valori predefiniti.", () => {
+    state.merchantRules = previousRules;
+    saveMerchantRules();
+    renderRuleEditor();
+  });
 }
 function computeReviewGroups() {
   const groups = new Map();
@@ -6241,6 +6550,17 @@ function init() {
   document.getElementById("settingsModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("settingsModal"), e));
   document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
   document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
+  document.getElementById("btnSuggestBudgets").addEventListener("click", suggestBudgetsFromHistory);
+
+  ["compareAStart", "compareAEnd", "compareBStart", "compareBEnd"].forEach((id) => {
+    const key = id.replace("compare", "").replace(/^./, (c) => c.toLowerCase());
+    document.getElementById(id).addEventListener("change", (e) => { state.customCompare[key] = e.target.value || null; validateCustomCompareRange(); });
+  });
+  document.getElementById("btnRunCustomCompare").addEventListener("click", renderCustomPeriodComparison);
+  document.getElementById("btnCompareThisVsLastMonth").addEventListener("click", compareThisVsLastMonth);
+
+  document.getElementById("btnUndoToast").addEventListener("click", runPendingUndo);
+  document.getElementById("btnDismissUndoToast").addEventListener("click", hideUndoToast);
   document.getElementById("btnSaveSavingsGoal").addEventListener("click", () => {
     const val = parseFloat(document.getElementById("savingsGoalInput").value);
     if (isNaN(val) || val < 0 || val > 100) { alert("Inserisci una percentuale tra 0 e 100."); return; }
@@ -6451,7 +6771,7 @@ function init() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeQuickAddModal(); closeCommandPalette(); closeMoreActionsMenu(); }
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeQuickAddModal(); closeCommandPalette(); closeMoreActionsMenu(); hideUndoToast(); }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       if (state.commandPaletteOpen) closeCommandPalette(); else openCommandPalette();
