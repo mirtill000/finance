@@ -474,6 +474,13 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
   width: 100%; background: var(--card2); border: 1px solid var(--border); color: var(--text);
   padding: 8px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 700; text-align: center;
 }
+.tx-note-icon { cursor: help; }
+.goal-contribution { font-size: 11px; color: var(--text-muted); margin: -6px 0 10px; }
+.goal-contribution.warn { color: var(--danger); font-weight: 600; }
+.mx-cat-edit textarea {
+  width: 100%; box-sizing: border-box; background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 10px; border-radius: 8px; font-size: 12.5px; font-family: inherit; resize: vertical;
+}
 .mx-actions-right { display: flex; gap: 8px; }
 .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
 .modal-grid .mi { background: var(--card2); border-radius: 8px; padding: 9px 11px; }
@@ -534,6 +541,7 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 }
 .list-search.hidden { display: none; }
 .list-search:focus { outline: 1.5px solid var(--secondary); }
+.review-row-actions { display: flex; gap: 6px; align-items: center; }
 .review-row.clickable { cursor: pointer; }
 .review-row.clickable:hover { border-color: var(--primary); background: rgba(79,209,165,0.08); }
 .review-list.scrollable { max-height: 320px; overflow-y: auto; padding-right: 4px; }
@@ -697,7 +705,16 @@ table.data-table tbody tr:focus-visible { outline: 2px solid var(--secondary); o
   body.printing-report #monthlyReportModal .modal-box {
     width: 100% !important; max-width: none !important; max-height: none !important; box-shadow: none !important; border: none !important; padding: 0 !important;
   }
-  body.printing-report .report-stat, body.printing-report .report-list li { border: 1px solid #ccc !important; background: #fff !important; }
+  /* Report Annuale: stesso meccanismo, classe body dedicata per non mostrare entrambi i modali insieme */
+  body.printing-annual-report .app-shell { display: none !important; }
+  body.printing-annual-report #annualReportModal {
+    display: block !important; position: static !important; background: none !important; inset: auto; z-index: auto;
+  }
+  body.printing-annual-report #annualReportModal .modal-box {
+    width: 100% !important; max-width: none !important; max-height: none !important; box-shadow: none !important; border: none !important; padding: 0 !important;
+  }
+  body.printing-report .report-stat, body.printing-report .report-list li,
+  body.printing-annual-report .report-stat, body.printing-annual-report .report-list li { border: 1px solid #ccc !important; background: #fff !important; }
 }
 
 /* misc */
@@ -775,6 +792,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <div id="moreActionsMenu" class="topbar-more-menu hidden" role="menu" aria-label="Altre azioni">
           <button id="btnPrint" class="topbar-more-item" type="button" role="menuitem">🖨️ Stampa/PDF</button>
           <button id="btnMonthlyReport" class="topbar-more-item" type="button" role="menuitem">📄 Report Mensile</button>
+          <button id="btnAnnualReport" class="topbar-more-item" type="button" role="menuitem">📅 Report Annuale</button>
           <button id="btnAddCsv" class="topbar-more-item" type="button" role="menuitem">➕ Aggiungi CSV</button>
           <button id="btnNewCsv" class="topbar-more-item" type="button" role="menuitem">🔄 Nuovo CSV</button>
         </div>
@@ -1520,6 +1538,10 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnAddTag" class="btn-ghost btn-sm" type="button">+ Aggiungi</button>
       </div>
     </div>
+    <div class="mx-cat-edit">
+      <label for="mxNoteInput" class="mx-field-label">Nota</label>
+      <textarea id="mxNoteInput" rows="2" placeholder="Appunti liberi su questa transazione, es. rimborso atteso da Mario"></textarea>
+    </div>
     <div class="modal-grid">
       <div class="mi"><div class="ml">Data</div><div class="mv" id="mxDate">-</div></div>
       <div class="mi"><div class="ml">Tipo</div><div class="mv" id="mxType">-</div></div>
@@ -1529,7 +1551,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="modal-close-row-split">
       <button id="btnDeleteTx" class="btn-danger-outline btn-sm" type="button">🗑 Elimina</button>
       <div class="mx-actions-right">
-        <button id="btnSaveTxCategory" class="btn btn-primary btn-sm" type="button">💾 Salva categoria</button>
+        <button id="btnSaveTxCategory" class="btn btn-primary btn-sm" type="button">💾 Salva modifiche</button>
         <button id="btnCloseModal" class="btn btn-ghost btn-sm" type="button">Chiudi</button>
       </div>
     </div>
@@ -1594,8 +1616,12 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveCustomAlerts" class="btn btn-primary btn-sm" type="button">Salva Regole di Allarme</button>
       </div>
 
-      <h4>💾 Backup completo</h4>
-      <p class="modal-lead">Esporta tutti i tuoi dati (transazioni, budget, dizionario, obiettivi, membri) in un unico file JSON, oppure ripristina un backup precedente.</p>
+      <h4>🔕 Esercenti ricorrenti ignorati</h4>
+      <p class="modal-lead">Esercenti esclusi dalle rilevazioni "Prossimi Addebiti Attesi" e "Pagamenti Ricorrenti in Ritardo" (escludibili con il pulsante "🔕 Ignora" nel tab Risparmio).</p>
+      <div id="ignoredRecurringList"></div>
+
+      <h4>💾 Backup completo (per trasferire i dati su un altro dispositivo)</h4>
+      <p class="modal-lead">Tutti i tuoi dati vivono solo in questo browser: esporta transazioni, budget, dizionario, obiettivi, membri, patrimonio, debiti e tutte le altre impostazioni (incluso il tema) in un unico file JSON, da importare su un altro dispositivo o browser per ripristinare la stessa situazione.</p>
       <div class="rule-import-row">
         <button id="btnExportBackup" class="btn-ghost btn-sm" type="button">⬇️ Esporta Backup</button>
         <button id="btnImportBackup" class="btn-ghost btn-sm" type="button">📂 Importa Backup</button>
@@ -1652,6 +1678,20 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="modal-close-row-split no-print">
       <button id="btnCloseMonthlyReport" class="btn-ghost btn-sm" type="button">Chiudi</button>
       <button id="btnPrintMonthlyReport" class="btn btn-primary btn-sm" type="button">🖨️ Stampa / Esporta PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="annualReportModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="annualReportContent">
+  <div class="modal-box modal-box-wide">
+    <div class="rule-add-row no-print">
+      <label for="annualReportYearSelect" style="flex:0 0 auto;">Anno</label>
+      <select id="annualReportYearSelect"></select>
+    </div>
+    <div id="annualReportContent"></div>
+    <div class="modal-close-row-split no-print">
+      <button id="btnCloseAnnualReport" class="btn-ghost btn-sm" type="button">Chiudi</button>
+      <button id="btnPrintAnnualReport" class="btn btn-primary btn-sm" type="button">🖨️ Stampa / Esporta PDF</button>
     </div>
   </div>
 </div>
@@ -2583,6 +2623,7 @@ const LS_VISIT_SNAPSHOT_KEY = "ffdpro_visit_snapshot_v1";
 const LS_BUDGET_ROLLOVER_KEY = "ffdpro_budget_rollover_v1";
 const LS_DEBTS_KEY = "ffdpro_debts_v1";
 const LS_NET_WORTH_KEY = "ffdpro_net_worth_v1";
+const LS_IGNORED_RECURRING_KEY = "ffdpro_ignored_recurring_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
 
 const PRESETS = [
@@ -2614,6 +2655,7 @@ const state = {
   savingsCalc: { category: null, pct: 20 },
   opportunityCost: { returnPct: 5, years: 10 },
   customCompare: { aStart: null, aEnd: null, bStart: null, bEnd: null },
+  ignoredRecurringMerchants: [],
   savingsGoals: [],
   householdMembers: [],
   customAlerts: { singleTxThreshold: null, negativeBalanceAlert: false },
@@ -2811,7 +2853,7 @@ function persistTransactions() {
   const raw = state.transactions.map((t) => [
     t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
     t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "",
-    t.member || "", (t.tags || []).join("|"),
+    t.member || "", (t.tags || []).join("|"), t.note || "",
   ]);
   try { localStorage.setItem(LS_KEY, JSON.stringify(raw)); } catch (e) { /* storage full/unavailable: ignore */ }
 }
@@ -2820,12 +2862,13 @@ function loadPersisted() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    return arr.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags]) => ({
+    return arr.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags, note]) => ({
       date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
       autoCategorized: !!auto, matchedKeyword: kw || null,
       discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
       member: member || null,
       tags: tags ? tags.split("|").filter(Boolean) : [],
+      note: note || null,
     }));
   } catch (e) { return null; }
 }
@@ -2922,6 +2965,16 @@ function loadNetWorth() {
     state.netWorthEntries = entries;
     state.netWorthHistory = parsed && Array.isArray(parsed.history) ? parsed.history : [];
   } catch (e) { state.netWorthEntries = []; state.netWorthHistory = []; }
+}
+function saveIgnoredRecurringMerchants() {
+  try { localStorage.setItem(LS_IGNORED_RECURRING_KEY, JSON.stringify(state.ignoredRecurringMerchants)); } catch (e) { /* ignore */ }
+}
+function loadIgnoredRecurringMerchants() {
+  try {
+    const raw = localStorage.getItem(LS_IGNORED_RECURRING_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    state.ignoredRecurringMerchants = Array.isArray(parsed) ? parsed : [];
+  } catch (e) { state.ignoredRecurringMerchants = []; }
 }
 function ensureBudgetKeysForTransactions() {
   const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome" && t.category !== NEEDS_CATEGORY).map((t) => t.category));
@@ -3174,6 +3227,23 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
     insights.push({ level: "warning", icon: "🔮", title: `${uncategorized.length} transazioni da categorizzare`,
       text: "Non riconosciute dal dizionario esercente → categoria.",
       action: "Apri Impostazioni per assegnarle e migliorare il dizionario." });
+  }
+  // Ritmo di spesa: proiezione a fine periodo basata sulla spesa media/giorno finora, utile per
+  // correggere la rotta a metà periodo invece che scoprirlo solo a consuntivo.
+  const [periodStart, periodEnd] = getPeriodRange();
+  if (periodStart && periodEnd) {
+    const today = latestDate();
+    if (today >= periodStart && today < periodEnd) {
+      const daysTotal = Math.round((periodEnd - periodStart) / 86400000) + 1;
+      const daysElapsed = Math.round((today - periodStart) / 86400000) + 1;
+      if (daysTotal > daysElapsed && daysElapsed >= 1 && outcome > 0) {
+        const projected = (outcome / daysElapsed) * daysTotal;
+        const daysLeft = daysTotal - daysElapsed;
+        insights.push({ level: "info", icon: "⏱️", title: "Ritmo di spesa nel periodo",
+          text: `Di questo passo, a fine periodo avrai speso circa ${fmtCurrency(projected, 2)} (finora ${fmtCurrency(outcome, 2)}, mancano ${daysLeft} giorn${daysLeft === 1 ? "o" : "i"}).`,
+          action: withActions ? "Proiezione basata sulla spesa media giornaliera del periodo in corso." : null });
+      }
+    }
   }
   for (const b of budgetBreakdown) {
     if (b.percent === null) continue;
@@ -3825,9 +3895,11 @@ function groupByMerchant(txs) {
   }
   return map;
 }
+function isIgnoredRecurring(key) { return state.ignoredRecurringMerchants.some((m) => m.key === key); }
 function computeRecurringMerchants(allTxs) {
   const result = [];
   for (const g of groupByMerchant(allTxs).values()) {
+    if (isIgnoredRecurring(g.key)) continue;
     if (g.items.length < 3) continue;
     const months = new Set(g.items.map((t) => monthKey(t.date)));
     if (months.size < 3) continue;
@@ -4137,10 +4209,21 @@ function renderSavings() {
     desc.appendChild(el("div", "rv-count", `${r.count} addebiti in ${r.monthsSeen} mesi · ultimo il ${fmtDateFull(r.lastDate)}`));
     row.appendChild(desc);
     row.appendChild(el("div", "amt-mono", fmtCurrency(r.avgAmount, 2) + "/mese"));
+    const btnWrap = el("div", "review-row-actions");
     const btn = el("button", "btn btn-sm", "Simula taglio");
     btn.type = "button";
     btn.addEventListener("click", () => simulateCut(r.label, r.avgAmount, 100));
-    row.appendChild(btn);
+    btnWrap.appendChild(btn);
+    const ignoreBtn = el("button", "btn btn-ghost btn-sm", "🔕 Ignora");
+    ignoreBtn.type = "button";
+    ignoreBtn.title = "Escludi questo esercente dalle rilevazioni di ricorrenza (Prossimi Addebiti / In Ritardo)";
+    ignoreBtn.addEventListener("click", () => {
+      if (!isIgnoredRecurring(r.key)) state.ignoredRecurringMerchants.push({ key: r.key, label: r.label });
+      saveIgnoredRecurringMerchants();
+      renderSavings();
+    });
+    btnWrap.appendChild(ignoreBtn);
+    row.appendChild(btnWrap);
     recurringList.appendChild(row);
   }
   toggleListSearchVisibility("recurringSearch", recurring.length);
@@ -4571,6 +4654,19 @@ function computeGoalProgress(goal) {
   const pct = goal.targetAmount > 0 ? progress / goal.targetAmount : 0;
   return { progress, pct };
 }
+// Quanto accantonare ogni mese per rispettare la scadenza di un obiettivo: rende l'obiettivo
+// operativo (un numero da mettere da parte) invece che solo descrittivo (un progresso passivo).
+function computeGoalMonthlyContribution(goal, progress) {
+  if (!goal.deadline) return null;
+  const remaining = Math.max(0, goal.targetAmount - progress);
+  if (remaining <= 0) return { remaining: 0, monthsLeft: 0, monthlyNeeded: 0, isOverdue: false, isComplete: true };
+  const today = latestDate();
+  const deadline = new Date(goal.deadline + "T23:59:59.999");
+  const daysLeft = (deadline - today) / 86400000;
+  if (daysLeft <= 0) return { remaining, monthsLeft: 0, monthlyNeeded: remaining, isOverdue: true, isComplete: false };
+  const monthsLeft = Math.max(1, Math.ceil(daysLeft / 30.44));
+  return { remaining, monthsLeft, monthlyNeeded: remaining / monthsLeft, isOverdue: false, isComplete: false };
+}
 function addSavingsGoal(name, targetAmount, deadline) {
   state.savingsGoals.push({ id: Date.now(), name, targetAmount, deadline: deadline || null, createdAt: new Date().toISOString() });
   saveSavingsGoals();
@@ -4589,6 +4685,7 @@ function renderSavingsGoals() {
   }
   for (const goal of state.savingsGoals) {
     const { progress, pct } = computeGoalProgress(goal);
+    const contribution = computeGoalMonthlyContribution(goal, progress);
     const row = el("div", "budget-row");
     const catBox = el("div", "budget-cat", goal.name + (goal.deadline ? ` (entro ${fmtDateFull(new Date(goal.deadline))})` : ""));
     row.appendChild(catBox);
@@ -4606,6 +4703,14 @@ function renderSavingsGoals() {
     rm.addEventListener("click", () => { removeSavingsGoal(goal.id); renderSavingsGoals(); });
     row.appendChild(rm);
     list.appendChild(row);
+    if (contribution) {
+      let contribText;
+      if (contribution.isComplete) contribText = "🎉 Obiettivo raggiunto.";
+      else if (contribution.isOverdue) contribText = `⚠️ Scadenza superata: mancano ancora ${fmtCurrency(contribution.remaining, 2)}.`;
+      else contribText = `Per rispettare la scadenza, accantona circa ${fmtCurrency(contribution.monthlyNeeded, 2)}/mese per ${contribution.monthsLeft} mes${contribution.monthsLeft === 1 ? "e" : "i"}.`;
+      const contribRow = el("div", "goal-contribution" + (contribution.isOverdue ? " warn" : ""), contribText);
+      list.appendChild(contribRow);
+    }
   }
 }
 
@@ -4646,6 +4751,29 @@ function renderHouseholdMembersEditor() {
     rm.type = "button";
     rm.addEventListener("click", () => { removeHouseholdMember(name); renderHouseholdMembersEditor(); populateMemberSelects(); renderTab(state.activeTab); });
     row.appendChild(rm);
+    list.appendChild(row);
+  }
+}
+function renderIgnoredRecurringList() {
+  const list = document.getElementById("ignoredRecurringList");
+  if (!list) return;
+  list.innerHTML = "";
+  if (!state.ignoredRecurringMerchants.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun esercente ignorato: tutti i ricorrenti rilevati vengono mostrati e monitorati."));
+    return;
+  }
+  for (const m of state.ignoredRecurringMerchants) {
+    const row = el("div", "review-row");
+    row.appendChild(el("div", "rv-desc", m.label));
+    const restore = el("button", "btn btn-sm", "🔔 Riattiva");
+    restore.type = "button";
+    restore.addEventListener("click", () => {
+      state.ignoredRecurringMerchants = state.ignoredRecurringMerchants.filter((x) => x.key !== m.key);
+      saveIgnoredRecurringMerchants();
+      renderIgnoredRecurringList();
+      renderTab(state.activeTab);
+    });
+    row.appendChild(restore);
     list.appendChild(row);
   }
 }
@@ -4820,7 +4948,7 @@ function exportFullBackup() {
     version: 1, exportedAt: new Date().toISOString(),
     transactions: state.transactions.map((t) => [
       t.date.toISOString(), t.category, t.type, t.value, t.description || "", !!t.autoCategorized, t.matchedKeyword || "",
-      t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "", t.member || "", (t.tags || []).join("|"),
+      t.discretionaryOverride === true ? 1 : t.discretionaryOverride === false ? 0 : "", t.member || "", (t.tags || []).join("|"), t.note || "",
     ]),
     budgets: state.budgets,
     merchantRules: state.merchantRules,
@@ -4836,6 +4964,8 @@ function exportFullBackup() {
     debtExtraPayment: state.debtExtraPayment,
     netWorthEntries: state.netWorthEntries,
     netWorthHistory: state.netWorthHistory,
+    theme: (() => { try { return localStorage.getItem(LS_THEME_KEY) || "system"; } catch (e) { return "system"; } })(),
+    ignoredRecurringMerchants: state.ignoredRecurringMerchants,
   };
   downloadJSON(backup, `backup_family_finance_${Date.now()}.json`);
 }
@@ -4848,12 +4978,13 @@ function importFullBackup(file) {
       const data = JSON.parse(reader.result);
       if (!data || !Array.isArray(data.transactions)) throw new Error("Il file non è un backup valido.");
       if (!confirm("Importare questo backup sovrascriverà tutti i dati attuali (transazioni, budget, dizionario, obiettivi, impostazioni). Continuare?")) return;
-      const rows = data.transactions.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags]) => ({
+      const rows = data.transactions.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags, note]) => ({
         date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
         autoCategorized: !!auto, matchedKeyword: kw || null,
         discretionaryOverride: disc === 1 ? true : disc === 0 ? false : undefined,
         member: member || null,
         tags: tags ? tags.split("|").filter(Boolean) : [],
+        note: note || null,
       }));
       state.budgets = data.budgets && typeof data.budgets === "object" ? data.budgets : {};
       state.merchantRules = Array.isArray(data.merchantRules) ? data.merchantRules : DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
@@ -4869,9 +5000,11 @@ function importFullBackup(file) {
       state.debtExtraPayment = typeof data.debtExtraPayment === "number" ? data.debtExtraPayment : 0;
       state.netWorthEntries = Array.isArray(data.netWorthEntries) ? data.netWorthEntries : [];
       state.netWorthHistory = Array.isArray(data.netWorthHistory) ? data.netWorthHistory : [];
+      state.ignoredRecurringMerchants = Array.isArray(data.ignoredRecurringMerchants) ? data.ignoredRecurringMerchants : [];
       saveBudgets(); saveMerchantRules(); saveSavingsGoal(state.savingsGoal); saveSavingsGoals(); saveHouseholdMembers(); saveCustomAlerts();
-      saveBudgetRolloverEnabled(); saveDebts(); saveNetWorth();
+      saveBudgetRolloverEnabled(); saveDebts(); saveNetWorth(); saveIgnoredRecurringMerchants();
       try { localStorage.setItem(LS_OVERVIEW_LAYOUT_KEY, state.overviewLayout); } catch (e) { /* ignore */ }
+      if (data.theme === "light" || data.theme === "dark" || data.theme === "system") applyTheme(data.theme);
       loadTransactions(rows, { mode: "replace" });
       populateMemberSelects();
       closeSettings();
@@ -4927,6 +5060,106 @@ function closeMonthlyReport() {
 }
 function printMonthlyReport() {
   document.body.classList.add("printing-report");
+  window.print();
+}
+
+// ---------------------------------------------------------------- Advanced: report annuale ("anno in rassegna")
+function getAvailableReportYears() {
+  const years = new Set(state.transactions.map((t) => t.date.getFullYear()));
+  return Array.from(years).sort((a, b) => b - a);
+}
+function computeAnnualReport(year) {
+  const allTxs = getCategoryTypeFiltered();
+  const yearTxs = allTxs.filter((t) => t.date.getFullYear() === year);
+  const prevYearTxs = allTxs.filter((t) => t.date.getFullYear() === year - 1);
+  const income = sumBy(yearTxs, "income"), outcome = sumBy(yearTxs, "outcome");
+  const net = income - outcome;
+  const savingsRate = income > 0 ? net / income : 0;
+
+  const byCategory = {};
+  for (const t of yearTxs) { if (t.type === "outcome") byCategory[t.category] = (byCategory[t.category] || 0) + t.value; }
+  const topCategories = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  const prevByCategory = {};
+  for (const t of prevYearTxs) { if (t.type === "outcome") prevByCategory[t.category] = (prevByCategory[t.category] || 0) + t.value; }
+  const allCats = new Set([...Object.keys(byCategory), ...Object.keys(prevByCategory)]);
+  const categoryDeltas = Array.from(allCats)
+    .map((cat) => { const curr = byCategory[cat] || 0, prev = prevByCategory[cat] || 0; return { category: cat, curr, prev, delta: pctDelta(curr, prev) }; })
+    .filter((r) => r.curr > 20 || r.prev > 20); // ignora categorie marginali per non riempire il report di rumore
+  const grown = categoryDeltas.filter((r) => r.delta !== null && r.delta > 0).sort((a, b) => (b.curr - b.prev) - (a.curr - a.prev)).slice(0, 3);
+  const shrunk = categoryDeltas.filter((r) => r.delta !== null && r.delta < 0).sort((a, b) => (a.curr - a.prev) - (b.curr - b.prev)).slice(0, 3);
+
+  const monthlyMap = new Map();
+  for (const t of yearTxs) {
+    const mk = monthKey(t.date);
+    if (!monthlyMap.has(mk)) monthlyMap.set(mk, { key: mk, income: 0, outcome: 0 });
+    const m = monthlyMap.get(mk);
+    if (t.type === "income") m.income += t.value; else m.outcome += t.value;
+  }
+  const monthsArr = Array.from(monthlyMap.values()).map((m) => ({ ...m, net: m.income - m.outcome }));
+  const bestMonth = monthsArr.length ? monthsArr.reduce((a, b) => (b.net > a.net ? b : a)) : null;
+  const worstMonth = monthsArr.length ? monthsArr.reduce((a, b) => (b.net < a.net ? b : a)) : null;
+
+  const goalsThisYear = state.savingsGoals
+    .filter((g) => g.deadline && new Date(g.deadline).getFullYear() === year)
+    .map((g) => { const { progress, pct } = computeGoalProgress(g); return { ...g, progress, pct, reached: pct >= 1 }; });
+
+  return { year, income, outcome, net, savingsRate, topCategories, grown, shrunk, bestMonth, worstMonth, goalsThisYear, txCount: yearTxs.length };
+}
+function renderAnnualReport() {
+  const sel = document.getElementById("annualReportYearSelect");
+  const years = getAvailableReportYears();
+  const current = sel.value ? Number(sel.value) : years[0];
+  sel.innerHTML = years.map((y) => `<option value="${y}"${y === current ? " selected" : ""}>${y}</option>`).join("");
+  const year = current || new Date().getFullYear();
+  const r = computeAnnualReport(year);
+  const box = document.getElementById("annualReportContent");
+  if (!box) return;
+  const growList = r.grown.length
+    ? r.grown.map((c) => `<li>${catIcon(c.category)} ${c.category} — ${fmtCurrency(c.prev, 2)} → ${fmtCurrency(c.curr, 2)} (+${fmtPercent(c.delta)})</li>`).join("")
+    : "<li>Nessuna categoria in crescita significativa.</li>";
+  const shrinkList = r.shrunk.length
+    ? r.shrunk.map((c) => `<li>${catIcon(c.category)} ${c.category} — ${fmtCurrency(c.prev, 2)} → ${fmtCurrency(c.curr, 2)} (${fmtPercent(c.delta)})</li>`).join("")
+    : "<li>Nessuna categoria in calo significativo.</li>";
+  const goalsList = r.goalsThisYear.length
+    ? r.goalsThisYear.map((g) => `<li>${g.reached ? "🎉" : "⏳"} ${g.name} — ${fmtCurrency(g.progress, 2)} / ${fmtCurrency(g.targetAmount, 2)} (${fmtPercent(g.pct)})</li>`).join("")
+    : "<li>Nessun obiettivo con scadenza in quest'anno.</li>";
+  box.innerHTML = `
+    <h2>📅 Anno in Rassegna — ${r.year}</h2>
+    <p class="report-meta">Generato il ${fmtDateFull(new Date())}</p>
+    <div class="report-grid">
+      <div class="report-stat"><span class="report-label">Entrate</span><strong>${fmtCurrency(r.income, 2)}</strong></div>
+      <div class="report-stat"><span class="report-label">Uscite</span><strong>${fmtCurrency(r.outcome, 2)}</strong></div>
+      <div class="report-stat"><span class="report-label">Saldo Netto</span><strong>${fmtCurrency(r.net, 2)}</strong></div>
+      <div class="report-stat"><span class="report-label">Tasso di Risparmio</span><strong>${fmtPercent(r.savingsRate)}</strong></div>
+    </div>
+    <h3>Categorie principali</h3>
+    <ul class="report-list">${r.topCategories.length ? r.topCategories.map(([c, v]) => `<li>${catIcon(c)} ${c} — ${fmtCurrency(v, 2)}</li>`).join("") : "<li>Nessuna spesa nell'anno.</li>"}</ul>
+    <h3>Categorie in maggiore crescita vs anno precedente</h3>
+    <ul class="report-list">${growList}</ul>
+    <h3>Categorie in maggiore calo vs anno precedente</h3>
+    <ul class="report-list">${shrinkList}</ul>
+    <h3>Mese migliore e peggiore</h3>
+    <ul class="report-list">
+      ${r.bestMonth ? `<li>🏆 Migliore: ${monthLabel(r.bestMonth.key)} — saldo ${fmtCurrency(r.bestMonth.net, 2)}</li>` : "<li>Nessun dato mensile disponibile.</li>"}
+      ${r.worstMonth ? `<li>📉 Peggiore: ${monthLabel(r.worstMonth.key)} — saldo ${fmtCurrency(r.worstMonth.net, 2)}</li>` : ""}
+    </ul>
+    <h3>Obiettivi di risparmio con scadenza in quest'anno</h3>
+    <ul class="report-list">${goalsList}</ul>
+    <p class="report-footer">${r.txCount} transazioni nell'anno · Family Finance PRO</p>
+  `;
+}
+function openAnnualReport() {
+  const years = getAvailableReportYears();
+  if (!years.length) return;
+  renderAnnualReport();
+  document.getElementById("annualReportModal").classList.remove("hidden");
+}
+function closeAnnualReport() {
+  document.getElementById("annualReportModal").classList.add("hidden");
+}
+function printAnnualReport() {
+  document.body.classList.add("printing-annual-report");
   window.print();
 }
 
@@ -5581,7 +5814,7 @@ function getTxFiltered() {
       const amountPlain = t.value.toFixed(2).replace(".", ",");
       const dateStr = fmtDateShort(t.date).toLowerCase();
       const tagsStr = (t.tags || []).join(" ");
-      const haystack = `${t.category} ${t.description || ""} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr} ${tagsStr}`.toLowerCase();
+      const haystack = `${t.category} ${t.description || ""} ${typeLabel} ${amountFormatted} ${amountPlain} ${dateStr} ${tagsStr} ${t.note || ""}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -5600,10 +5833,10 @@ function csvEscape(v) { const s = String(v); return /[",;\n]/.test(s) ? '"' + s.
 function exportTransactionsCSV() {
   const rows = getTxFiltered();
   if (!rows.length) { alert("Nessuna transazione da esportare con i filtri correnti."); return; }
-  const lines = ["date,category,value,type,description,tags"];
+  const lines = ["date,category,value,type,description,tags,note"];
   for (const t of rows) {
     const iso = `${t.date.getFullYear()}-${pad2(t.date.getMonth() + 1)}-${pad2(t.date.getDate())}`;
-    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type, csvEscape(t.description || ""), csvEscape((t.tags || []).join("|"))].join(","));
+    lines.push([csvEscape(iso), csvEscape(t.category), t.value.toFixed(2), t.type, csvEscape(t.description || ""), csvEscape((t.tags || []).join("|")), csvEscape(t.note || "")].join(","));
   }
   downloadCSV(lines.join("\n"), `transazioni_export_${Date.now()}.csv`);
 }
@@ -5706,6 +5939,13 @@ function renderTransactions() {
     tr.innerHTML = `<td class="tabular">${fmtDateShort(t.date)}</td><td>${catIcon(t.category)} ${t.category}${descLine}</td>
       <td><span class="badge ${t.type}">${t.type === "income" ? "Entrata" : "Uscita"}</span></td>
       <td class="tabular" style="text-align:right; font-weight:700; color:${t.type === "income" ? "var(--primary)" : "var(--danger)"}">${t.type === "income" ? "+" : "-"}${fmtCurrency(t.value, 2)}</td>`;
+    if (t.note) {
+      const noteIcon = document.createElement("span");
+      noteIcon.className = "tx-note-icon";
+      noteIcon.textContent = " 📝";
+      noteIcon.title = t.note;
+      tr.children[1].appendChild(noteIcon);
+    }
     tr.addEventListener("click", () => openTxModal(t));
     tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTxModal(t); } });
     tbody.appendChild(tr);
@@ -5775,6 +6015,7 @@ function openTxModal(t) {
   document.getElementById("mxId").textContent = t.id;
   renderTxTagEditor(t);
   document.getElementById("mxNewTagInput").value = "";
+  document.getElementById("mxNoteInput").value = t.note || "";
   const descRow = document.getElementById("mxDescRow");
   if (t.description) {
     let suffix = "";
@@ -5796,6 +6037,8 @@ function closeTxModal() {
 function saveTxCategoryFromModal() {
   if (!modalTx) return;
   const newCat = document.getElementById("mxCategorySelect").value;
+  const newNote = document.getElementById("mxNoteInput").value.trim();
+  let needsPersist = false;
   if (newCat !== modalTx.category) {
     const desc = modalTx.description;
     let propagatedCount = 0;
@@ -5823,15 +6066,22 @@ function saveTxCategoryFromModal() {
       }
     }
     ensureBudgetKeysForTransactions();
-    persistTransactions();
-    populateCategoryFilters();
-    renderTab(state.activeTab);
+    needsPersist = true;
     if (propagatedCount || newRuleKeyword) {
       const parts = [];
       if (propagatedCount) parts.push(`aggiornate altre ${propagatedCount} transazioni con lo stesso esercente`);
       if (newRuleKeyword) parts.push(`aggiunta la regola "${newRuleKeyword}" → ${newCat} al dizionario`);
       alert("Categoria salvata: " + parts.join(" e ") + ".");
     }
+  }
+  if (newNote !== (modalTx.note || "")) {
+    modalTx.note = newNote || null;
+    needsPersist = true;
+  }
+  if (needsPersist) {
+    persistTransactions();
+    populateCategoryFilters();
+    renderTab(state.activeTab);
   }
   closeTxModal();
 }
@@ -5982,6 +6232,7 @@ function openSettings() {
   populateCategoryRenameToSelect();
   document.getElementById("savingsGoalInput").value = Math.round(state.savingsGoal * 100);
   renderHouseholdMembersEditor();
+  renderIgnoredRecurringList();
   document.getElementById("singleTxThresholdInput").value = state.customAlerts.singleTxThreshold || "";
   document.getElementById("negativeBalanceAlertInput").checked = !!state.customAlerts.negativeBalanceAlert;
   document.getElementById("budgetRolloverInput").checked = !!state.budgetRolloverEnabled;
@@ -6424,6 +6675,7 @@ function init() {
   loadBudgetRolloverEnabled();
   loadDebts();
   loadNetWorth();
+  loadIgnoredRecurringMerchants();
   populateMemberSelects();
 
   const dropzone = document.getElementById("dropzone");
@@ -6700,6 +6952,13 @@ function init() {
   document.getElementById("monthlyReportModal").addEventListener("click", (e) => { if (e.target.id === "monthlyReportModal") closeMonthlyReport(); });
   window.addEventListener("afterprint", () => document.body.classList.remove("printing-report"));
 
+  document.getElementById("btnAnnualReport").addEventListener("click", openAnnualReport);
+  document.getElementById("btnCloseAnnualReport").addEventListener("click", closeAnnualReport);
+  document.getElementById("btnPrintAnnualReport").addEventListener("click", printAnnualReport);
+  document.getElementById("annualReportModal").addEventListener("click", (e) => { if (e.target.id === "annualReportModal") closeAnnualReport(); });
+  document.getElementById("annualReportYearSelect").addEventListener("change", renderAnnualReport);
+  window.addEventListener("afterprint", () => document.body.classList.remove("printing-annual-report"));
+
   // Banner "cosa è cambiato"
   document.getElementById("btnDismissVisitBanner").addEventListener("click", () => {
     state.visitChangeMessage = null;
@@ -6776,7 +7035,7 @@ function init() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeQuickAddModal(); closeCommandPalette(); closeMoreActionsMenu(); hideUndoToast(); }
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeAnnualReport(); closeQuickAddModal(); closeCommandPalette(); closeMoreActionsMenu(); hideUndoToast(); }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       if (state.commandPaletteOpen) closeCommandPalette(); else openCommandPalette();
