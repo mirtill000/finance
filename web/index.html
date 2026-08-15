@@ -391,6 +391,8 @@ button, input, select { font-family: inherit; }
 .badge { display: inline-block; padding: 3px 9px; border-radius: 100px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.2px; text-transform: uppercase; }
 .badge.income { background: rgba(79,209,165,0.14); color: var(--primary); }
 .badge.outcome { background: rgba(224,112,122,0.14); color: var(--danger); }
+.badge.warn { background: rgba(224,168,56,0.14); color: var(--warning); }
+.badge.info { background: rgba(78,168,222,0.14); color: var(--secondary); }
 .tx-desc-hint { font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
 
 /* ===================== alert box ===================== */
@@ -476,6 +478,13 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 }
 .tx-note-icon { cursor: help; }
 .goal-contribution { font-size: 11px; color: var(--text-muted); margin: -6px 0 10px; }
+/* ===================== ottimizzazione costi nascosti ===================== */
+#subscriptionsTable td, #subscriptionsTable th { vertical-align: middle; }
+.sub-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.sub-review-btns { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
+.sub-review-btns button { padding: 4px 8px; font-size: 11px; }
+.sub-review-btns button.active { border-color: var(--primary); color: var(--primary); }
+.sub-review-btns button.active.unused { border-color: var(--danger); color: var(--danger); }
 .goal-contribution.warn { color: var(--danger); font-weight: 600; }
 .mx-cat-edit textarea {
   width: 100%; box-sizing: border-box; background: var(--card2); border: 1px solid var(--border); color: var(--text);
@@ -1246,6 +1255,47 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <h3>⚠️ Pagamenti Ricorrenti in Ritardo</h3>
         <p class="modal-lead">Ricorrenti che non si sono più ripresentati oltre il loro intervallo abituale: possibile disdetta, mancato addebito o carta scaduta.</p>
         <div class="review-list" id="missingRecurringList"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🕵️ Ottimizzazione Costi Nascosti</h3>
+      <p class="modal-lead">Bundle convenienti, abbonamenti ridondanti, commissioni bancarie nascoste e una stima del costo annuo recuperabile, calcolati sugli abbonamenti ricorrenti già rilevati sopra.</p>
+      <div class="metric-grid" style="margin-bottom:14px;">
+        <div class="metric-card">
+          <div class="metric-label">Costo Nascosto Stimato (annuo)</div>
+          <div class="metric-value" id="hiddenCostAnnualValue">-</div>
+          <div class="metric-sub" id="hiddenCostBreakdown"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h4 style="margin:0 0 8px;">📦 Bundle Convenienti</h4>
+          <div class="review-list" id="bundleOpportunityList"></div>
+        </div>
+        <div>
+          <h4 style="margin:0 0 8px;">🔁 Abbonamenti Ridondanti</h4>
+          <div class="review-list" id="redundantSubscriptionList"></div>
+        </div>
+      </div>
+
+      <h4 style="margin:16px 0 8px;">🏦 Commissioni Bancarie Rilevate</h4>
+      <div class="review-list" id="bankFeeList"></div>
+
+      <h4 style="margin:16px 0 8px;">💳 Tutti gli Abbonamenti</h4>
+      <p class="modal-lead">Costo mensile e annualizzato, confronto con il prezzo di listino di riferimento, e stato di revisione utilizzo (segna quelli che non usi più).</p>
+      <div class="rule-add-row hidden" id="subscriptionBulkRow">
+        <span class="muted" id="subscriptionSelectionSummary"></span>
+        <button id="btnSimulateSelectedSubscriptions" class="btn btn-primary btn-sm" type="button">✂️ Simula cancellazione selezionati</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="subscriptionsTable">
+          <thead>
+            <tr><th></th><th>Servizio</th><th>Mensile</th><th>Annuo</th><th>Note</th><th>Utilizzo</th></tr>
+          </thead>
+          <tbody id="subscriptionsTableBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -2394,6 +2444,49 @@ const DISCRETIONARY_CATEGORIES = new Set([
 // calcolo/totale (resta comunque visibile e modificabile nel tab Transazioni).
 const EXCLUDED_TOTAL_CATEGORIES = new Set(["Carta di Credito"]);
 function isCountedTx(t) { return !EXCLUDED_TOTAL_CATEGORIES.has(t.category); }
+
+// ---------------------------------------------------------------- Ottimizzazione costi nascosti
+// Catalogo di servizi in abbonamento comuni, con un "tipo" (per rilevare doppioni e bundle
+// possibili) e un prezzo di riferimento indicativo (per segnalare quando si paga più del listino
+// attuale). Elenco volutamente compatto e aggiornabile a mano: non è un listino ufficiale, solo un
+// punto di riferimento approssimativo per far notare pattern che altrimenti passerebbero inosservati.
+const SERVICE_CATALOG = [
+  { keyword: "NETFLIX", service: "Netflix", serviceType: "streaming_video", referenceMonthly: 12.99 },
+  { keyword: "DISNEY", service: "Disney+", serviceType: "streaming_video", referenceMonthly: 8.99 },
+  { keyword: "PRIME VIDEO", service: "Amazon Prime Video", serviceType: "streaming_video", referenceMonthly: 4.99 },
+  { keyword: "AMAZON PRIME", service: "Amazon Prime", serviceType: "streaming_video", referenceMonthly: 4.99 },
+  { keyword: "NOW TV", service: "NOW", serviceType: "streaming_video", referenceMonthly: 12.99 },
+  { keyword: "DAZN", service: "DAZN", serviceType: "streaming_video", referenceMonthly: 34.99 },
+  { keyword: "APPLE TV", service: "Apple TV+", serviceType: "streaming_video", referenceMonthly: 9.99 },
+  { keyword: "YOUTUBE PREMIUM", service: "YouTube Premium", serviceType: "streaming_video", referenceMonthly: 12.99 },
+  { keyword: "SPOTIFY", service: "Spotify", serviceType: "streaming_music", referenceMonthly: 10.99 },
+  { keyword: "APPLE MUSIC", service: "Apple Music", serviceType: "streaming_music", referenceMonthly: 10.99 },
+  { keyword: "YOUTUBE MUSIC", service: "YouTube Music", serviceType: "streaming_music", referenceMonthly: 10.99 },
+  { keyword: "TIDAL", service: "Tidal", serviceType: "streaming_music", referenceMonthly: 10.99 },
+  { keyword: "ONEDRIVE", service: "OneDrive", serviceType: "cloud_storage", referenceMonthly: 2.00 },
+  { keyword: "MICROSOFT 365", service: "Microsoft 365", serviceType: "cloud_storage", referenceMonthly: 7.00 },
+  { keyword: "OFFICE 365", service: "Microsoft 365", serviceType: "cloud_storage", referenceMonthly: 7.00 },
+  { keyword: "GOOGLE ONE", service: "Google One", serviceType: "cloud_storage", referenceMonthly: 1.99 },
+  { keyword: "GOOGLE STORAGE", service: "Google One", serviceType: "cloud_storage", referenceMonthly: 1.99 },
+  { keyword: "ICLOUD", service: "iCloud+", serviceType: "cloud_storage", referenceMonthly: 2.99 },
+  { keyword: "DROPBOX", service: "Dropbox", serviceType: "cloud_storage", referenceMonthly: 11.99 },
+  { keyword: "APPLE ONE", service: "Apple One", serviceType: "bundle", referenceMonthly: 19.95 },
+];
+// Bundle noti che possono sostituire più abbonamenti separati: se l'utente paga servizi che
+// coprono tutti i "requires" di un bundle (indipendentemente dal fornitore, es. Spotify anziché
+// Apple Music), il costo combinato viene confrontato con quello del bundle stesso.
+const SUBSCRIPTION_BUNDLES = [
+  { name: "Apple One (Individuale)", icon: "🍎", requires: ["streaming_music", "cloud_storage"], price: 19.95,
+    note: "Include Apple Music e 50GB di iCloud+." },
+  { name: "Apple One (Famiglia)", icon: "🍎", requires: ["streaming_music", "cloud_storage", "streaming_video"], price: 22.95,
+    note: "Include Apple Music, 200GB di iCloud+ e Apple TV+, condivisibile con la famiglia." },
+];
+// Parole chiave per intercettare commissioni/spese bancarie ricorrenti, spesso nascoste dentro
+// categorie generiche come "Bollette" e facili da non notare tra le altre spese fisse.
+const BANK_FEE_KEYWORDS = [
+  "COMMISSIONE", "CANONE CONTO", "CANONE MENSILE", "SPESE TENUTA CONTO", "IMPOSTA DI BOLLO",
+  "SPESE INCASSO", "COSTO GESTIONE", "SPESE CONTO", "COMPETENZE BANCARIE", "SPESE BANCARIE",
+];
 // Le categorie sono cambiate due volte in passato (dall'inglese originale, poi da una prima
 // versione italiana all'attuale tassonomia più granulare): i dati già salvati nel browser
 // (localStorage) di chi ha usato l'app in precedenza contengono ancora i vecchi nomi. Questa
@@ -2624,6 +2717,7 @@ const LS_BUDGET_ROLLOVER_KEY = "ffdpro_budget_rollover_v1";
 const LS_DEBTS_KEY = "ffdpro_debts_v1";
 const LS_NET_WORTH_KEY = "ffdpro_net_worth_v1";
 const LS_IGNORED_RECURRING_KEY = "ffdpro_ignored_recurring_v1";
+const LS_SUBSCRIPTION_REVIEWS_KEY = "ffdpro_subscription_reviews_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
 
 const PRESETS = [
@@ -2656,6 +2750,7 @@ const state = {
   opportunityCost: { returnPct: 5, years: 10 },
   customCompare: { aStart: null, aEnd: null, bStart: null, bEnd: null },
   ignoredRecurringMerchants: [],
+  subscriptionReviews: {},
   savingsGoals: [],
   householdMembers: [],
   customAlerts: { singleTxThreshold: null, negativeBalanceAlert: false },
@@ -2975,6 +3070,20 @@ function loadIgnoredRecurringMerchants() {
     const parsed = raw ? JSON.parse(raw) : null;
     state.ignoredRecurringMerchants = Array.isArray(parsed) ? parsed : [];
   } catch (e) { state.ignoredRecurringMerchants = []; }
+}
+function saveSubscriptionReviews() {
+  try { localStorage.setItem(LS_SUBSCRIPTION_REVIEWS_KEY, JSON.stringify(state.subscriptionReviews)); } catch (e) { /* ignore */ }
+}
+function loadSubscriptionReviews() {
+  try {
+    const raw = localStorage.getItem(LS_SUBSCRIPTION_REVIEWS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    state.subscriptionReviews = parsed && typeof parsed === "object" ? parsed : {};
+  } catch (e) { state.subscriptionReviews = {}; }
+}
+function setSubscriptionReview(key, status) {
+  state.subscriptionReviews[key] = { status, reviewedAt: new Date().toISOString() };
+  saveSubscriptionReviews();
 }
 function ensureBudgetKeysForTransactions() {
   const outcomeCats = new Set(state.transactions.filter((t) => t.type === "outcome" && t.category !== NEEDS_CATEGORY).map((t) => t.category));
@@ -3316,6 +3425,16 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
     insights.push({ level: "warning", icon: "⚠️", title: `Ricorrente in ritardo: ${worst.label}`,
       text: `Atteso da ${Math.abs(worst.daysUntilNext)} giorni (di solito ogni ~${Math.round(worst.avgIntervalDays)} giorni)` + (missingRecurring.length > 1 ? ` e altri ${missingRecurring.length - 1}.` : "."),
       action: withActions ? "Possibile disdetta, mancato addebito o carta scaduta: verifica nel tab Risparmio." : null,
+      actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
+  }
+  const hiddenCostSubs = computeAllSubscriptions(recurring);
+  const hiddenCostSummary = computeHiddenCostSummary(
+    hiddenCostSubs, computeBundleOpportunities(hiddenCostSubs), computeRedundantSubscriptions(hiddenCostSubs), computeBankFees(allOutcomeTxs)
+  );
+  if (hiddenCostSummary.totalAnnual > 15) {
+    insights.push({ level: "info", icon: "🕵️", title: "Costi nascosti da rivedere",
+      text: `Stimati circa ${fmtCurrency(hiddenCostSummary.totalAnnual, 2)}/anno recuperabili tra bundle, doppioni, commissioni e abbonamenti non più usati.`,
+      action: withActions ? "Vedi il dettaglio in Risparmio → Ottimizzazione Costi Nascosti." : null,
       actionButton: withActions ? { label: "Vedi dettagli", run: () => switchTab("savings") } : null });
   }
   const duplicates = computeSuspiciousDuplicates(allOutcomeTxs, 3);
@@ -3944,6 +4063,260 @@ function computeMissingRecurring(recurringList) {
     .filter((r) => r.isMissing)
     .sort((a, b) => a.daysUntilNext - b.daysUntilNext);
 }
+
+// ---------------------------------------------------------------- Ottimizzazione costi nascosti
+const SERVICE_TYPE_LABELS = { streaming_video: "Streaming Video", streaming_music: "Streaming Musica", cloud_storage: "Cloud Storage", bundle: "Bundle" };
+const SUBSCRIPTION_REVIEW_STALE_DAYS = 90;
+const RECENT_SUBSCRIPTION_DAYS = 90;
+const PRICE_ABOVE_REFERENCE_THRESHOLD = 0.15;
+function matchServiceCatalog(label) {
+  const norm = normalizeForMatch(label || "");
+  if (!norm) return null;
+  let best = null;
+  for (const entry of SERVICE_CATALOG) {
+    const kw = normalizeForMatch(entry.keyword);
+    if (kw && norm.includes(kw) && (!best || kw.length > normalizeForMatch(best.keyword).length)) best = entry;
+  }
+  return best;
+}
+// Arricchisce ogni ricorrente già rilevato (stessa fonte di dati di "Abbonamenti Ricorrenti") con:
+// corrispondenza nel catalogo servizi, costo annualizzato, se sembra un abbonamento appena
+// iniziato ("trial dimenticato"), se il prezzo pagato è sopra il listino di riferimento, e lo
+// stato di revisione utilizzo impostato manualmente dall'utente.
+function computeAllSubscriptions(recurringList) {
+  const today = latestDate();
+  return recurringList.map((r) => {
+    const catalogMatch = matchServiceCatalog(r.label);
+    const firstDate = r.items[0].date;
+    const daysSinceFirst = (today - firstDate) / 86400000;
+    const isRecent = r.monthsSeen <= 3 && daysSinceFirst <= RECENT_SUBSCRIPTION_DAYS;
+    let priceAboveReference = null;
+    if (catalogMatch) {
+      const delta = pctDelta(r.avgAmount, catalogMatch.referenceMonthly);
+      if (delta !== null && delta > PRICE_ABOVE_REFERENCE_THRESHOLD) priceAboveReference = { reference: catalogMatch.referenceMonthly, delta };
+    }
+    const review = state.subscriptionReviews[r.key] || null;
+    const daysSinceReview = review && review.reviewedAt ? (today - new Date(review.reviewedAt)) / 86400000 : Infinity;
+    const needsReview = !review || daysSinceReview > SUBSCRIPTION_REVIEW_STALE_DAYS;
+    return {
+      ...r, catalogMatch, annualCost: r.avgAmount * 12, isRecent, priceAboveReference,
+      reviewStatus: review ? review.status : null, needsReview,
+    };
+  }).sort((a, b) => b.avgAmount - a.avgAmount);
+}
+// Due o più abbonamenti attivi con lo stesso "tipo di servizio" nel catalogo (es. due servizi di
+// streaming video contemporaneamente): possibili doppioni da rivedere.
+function computeRedundantSubscriptions(allSubs) {
+  const byType = new Map();
+  for (const s of allSubs) {
+    if (!s.catalogMatch || s.catalogMatch.serviceType === "bundle") continue;
+    const t = s.catalogMatch.serviceType;
+    if (!byType.has(t)) byType.set(t, []);
+    byType.get(t).push(s);
+  }
+  const groups = [];
+  for (const [serviceType, subscriptions] of byType.entries()) {
+    if (subscriptions.length < 2) continue;
+    groups.push({ serviceType, subscriptions, totalMonthly: subscriptions.reduce((s, x) => s + x.avgAmount, 0) });
+  }
+  groups.sort((a, b) => b.totalMonthly - a.totalMonthly);
+  return groups;
+}
+// Bundle noti (es. Apple One) più economici della somma dei singoli servizi equivalenti che
+// l'utente sta già pagando separatamente (es. Spotify + OneDrive).
+function computeBundleOpportunities(allSubs) {
+  const byType = new Map();
+  for (const s of allSubs) {
+    if (!s.catalogMatch || s.catalogMatch.serviceType === "bundle") continue;
+    const t = s.catalogMatch.serviceType;
+    if (!byType.has(t)) byType.set(t, []);
+    byType.get(t).push(s);
+  }
+  const opportunities = [];
+  for (const bundle of SUBSCRIPTION_BUNDLES) {
+    if (!bundle.requires.every((t) => byType.has(t))) continue;
+    const coveredSubs = bundle.requires.flatMap((t) => byType.get(t));
+    const currentTotal = coveredSubs.reduce((s, x) => s + x.avgAmount, 0);
+    const savings = currentTotal - bundle.price;
+    if (savings > 0) opportunities.push({ ...bundle, coveredSubs, currentTotal, savings });
+  }
+  opportunities.sort((a, b) => b.savings - a.savings);
+  return opportunities;
+}
+// Commissioni/spese bancarie ricorrenti individuate per parola chiave (BANK_FEE_KEYWORDS), spesso
+// mescolate tra le bollette e facili da non notare.
+function computeBankFees(allOutcomeTxs) {
+  const matched = allOutcomeTxs.filter((t) => t.description &&
+    BANK_FEE_KEYWORDS.some((kw) => normalizeForMatch(t.description).includes(normalizeForMatch(kw))));
+  if (!matched.length) return { total: 0, annualProjection: 0, rows: [] };
+  const rows = Array.from(groupByMerchant(matched).values()).map((g) => ({
+    label: g.label, category: g.category, count: g.items.length,
+    total: g.items.reduce((s, t) => s + t.value, 0),
+    lastDate: g.items.reduce((mx, t) => (t.date > mx ? t.date : mx), new Date(0)),
+  })).sort((a, b) => b.total - a.total);
+  const total = rows.reduce((s, g) => s + g.total, 0);
+  const annualProjection = (total / monthsCoveredCount(matched)) * 12;
+  return { total, annualProjection, rows };
+}
+// Stima complessiva (dichiaratamente approssimativa, non deduplica eventuali sovrapposizioni tra
+// bundle e doppioni) del costo nascosto annuo recuperabile individuato dalle analisi sopra.
+function computeHiddenCostSummary(allSubs, bundleOpportunities, redundantGroups, bankFees) {
+  const bundleSavingsMonthly = bundleOpportunities.reduce((s, b) => s + b.savings, 0);
+  const redundancyMonthly = redundantGroups.reduce((s, g) => {
+    const sorted = g.subscriptions.slice().sort((a, b) => a.avgAmount - b.avgAmount);
+    return s + sorted.slice(1).reduce((sum, x) => sum + x.avgAmount, 0);
+  }, 0);
+  const bankFeesMonthly = bankFees.annualProjection / 12;
+  const unusedMonthly = allSubs.filter((s) => s.reviewStatus === "unused").reduce((s, x) => s + x.avgAmount, 0);
+  const totalMonthly = bundleSavingsMonthly + redundancyMonthly + bankFeesMonthly + unusedMonthly;
+  return { bundleSavingsMonthly, redundancyMonthly, bankFeesMonthly, unusedMonthly, totalMonthly, totalAnnual: totalMonthly * 12 };
+}
+let selectedSubscriptionKeys = new Set();
+function renderHiddenCostOptimization(recurring, allOutcomeTxs) {
+  const allSubs = computeAllSubscriptions(recurring);
+  const bundleOpportunities = computeBundleOpportunities(allSubs);
+  const redundantGroups = computeRedundantSubscriptions(allSubs);
+  const bankFees = computeBankFees(allOutcomeTxs);
+  const summary = computeHiddenCostSummary(allSubs, bundleOpportunities, redundantGroups, bankFees);
+
+  document.getElementById("hiddenCostAnnualValue").textContent = fmtCurrency(summary.totalAnnual, 2);
+  const parts = [];
+  if (summary.bundleSavingsMonthly > 0) parts.push(`${fmtCurrency(summary.bundleSavingsMonthly * 12, 2)}/anno da bundle`);
+  if (summary.redundancyMonthly > 0) parts.push(`${fmtCurrency(summary.redundancyMonthly * 12, 2)}/anno da doppioni`);
+  if (summary.bankFeesMonthly > 0) parts.push(`${fmtCurrency(summary.bankFeesMonthly * 12, 2)}/anno da commissioni`);
+  if (summary.unusedMonthly > 0) parts.push(`${fmtCurrency(summary.unusedMonthly * 12, 2)}/anno da non più usati`);
+  document.getElementById("hiddenCostBreakdown").textContent = parts.length ? "Stima: " + parts.join(" · ") : "Nessun costo nascosto rilevato al momento.";
+
+  const bundleList = document.getElementById("bundleOpportunityList");
+  bundleList.innerHTML = "";
+  if (!bundleOpportunities.length) {
+    bundleList.appendChild(el("div", "sim-empty", "Nessun bundle conveniente rilevato con gli abbonamenti attuali."));
+  }
+  for (const b of bundleOpportunities) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${b.icon} ${b.name}`));
+    desc.appendChild(el("div", "rv-count", `Sostituisce ${b.coveredSubs.map((s) => s.label).join(", ")} (${fmtCurrency(b.currentTotal, 2)}/mese) · ${b.note}`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono", "-" + fmtCurrency(b.savings, 2) + "/mese"));
+    bundleList.appendChild(row);
+  }
+
+  const redundantList = document.getElementById("redundantSubscriptionList");
+  redundantList.innerHTML = "";
+  if (!redundantGroups.length) {
+    redundantList.appendChild(el("div", "sim-empty", "Nessun doppione rilevato tra gli abbonamenti riconosciuti."));
+  }
+  for (const g of redundantGroups) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", SERVICE_TYPE_LABELS[g.serviceType] || g.serviceType));
+    desc.appendChild(el("div", "rv-count", g.subscriptions.map((s) => `${s.label} (${fmtCurrency(s.avgAmount, 2)})`).join(" + ")));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono neg", fmtCurrency(g.totalMonthly, 2) + "/mese"));
+    redundantList.appendChild(row);
+  }
+
+  const bankFeeList = document.getElementById("bankFeeList");
+  bankFeeList.innerHTML = "";
+  if (!bankFees.rows.length) {
+    bankFeeList.appendChild(el("div", "sim-empty", "Nessuna commissione bancaria rilevata tra le transazioni."));
+  }
+  for (const f of bankFees.rows) {
+    const row = el("div", "review-row");
+    const desc = el("div");
+    desc.appendChild(el("div", "rv-desc", `${catIcon(f.category)} ${f.label}`));
+    desc.appendChild(el("div", "rv-count", `${f.count} addebit${f.count === 1 ? "o" : "i"} · ultimo il ${fmtDateFull(f.lastDate)}`));
+    row.appendChild(desc);
+    row.appendChild(el("div", "amt-mono neg", fmtCurrency(f.total, 2)));
+    bankFeeList.appendChild(row);
+  }
+
+  renderSubscriptionsTable(allSubs);
+}
+function renderSubscriptionsTable(allSubs) {
+  const tbody = document.getElementById("subscriptionsTableBody");
+  tbody.innerHTML = "";
+  const currentKeys = new Set(allSubs.map((s) => s.key));
+  selectedSubscriptionKeys = new Set(Array.from(selectedSubscriptionKeys).filter((k) => currentKeys.has(k)));
+  if (!allSubs.length) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="6" class="table-empty">Nessun abbonamento ricorrente rilevato.</td>`;
+    tbody.appendChild(tr);
+  }
+  for (const s of allSubs) {
+    const tr = document.createElement("tr");
+    const tdCheck = document.createElement("td");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = selectedSubscriptionKeys.has(s.key);
+    checkbox.setAttribute("aria-label", `Seleziona ${s.label} per la simulazione di cancellazione`);
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) selectedSubscriptionKeys.add(s.key); else selectedSubscriptionKeys.delete(s.key);
+      updateSubscriptionBulkRow(allSubs);
+    });
+    tdCheck.appendChild(checkbox);
+    tr.appendChild(tdCheck);
+
+    const tdService = document.createElement("td");
+    tdService.appendChild(el("div", "rv-desc", `${catIcon(s.category)} ${s.catalogMatch ? s.catalogMatch.service : s.label}`));
+    const badges = el("div", "sub-badges");
+    if (s.isRecent) badges.appendChild(el("span", "badge info", "🆕 Recente"));
+    if (s.priceAboveReference) badges.appendChild(el("span", "badge warn", `💰 Sopra listino +${fmtPercent(s.priceAboveReference.delta)}`));
+    if (s.needsReview) badges.appendChild(el("span", "badge warn", "🔎 Da rivedere"));
+    if (badges.children.length) tdService.appendChild(badges);
+    tr.appendChild(tdService);
+
+    const tdMonthly = document.createElement("td");
+    tdMonthly.className = "tabular";
+    tdMonthly.textContent = fmtCurrency(s.avgAmount, 2);
+    tr.appendChild(tdMonthly);
+
+    const tdAnnual = document.createElement("td");
+    tdAnnual.className = "tabular";
+    tdAnnual.textContent = fmtCurrency(s.annualCost, 2);
+    tr.appendChild(tdAnnual);
+
+    const tdNote = document.createElement("td");
+    tdNote.className = "muted";
+    tdNote.textContent = s.priceAboveReference ? `Listino: ${fmtCurrency(s.priceAboveReference.reference, 2)}` : (s.catalogMatch ? s.catalogMatch.service : "—");
+    tr.appendChild(tdNote);
+
+    const tdReview = document.createElement("td");
+    const btnGroup = el("div", "sub-review-btns");
+    const btnUsing = el("button", "btn btn-sm" + (s.reviewStatus === "using" ? " active" : ""), "✅ Lo uso");
+    btnUsing.type = "button";
+    btnUsing.addEventListener("click", () => { setSubscriptionReview(s.key, "using"); renderSavings(); });
+    const btnUnused = el("button", "btn btn-sm" + (s.reviewStatus === "unused" ? " active unused" : ""), "❌ Non più");
+    btnUnused.type = "button";
+    btnUnused.addEventListener("click", () => { setSubscriptionReview(s.key, "unused"); renderSavings(); });
+    btnGroup.appendChild(btnUsing);
+    btnGroup.appendChild(btnUnused);
+    tdReview.appendChild(btnGroup);
+    tr.appendChild(tdReview);
+
+    tbody.appendChild(tr);
+  }
+  updateSubscriptionBulkRow(allSubs);
+}
+function updateSubscriptionBulkRow(allSubs) {
+  const row = document.getElementById("subscriptionBulkRow");
+  const selected = allSubs.filter((s) => selectedSubscriptionKeys.has(s.key));
+  if (!selected.length) { row.classList.add("hidden"); return; }
+  row.classList.remove("hidden");
+  const total = selected.reduce((s, x) => s + x.avgAmount, 0);
+  document.getElementById("subscriptionSelectionSummary").textContent =
+    `${selected.length} selezionat${selected.length === 1 ? "o" : "i"}: ${fmtCurrency(total, 2)}/mese (${fmtCurrency(total * 12, 2)}/anno)`;
+}
+function simulateSelectedSubscriptionsCancellation() {
+  const allSubs = computeAllSubscriptions(computeRecurringMerchants(getCategoryTypeFiltered()));
+  const selected = allSubs.filter((s) => selectedSubscriptionKeys.has(s.key));
+  if (!selected.length) return;
+  const total = selected.reduce((s, x) => s + x.avgAmount, 0);
+  const names = selected.map((s) => (s.catalogMatch ? s.catalogMatch.service : s.label)).join(", ");
+  addSimulation({ name: `Cancellazione: ${names}`, amount: Math.round(total * 100) / 100, type: "saving", frequency: "monthly", duration: 12 });
+  switchTab("simulator");
+}
 function computePriceIncreases(recurringList) {
   const flagged = [];
   for (const r of recurringList) {
@@ -4279,6 +4652,8 @@ function renderSavings() {
     row.appendChild(el("div", "amt-mono neg", fmtCurrency(r.avgAmount, 2)));
     missingList.appendChild(row);
   }
+
+  renderHiddenCostOptimization(recurring, allOutcomeTxs);
 
   // Top esercenti
   document.getElementById("topMerchantRangeTag").textContent = periodRangeLabel();
@@ -4966,6 +5341,7 @@ function exportFullBackup() {
     netWorthHistory: state.netWorthHistory,
     theme: (() => { try { return localStorage.getItem(LS_THEME_KEY) || "system"; } catch (e) { return "system"; } })(),
     ignoredRecurringMerchants: state.ignoredRecurringMerchants,
+    subscriptionReviews: state.subscriptionReviews,
   };
   downloadJSON(backup, `backup_family_finance_${Date.now()}.json`);
 }
@@ -5001,8 +5377,9 @@ function importFullBackup(file) {
       state.netWorthEntries = Array.isArray(data.netWorthEntries) ? data.netWorthEntries : [];
       state.netWorthHistory = Array.isArray(data.netWorthHistory) ? data.netWorthHistory : [];
       state.ignoredRecurringMerchants = Array.isArray(data.ignoredRecurringMerchants) ? data.ignoredRecurringMerchants : [];
+      state.subscriptionReviews = data.subscriptionReviews && typeof data.subscriptionReviews === "object" ? data.subscriptionReviews : {};
       saveBudgets(); saveMerchantRules(); saveSavingsGoal(state.savingsGoal); saveSavingsGoals(); saveHouseholdMembers(); saveCustomAlerts();
-      saveBudgetRolloverEnabled(); saveDebts(); saveNetWorth(); saveIgnoredRecurringMerchants();
+      saveBudgetRolloverEnabled(); saveDebts(); saveNetWorth(); saveIgnoredRecurringMerchants(); saveSubscriptionReviews();
       try { localStorage.setItem(LS_OVERVIEW_LAYOUT_KEY, state.overviewLayout); } catch (e) { /* ignore */ }
       if (data.theme === "light" || data.theme === "dark" || data.theme === "system") applyTheme(data.theme);
       loadTransactions(rows, { mode: "replace" });
@@ -6676,6 +7053,7 @@ function init() {
   loadDebts();
   loadNetWorth();
   loadIgnoredRecurringMerchants();
+  loadSubscriptionReviews();
   populateMemberSelects();
 
   const dropzone = document.getElementById("dropzone");
@@ -6818,6 +7196,8 @@ function init() {
 
   document.getElementById("btnUndoToast").addEventListener("click", runPendingUndo);
   document.getElementById("btnDismissUndoToast").addEventListener("click", hideUndoToast);
+
+  document.getElementById("btnSimulateSelectedSubscriptions").addEventListener("click", simulateSelectedSubscriptionsCancellation);
   document.getElementById("btnSaveSavingsGoal").addEventListener("click", () => {
     const val = parseFloat(document.getElementById("savingsGoalInput").value);
     if (isNaN(val) || val < 0 || val > 100) { alert("Inserisci una percentuale tra 0 e 100."); return; }
