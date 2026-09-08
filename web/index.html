@@ -252,6 +252,24 @@ button, input, select { font-family: inherit; }
   background: var(--tint-faint); border: 1px solid var(--border);
 }
 
+/* ===================== sub-navigation (e.g. tab Risparmio) ===================== */
+.savings-subnav {
+  display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px;
+  padding: 4px; border-radius: 11px; background: var(--tint-faint); border: 1px solid var(--border);
+  position: sticky; top: 53px; z-index: 5;
+}
+.savings-subnav-btn {
+  flex: 1 1 auto; background: transparent; border: none; color: var(--text-muted);
+  padding: 9px 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+  border-radius: 8px; white-space: nowrap; text-align: center;
+}
+.savings-subnav-btn:hover { color: var(--text); background: var(--hover-bg); }
+.savings-subnav-btn.active { color: var(--primary); background: var(--card); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+@media (max-width: 640px) {
+  .savings-subnav { position: static; }
+  .savings-subnav-btn { flex: 1 1 42%; font-size: 11px; padding: 8px 6px; }
+}
+
 @media (max-width: 1024px) and (min-width: 641px) {
   /* Tablet: etichette abbreviate leggibili, non solo icone + title (che non funziona al tocco). */
   .sidebar { flex-basis: 78px; padding: 14px 6px; }
@@ -500,8 +518,17 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 .modal-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-shrink: 0; }
 .modal-head-row h3 { margin: 0; }
 .modal-scroll-body { overflow-y: auto; padding-right: 6px; flex: 1 1 auto; min-height: 0; }
-.modal-scroll-body h4 { margin: 22px 0 4px; font-size: 13px; color: var(--text); }
+.modal-scroll-body h4 { margin: 22px 0 4px; font-size: 13px; color: var(--text); scroll-margin-top: 10px; }
 .modal-scroll-body h4:first-child { margin-top: 2px; }
+.settings-quickjump {
+  display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 6px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.settings-quickjump-link {
+  font-size: 11px; font-weight: 700; color: var(--text-muted); text-decoration: none;
+  padding: 5px 10px; border-radius: 999px; background: var(--tint-faint); border: 1px solid var(--border);
+}
+.settings-quickjump-link:hover { color: var(--primary); background: var(--hover-bg); }
 .modal-lead { color: var(--text-muted); font-size: 12px; margin: 4px 0 16px; line-height: 1.5; }
 .modal-close-row-split { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px; }
 .budget-editor { display: flex; flex-direction: column; gap: 8px; }
@@ -1230,6 +1257,14 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   <section id="tab-savings" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-savings">
     <div class="stat-strip" id="savingsStats"></div>
 
+    <div class="savings-subnav" id="savingsSubnav" role="tablist" aria-label="Sotto-sezioni Risparmio">
+      <button type="button" class="savings-subnav-btn active" data-subsection="recurring" role="tab" aria-selected="true">🔁 Pagamenti Ricorrenti &amp; Abbonamenti</button>
+      <button type="button" class="savings-subnav-btn" data-subsection="spending" role="tab" aria-selected="false">📊 Analisi Spesa</button>
+      <button type="button" class="savings-subnav-btn" data-subsection="compare" role="tab" aria-selected="false">🆚 Confronti &amp; Report</button>
+      <button type="button" class="savings-subnav-btn" data-subsection="goals" role="tab" aria-selected="false">🎯 Obiettivi &amp; Piano d'Azione</button>
+    </div>
+
+    <div class="savings-subsection" data-subsection="recurring">
     <div class="grid-2">
       <div class="panel">
         <h3>🔁 Abbonamenti e Pagamenti Ricorrenti</h3>
@@ -1247,8 +1282,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
     <div class="grid-2">
       <div class="panel">
-        <h3>📅 Prossimi Addebiti Attesi</h3>
-        <p class="modal-lead">Pagamenti ricorrenti attesi nei prossimi 14 giorni, in base all'intervallo medio tra gli addebiti passati.</p>
+        <h3>📅 Prossimi Addebiti Attesi <button id="btnExportRecurringICS" class="btn-link" type="button" style="font-size:11px;">⬇️ Esporta calendario (.ics)</button></h3>
+        <p class="modal-lead">Pagamenti ricorrenti attesi nei prossimi 14 giorni, in base all'intervallo medio tra gli addebiti passati. Il calendario esportato include invece tutte le scadenze attese nei prossimi 60 giorni.</p>
         <div class="review-list" id="upcomingRecurringList"></div>
       </div>
       <div class="panel">
@@ -1298,7 +1333,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         </table>
       </div>
     </div>
+    </div>
 
+    <div class="savings-subsection" data-subsection="spending" hidden>
     <div class="grid-2">
       <div class="panel">
         <h3>🏆 Top Esercenti <span class="panel-tag" id="topMerchantRangeTag"></span></h3>
@@ -1343,7 +1380,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         </div>
       </div>
     </div>
+    </div>
 
+    <div class="savings-subsection" data-subsection="compare" hidden>
     <div class="panel">
       <h3>🧮 Calcolatore Impatto Risparmio</h3>
       <p class="modal-lead">Quanto risparmieresti, e come cambierebbe il tuo tasso di risparmio, riducendo una categoria nel periodo selezionato.</p>
@@ -1406,7 +1445,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         </table>
       </div>
     </div>
+    </div>
 
+    <div class="savings-subsection" data-subsection="spending" hidden>
     <div class="grid-2">
       <div class="panel">
         <h3>✂️ Spese da Rivedere</h3>
@@ -1419,7 +1460,9 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <div class="review-list" id="duplicatesList"></div>
       </div>
     </div>
+    </div>
 
+    <div class="savings-subsection" data-subsection="goals" hidden>
     <div class="panel">
       <h3>🎯 Obiettivi di Risparmio</h3>
       <p class="modal-lead">Imposta un obiettivo concreto (es. "Vacanze estive") e traccia il saldo netto accumulato da quando l'hai creato.</p>
@@ -1434,18 +1477,25 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
     <div class="panel">
       <h3>✅ Piano d'Azione Combinato</h3>
-      <p class="modal-lead">Seleziona le opportunità di risparmio da mettere in pratica insieme: verrà creata una simulazione unica nel Simulatore.</p>
+      <p class="modal-lead">Seleziona le opportunità di risparmio da mettere in pratica insieme: abbonamenti da disdire, doppioni, e categorie da tagliare. Applica il totale al Simulatore, oppure — se hai debiti in Patrimonio — usalo come pagamento extra per estinguerli prima.</p>
+      <div id="actionPlanDebtHint" class="tab-filter-note hidden"></div>
       <div id="actionPlanList"></div>
       <div class="modal-close-row-split">
         <span class="muted">Totale selezionato: <strong id="actionPlanTotal" class="amt-mono">€0,00 / mese</strong></span>
-        <button id="btnApplyActionPlan" class="btn btn-primary btn-sm" type="button" disabled>Applica al Simulatore</button>
+        <div style="display:flex; gap:8px;">
+          <button id="btnApplyActionPlanToDebt" class="btn-ghost btn-sm hidden" type="button" disabled>💳 Applica a Estinzione Debiti</button>
+          <button id="btnApplyActionPlan" class="btn btn-primary btn-sm" type="button" disabled>Applica al Simulatore</button>
+        </div>
       </div>
     </div>
+    </div>
 
+    <div class="savings-subsection" data-subsection="spending" hidden>
     <div class="panel">
-      <h3>📊 Andamento per Categoria <span class="panel-tag">ultimi 6 mesi</span></h3>
-      <p class="modal-lead">Mini-grafici (sparkline) delle categorie di spesa principali del periodo selezionato.</p>
+      <h3>📊 Andamento per Categoria <span class="panel-tag">ultimi 6 mesi</span> <button id="btnExportMonthlySummary" class="btn-link" type="button" style="font-size:11px;">⬇️ Esporta riepilogo per foglio di calcolo</button></h3>
+      <p class="modal-lead">Mini-grafici (sparkline) delle categorie di spesa principali del periodo selezionato. Il riepilogo esportato copre invece l'intero storico, mese per categoria, pronto da incollare in Google Sheets/Excel.</p>
       <div id="categorySparklines"></div>
+    </div>
     </div>
   </section>
 
@@ -1614,8 +1664,18 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       <h3 id="settingsTitle">⚙ Impostazioni</h3>
       <button id="closeSettings" class="btn-icon" type="button" aria-label="Chiudi impostazioni">✕</button>
     </div>
+    <div class="settings-quickjump" id="settingsQuickjump">
+      <a href="#settingsSectionBudget" class="settings-quickjump-link">Budget</a>
+      <a href="#settingsSectionGoal" class="settings-quickjump-link">Obiettivo</a>
+      <a href="#settingsSectionMembers" class="settings-quickjump-link">Famiglia</a>
+      <a href="#settingsSectionAlerts" class="settings-quickjump-link">Allarmi</a>
+      <a href="#settingsSectionIgnored" class="settings-quickjump-link">Ricorrenti ignorati</a>
+      <a href="#settingsSectionBackup" class="settings-quickjump-link">Backup</a>
+      <a href="#settingsSectionRenameCategory" class="settings-quickjump-link">Sposta categoria</a>
+      <a href="#settingsSectionDictionary" class="settings-quickjump-link">Dizionario</a>
+    </div>
     <div class="modal-scroll-body">
-      <h4>Budget per categoria</h4>
+      <h4 id="settingsSectionBudget">Budget per categoria</h4>
       <p class="modal-lead">Imposta il budget mensile per ogni categoria di spesa. Le categorie provenienti dal tuo CSV che non hanno ancora un budget sono evidenziate.</p>
       <div id="budgetEditor" class="budget-editor"></div>
       <div class="rule-add-row">
@@ -1633,7 +1693,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveBudgets" class="btn btn-primary btn-sm" type="button">Salva Budget</button>
       </div>
 
-      <h4>🎯 Obiettivo di risparmio</h4>
+      <h4 id="settingsSectionGoal">🎯 Obiettivo di risparmio</h4>
       <p class="modal-lead">Percentuale di entrate che punti a risparmiare ogni periodo: determina quando la card "Obiettivo" nella Overview è verde o gialla.</p>
       <div class="rule-add-row">
         <input type="number" id="savingsGoalInput" min="0" max="100" step="1" style="max-width:120px;">
@@ -1641,7 +1701,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveSavingsGoal" class="btn btn-primary btn-sm" type="button">Salva Obiettivo</button>
       </div>
 
-      <h4>👨‍👩‍👧‍👦 Membri della famiglia</h4>
+      <h4 id="settingsSectionMembers">👨‍👩‍👧‍👦 Membri della famiglia</h4>
       <p class="modal-lead">Aggiungi i membri della famiglia per assegnare le transazioni a chi le ha effettuate e vedere una ripartizione della spesa per persona in Analytics.</p>
       <div id="householdMembersList"></div>
       <div class="rule-add-row">
@@ -1649,7 +1709,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnAddMember" class="btn btn-primary btn-sm" type="button">+ Aggiungi Membro</button>
       </div>
 
-      <h4>⚠️ Regole di allarme personalizzabili</h4>
+      <h4 id="settingsSectionAlerts">⚠️ Regole di allarme personalizzabili</h4>
       <p class="modal-lead">Ricevi un avviso quando una singola transazione supera una soglia, o quando il saldo del periodo diventa negativo.</p>
       <div class="rule-add-row">
         <label for="singleTxThresholdInput" style="flex:0 0 auto;">Avvisa se una spesa supera</label>
@@ -1666,11 +1726,11 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnSaveCustomAlerts" class="btn btn-primary btn-sm" type="button">Salva Regole di Allarme</button>
       </div>
 
-      <h4>🔕 Esercenti ricorrenti ignorati</h4>
+      <h4 id="settingsSectionIgnored">🔕 Esercenti ricorrenti ignorati</h4>
       <p class="modal-lead">Esercenti esclusi dalle rilevazioni "Prossimi Addebiti Attesi" e "Pagamenti Ricorrenti in Ritardo" (escludibili con il pulsante "🔕 Ignora" nel tab Risparmio).</p>
       <div id="ignoredRecurringList"></div>
 
-      <h4>💾 Backup completo (per trasferire i dati su un altro dispositivo)</h4>
+      <h4 id="settingsSectionBackup">💾 Backup completo (per trasferire i dati su un altro dispositivo)</h4>
       <p class="modal-lead">Tutti i tuoi dati vivono solo in questo browser: esporta transazioni, budget, dizionario, obiettivi, membri, patrimonio, debiti e tutte le altre impostazioni (incluso il tema) in un unico file JSON, da importare su un altro dispositivo o browser per ripristinare la stessa situazione.</p>
       <div class="rule-import-row">
         <button id="btnExportBackup" class="btn-ghost btn-sm" type="button">⬇️ Esporta Backup</button>
@@ -1679,7 +1739,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
       </div>
       <div id="backupImportError" class="welcome-error hidden"></div>
 
-      <h4>🔀 Sposta/unisci categoria</h4>
+      <h4 id="settingsSectionRenameCategory">🔀 Sposta/unisci categoria</h4>
       <p class="modal-lead">Sposta tutti i dati di una categoria su un'altra tra quelle disponibili: si applica a transazioni, budget e regole del dizionario.</p>
       <div class="rule-add-row">
         <select id="categoryRenameFrom"></select>
@@ -1687,7 +1747,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <button id="btnRenameCategory" class="btn btn-primary btn-sm" type="button">Applica</button>
       </div>
 
-      <h4>🔮 Dizionario categorie (matching automatico)</h4>
+      <h4 id="settingsSectionDictionary">🔮 Dizionario categorie (matching automatico)</h4>
       <p class="modal-lead">Quando importi un CSV con una colonna descrizione/esercente ma senza categoria, il testo viene confrontato con queste parole chiave (case-insensitive) per assegnare automaticamente una categoria.</p>
       <div class="rule-search-row">
         <label for="ruleSearch" class="sr-only">Cerca nel dizionario</label>
@@ -3677,7 +3737,7 @@ function renderRecentTx(containerId, recent) {
   for (const t of recent) recentBox.appendChild(buildTxRow(t));
 }
 function buildNarrativeSummary(data) {
-  const { income, outcome, net, savingsRate, pieRows, budgetBreakdown } = data;
+  const { income, outcome, net, savingsRate, pieRows, budgetBreakdown, health } = data;
   const topCat = pieRows[0];
   const overBudget = budgetBreakdown.filter((b) => !b.unset && b.percent > 1);
   let html = `Nel periodo selezionato (<strong>${periodLabel()}</strong>) hai incassato <strong class="pos">${fmtCurrency(income)}</strong> e speso <strong class="neg">${fmtCurrency(outcome)}</strong>, `;
@@ -3687,6 +3747,10 @@ function buildNarrativeSummary(data) {
   if (topCat) html += ` La categoria che pesa di più è <strong>${catIcon(topCat.category)} ${topCat.category}</strong>, con ${fmtCurrency(topCat.speso)} spesi.`;
   if (overBudget.length) html += ` Attenzione: hai superato il budget in ${overBudget.length === 1 ? "1 categoria" : overBudget.length + " categorie"} (${overBudget.map((b) => b.category).join(", ")}).`;
   else if (budgetBreakdown.some((b) => !b.unset)) html += ` Tutti i budget impostati sono sotto controllo.`;
+  if (health) {
+    const healthCls = health.total >= 75 ? "pos" : health.total >= 40 ? "warn" : "neg";
+    html += ` La tua Salute Finanziaria di questo periodo è <strong class="${healthCls}">${health.grade} (${health.total}/100)</strong>.`;
+  }
   return html;
 }
 function renderOverviewClassica(data) {
@@ -5219,15 +5283,39 @@ function renderForecastChart() {
 }
 
 // ---------------------------------------------------------------- Advanced: piano d'azione combinato
+// Unifica le opportunità di risparmio già rilevate altrove nel tab (ricorrenti da disdire, doppioni
+// di abbonamenti, categorie da tagliare) in un'unica lista selezionabile, cosi' come la priorità di
+// estinzione debiti dal Pianificatore Estinzione in Patrimonio (vedi computeDebtPayoffPriority).
 function computeActionPlanCandidates(periodTxs, budgetBreakdown) {
   const allOutcomeTxs = getCategoryTypeFiltered();
   const recurring = computeRecurringMerchants(allOutcomeTxs).filter((r) => r.active);
   const reviewShortlist = computeReviewShortlist(budgetBreakdown);
   const monthsN = monthsCoveredCount(periodTxs.length ? periodTxs : state.transactions);
   const candidates = [];
-  for (const r of recurring) candidates.push({ key: `recurring:${r.key}`, label: `Disdici/riduci: ${r.label}`, monthlyAmount: r.avgAmount });
+  const allSubs = computeAllSubscriptions(recurring);
+  const unusedKeys = new Set(allSubs.filter((s) => s.reviewStatus === "unused").map((s) => s.key));
+  const redundantGroups = computeRedundantSubscriptions(allSubs);
+  const redundantKeys = new Set();
+  for (const g of redundantGroups) {
+    const sorted = g.subscriptions.slice().sort((a, b) => a.avgAmount - b.avgAmount);
+    for (const s of sorted.slice(1)) {
+      redundantKeys.add(s.key);
+      candidates.push({ key: `redundant:${s.key}`, label: `Disdici doppione: ${s.label} (hai già ${sorted[0].label})`, monthlyAmount: s.avgAmount });
+    }
+  }
+  for (const r of recurring) {
+    if (redundantKeys.has(r.key)) continue;
+    if (unusedKeys.has(r.key)) candidates.push({ key: `unused:${r.key}`, label: `Disdici (non più usato): ${r.label}`, monthlyAmount: r.avgAmount });
+    else candidates.push({ key: `recurring:${r.key}`, label: `Disdici/riduci: ${r.label}`, monthlyAmount: r.avgAmount });
+  }
   for (const b of reviewShortlist) candidates.push({ key: `budget:${b.category}`, label: `Taglia 30%: ${b.category}`, monthlyAmount: (b.speso / monthsN) * 0.3 });
   return candidates;
+}
+function computeDebtPayoffPriority() {
+  if (!state.debts.length) return null;
+  const active = state.debts.filter((d) => d.balance > 0.01);
+  if (!active.length) return null;
+  return active.slice().sort((a, b) => state.debtStrategy === "snowball" ? a.balance - b.balance : b.apr - a.apr)[0];
 }
 function renderActionPlan(periodTxs, budgetBreakdown) {
   const list = document.getElementById("actionPlanList");
@@ -5258,6 +5346,18 @@ function renderActionPlan(periodTxs, budgetBreakdown) {
   if (totalEl) totalEl.textContent = fmtCurrency(selectedTotal, 2) + " / mese";
   const btn = document.getElementById("btnApplyActionPlan");
   if (btn) btn.disabled = selectedTotal <= 0;
+  const debtPriority = computeDebtPayoffPriority();
+  const debtBtn = document.getElementById("btnApplyActionPlanToDebt");
+  const debtHint = document.getElementById("actionPlanDebtHint");
+  if (debtBtn) { debtBtn.classList.toggle("hidden", !debtPriority); debtBtn.disabled = selectedTotal <= 0; }
+  if (debtHint) {
+    if (debtPriority) {
+      debtHint.classList.remove("hidden");
+      debtHint.textContent = `💳 Debito prioritario in Patrimonio: ${debtPriority.name} (${debtPriority.apr}% APR). Destina qui il risparmio per estinguerlo prima, invece che nel Simulatore.`;
+    } else {
+      debtHint.classList.add("hidden");
+    }
+  }
 }
 function applyActionPlan() {
   const periodTxs = getPeriodFiltered();
@@ -5268,6 +5368,22 @@ function applyActionPlan() {
   if (total <= 0) return;
   addSimulation({ name: `Piano d'azione (${selected.length} voc${selected.length === 1 ? "e" : "i"})`, amount: Math.round(total * 100) / 100, type: "saving", frequency: "monthly", duration: 12 });
   switchTab("simulator");
+}
+function applyActionPlanToDebt() {
+  const periodTxs = getPeriodFiltered();
+  const budgetBreakdown = computeBudgetBreakdown(periodTxs);
+  const candidates = computeActionPlanCandidates(periodTxs, budgetBreakdown);
+  const selected = candidates.filter((c) => state.actionPlan.has(c.key));
+  const total = selected.reduce((s, c) => s + c.monthlyAmount, 0);
+  if (total <= 0 || !state.debts.length) return;
+  state.debtExtraPayment = Math.round((state.debtExtraPayment + total) * 100) / 100;
+  saveDebts();
+  switchTab("networth");
+  requestAnimationFrame(() => {
+    const input = document.getElementById("debtExtraPaymentInput");
+    if (input) input.value = state.debtExtraPayment;
+    renderDebtPlanner();
+  });
 }
 
 // ---------------------------------------------------------------- Advanced: andamento per categoria (sparkline)
@@ -5634,6 +5750,10 @@ function submitQuickAdd() {
 }
 
 // ---------------------------------------------------------------- Command palette (Ctrl+K)
+function goToSavingsSubsection(name) {
+  switchTab("savings");
+  requestAnimationFrame(() => switchSavingsSubsection(name));
+}
 function commandPaletteActions() {
   return [
     { label: "Vai a Overview", icon: "📊", run: () => switchTab("overview") },
@@ -5641,11 +5761,22 @@ function commandPaletteActions() {
     { label: "Vai a Analytics", icon: "📈", run: () => switchTab("analytics") },
     { label: "Vai a Transazioni", icon: "📋", run: () => switchTab("transactions") },
     { label: "Vai a Risparmio", icon: "🐷", run: () => switchTab("savings") },
+    { label: "Vai a Patrimonio", icon: "🏛️", run: () => switchTab("networth") },
+    { label: "Risparmio → Pagamenti Ricorrenti & Abbonamenti", icon: "🔁", run: () => goToSavingsSubsection("recurring") },
+    { label: "Risparmio → Analisi Spesa", icon: "📊", run: () => goToSavingsSubsection("spending") },
+    { label: "Risparmio → Confronti & Report", icon: "🆚", run: () => goToSavingsSubsection("compare") },
+    { label: "Risparmio → Obiettivi & Piano d'Azione", icon: "🎯", run: () => goToSavingsSubsection("goals") },
+    { label: "Ottimizzazione Costi Nascosti", icon: "🕵️", run: () => goToSavingsSubsection("recurring") },
+    { label: "Confronto Periodo Personalizzato", icon: "🆚", run: () => goToSavingsSubsection("compare") },
     { label: "Apri Impostazioni", icon: "⚙", run: () => openSettings() },
     { label: "Aggiungi transazione rapida", icon: "⚡", run: () => openQuickAddModal() },
     { label: "Aggiungi CSV", icon: "➕", run: () => document.getElementById("addCsvFileInput").click() },
     { label: "Report Mensile", icon: "📄", run: () => openMonthlyReport() },
+    { label: "Report Annuale", icon: "📅", run: () => openAnnualReport() },
     { label: "Esporta Transazioni CSV", icon: "⬇️", run: () => exportTransactionsCSV() },
+    { label: "Esporta Backup", icon: "💾", run: () => exportFullBackup() },
+    { label: "Esporta calendario scadenze ricorrenti (.ics)", icon: "📅", run: () => exportRecurringCalendarICS() },
+    { label: "Esporta riepilogo mensile per foglio di calcolo", icon: "🧮", run: () => exportMonthlySummarySpreadsheet() },
     { label: "Stampa / Esporta PDF", icon: "🖨️", run: () => window.print() },
     { label: "Reset filtri", icon: "✕", run: () => document.getElementById("btnResetFilters").click() },
   ];
@@ -6771,8 +6902,8 @@ function downloadDictionarySample() {
   const sample = "keyword,category\nESSELUNGA,Spesa & Alimentari\nFARMACIA,Salute & Prevenzione\nJYO JAPANESE RESTAURAN,Cena & Ristoranti\n";
   downloadCSV(sample, "esempio_dizionario_categorie.csv");
 }
-function downloadCSV(text, filename) {
-  const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+function downloadTextFile(text, filename, mimeType) {
+  const blob = new Blob([text], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -6781,6 +6912,87 @@ function downloadCSV(text, filename) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+function downloadCSV(text, filename) {
+  downloadTextFile(text, filename, "text/csv;charset=utf-8;");
+}
+// ---------------------------------------------------------------- Export verso strumenti esterni
+// Niente OAuth/push reale verso Google Sheets o Notion: tutto resta locale nel browser (vedi
+// footer). L'equivalente pratico e' un file .ics importabile in qualsiasi calendario, e un
+// riepilogo TSV pronto da incollare in un foglio di calcolo.
+function icsEscapeText(s) {
+  return String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+}
+function icsDateStamp(d) {
+  return `${d.getUTCFullYear()}${pad2(d.getUTCMonth() + 1)}${pad2(d.getUTCDate())}T${pad2(d.getUTCHours())}${pad2(d.getUTCMinutes())}${pad2(d.getUTCSeconds())}Z`;
+}
+function icsDateOnly(d) {
+  return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
+}
+function computeUpcomingRecurringForCalendar(recurringList, horizonDays) {
+  return computeRecurringForecast(recurringList)
+    .filter((r) => !r.isMissing)
+    .map((r) => ({ ...r, nextDate: new Date(r.lastDate.getTime() + Math.round(r.avgIntervalDays) * 86400000) }))
+    .filter((r) => r.daysUntilNext <= horizonDays)
+    .sort((a, b) => a.daysUntilNext - b.daysUntilNext);
+}
+function exportRecurringCalendarICS() {
+  const allOutcomeTxs = getCategoryTypeFiltered();
+  const recurring = computeRecurringMerchants(allOutcomeTxs).filter((r) => r.active);
+  const events = computeUpcomingRecurringForCalendar(recurring, 60);
+  if (!events.length) { alert("Nessun pagamento ricorrente atteso nei prossimi 60 giorni da esportare."); return; }
+  const now = new Date();
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Family Finance Dashboard PRO//IT", "CALSCALE:GREGORIAN"];
+  for (const r of events) {
+    lines.push("BEGIN:VEVENT");
+    lines.push(`UID:${icsDateOnly(r.nextDate)}-${normalizeForMatch(r.label).replace(/\s+/g, "-")}@ffdpro`);
+    lines.push(`DTSTAMP:${icsDateStamp(now)}`);
+    lines.push(`DTSTART;VALUE=DATE:${icsDateOnly(r.nextDate)}`);
+    lines.push(`SUMMARY:${icsEscapeText(`💳 ${r.label} (~${fmtCurrency(r.avgAmount, 2)})`)}`);
+    lines.push(`DESCRIPTION:${icsEscapeText(`Pagamento ricorrente stimato ogni ~${Math.round(r.avgIntervalDays)} giorni · categoria ${r.category}. Generato da Family Finance Dashboard PRO.`)}`);
+    lines.push("END:VEVENT");
+  }
+  lines.push("END:VCALENDAR");
+  downloadTextFile(lines.join("\r\n") + "\r\n", `scadenze_ricorrenti_${Date.now()}.ics`, "text/calendar;charset=utf-8;");
+}
+function computeMonthlyByCategoryPivot() {
+  const monthKeys = computeMonthlySeries(state.transactions).map((m) => m.key);
+  const categories = getAllCategories();
+  const grid = {};
+  for (const cat of categories) grid[cat] = {};
+  const incomeByMonth = {};
+  for (const t of state.transactions) {
+    const k = monthKey(t.date);
+    if (!monthKeys.includes(k)) continue;
+    if (t.type === "outcome") { grid[t.category] = grid[t.category] || {}; grid[t.category][k] = (grid[t.category][k] || 0) + t.value; }
+    else if (t.type === "income") incomeByMonth[k] = (incomeByMonth[k] || 0) + t.value;
+  }
+  return { monthKeys, categories, grid, incomeByMonth };
+}
+function exportMonthlySummarySpreadsheet() {
+  if (!state.transactions.length) { alert("Nessuna transazione da esportare."); return; }
+  const { monthKeys, categories, grid, incomeByMonth } = computeMonthlyByCategoryPivot();
+  if (!monthKeys.length) { alert("Nessuna transazione da esportare."); return; }
+  const header = ["Categoria", ...monthKeys.map(monthLabel), "Totale"];
+  const lines = [header.join("\t")];
+  const incomeTotal = monthKeys.reduce((s, k) => s + (incomeByMonth[k] || 0), 0);
+  lines.push(["Entrate", ...monthKeys.map((k) => (incomeByMonth[k] || 0).toFixed(2)), incomeTotal.toFixed(2)].join("\t"));
+  for (const cat of categories) {
+    const byMonth = grid[cat] || {};
+    const rowTotal = monthKeys.reduce((s, k) => s + (byMonth[k] || 0), 0);
+    if (rowTotal <= 0) continue;
+    lines.push([cat, ...monthKeys.map((k) => (byMonth[k] || 0).toFixed(2)), rowTotal.toFixed(2)].join("\t"));
+  }
+  const totalRow = ["Totale Uscite"];
+  let grandTotal = 0;
+  for (const k of monthKeys) {
+    const monthTotal = categories.reduce((s, cat) => s + ((grid[cat] || {})[k] || 0), 0);
+    grandTotal += monthTotal;
+    totalRow.push(monthTotal.toFixed(2));
+  }
+  totalRow.push(grandTotal.toFixed(2));
+  lines.push(totalRow.join("\t"));
+  downloadTextFile(lines.join("\n"), `riepilogo_mensile_${Date.now()}.tsv`, "text/tab-separated-values;charset=utf-8;");
 }
 function resetDictionaryToDefault() {
   if (!confirm("Ripristinare il dizionario predefinito? Potrai annullare subito dopo dal messaggio in basso.")) return;
@@ -6871,6 +7083,15 @@ function switchTab(name) {
   const filterBar = document.getElementById("filterBar");
   if (filterBar) filterBar.classList.toggle("hidden", name === "networth");
   requestAnimationFrame(() => renderTab(name));
+}
+function switchSavingsSubsection(name) {
+  state.activeSavingsSubsection = name;
+  document.querySelectorAll(".savings-subnav-btn").forEach((b) => {
+    const active = b.dataset.subsection === name;
+    b.classList.toggle("active", active);
+    b.setAttribute("aria-selected", active ? "true" : "false");
+  });
+  document.querySelectorAll(".savings-subsection").forEach((s) => { s.hidden = s.dataset.subsection !== name; });
 }
 function populateCategoryFilters() {
   const cats = getAllCategories();
@@ -7100,6 +7321,8 @@ function init() {
 
   document.querySelectorAll(".side-nav-item").forEach((btn) => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
 
+  document.querySelectorAll(".savings-subnav-btn").forEach((btn) => btn.addEventListener("click", () => switchSavingsSubsection(btn.dataset.subsection)));
+
   document.getElementById("filterPeriod").addEventListener("change", (e) => {
     state.filters.period = e.target.value;
     document.getElementById("filterCustomRangeField").classList.toggle("hidden", e.target.value !== "custom");
@@ -7182,6 +7405,13 @@ function init() {
   });
   document.getElementById("closeSettings").addEventListener("click", closeSettings);
   document.getElementById("settingsModal").addEventListener("click", (e) => { if (e.target.id === "settingsModal") closeSettings(); });
+  document.querySelectorAll(".settings-quickjump-link").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const target = document.getElementById(link.getAttribute("href").slice(1));
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
   document.getElementById("settingsModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("settingsModal"), e));
   document.getElementById("btnSaveBudgets").addEventListener("click", saveBudgetsFromModal);
   document.getElementById("btnResetBudgets").addEventListener("click", resetBudgetsToDefault);
@@ -7260,6 +7490,9 @@ function init() {
 
   // Piano d'azione combinato
   document.getElementById("btnApplyActionPlan").addEventListener("click", applyActionPlan);
+  document.getElementById("btnApplyActionPlanToDebt").addEventListener("click", applyActionPlanToDebt);
+  document.getElementById("btnExportRecurringICS").addEventListener("click", exportRecurringCalendarICS);
+  document.getElementById("btnExportMonthlySummary").addEventListener("click", exportMonthlySummarySpreadsheet);
 
   // Membri della famiglia
   document.getElementById("btnAddMember").addEventListener("click", () => {
