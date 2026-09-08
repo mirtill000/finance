@@ -252,6 +252,58 @@ button, input, select { font-family: inherit; }
   background: var(--tint-faint); border: 1px solid var(--border);
 }
 
+/* ===================== revisione mensile guidata (schermo intero) ===================== */
+.review-overlay {
+  position: fixed; inset: 0; z-index: 90; background: var(--background);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.review-overlay.hidden { display: none; }
+.review-stage {
+  width: min(760px, 100%); max-height: 100%; display: flex; flex-direction: column; gap: 18px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px 30px;
+}
+.review-head { display: flex; align-items: center; justify-content: space-between; flex: none; }
+.review-progress { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.review-body { flex: 1 1 auto; overflow-y: auto; min-height: 0; }
+.review-body h2 { margin: 0 0 6px; font-size: 24px; }
+.review-lead { margin: 0 0 18px; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+.review-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: none; }
+.review-dots { display: flex; gap: 6px; }
+.review-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.review-dot.active { background: var(--primary); }
+.review-figure { font-family: var(--font-mono); font-size: 32px; font-weight: 800; margin: 4px 0 2px; }
+.review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.review-tile { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.review-tile .rt-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+.review-tile .rt-value { font-family: var(--font-mono); font-size: 20px; font-weight: 800; margin-top: 4px; }
+.review-line { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.review-line:last-child { border-bottom: none; }
+.review-line .rl-amt { font-family: var(--font-mono); font-weight: 700; flex: none; }
+@media (max-width: 640px) {
+  .review-overlay { padding: 0; }
+  .review-stage { border-radius: 0; height: 100%; padding: 20px 18px; }
+  .review-body h2 { font-size: 20px; }
+}
+
+.cash-risk-row { background: rgba(224,112,122,0.10); }
+.cash-risk-row td:first-child::before { content: "⚠️ "; }
+
+/* ===================== drill-down: righe e celle che aprono le transazioni ===================== */
+.drillable { cursor: pointer; border-radius: 8px; transition: background 0.12s ease; }
+.drillable:hover { background: var(--tint-hover); }
+.drillable:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+.drillable::after {
+  content: "🔍"; font-size: 10px; opacity: 0; margin-left: 6px; transition: opacity 0.12s ease;
+}
+.drillable:hover::after, .drillable:focus-visible::after { opacity: 0.65; }
+.link-cell {
+  background: none; border: none; padding: 0; text-align: left; cursor: pointer;
+  color: var(--text); font: inherit; font-weight: 600; font-size: 12px;
+}
+.link-cell:hover { color: var(--secondary); text-decoration: underline; }
+.link-cell:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; border-radius: 4px; }
+@media print { .drillable::after { content: none; } }
+
 /* ===================== sub-navigation (e.g. tab Risparmio) ===================== */
 .savings-subnav {
   display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px;
@@ -484,6 +536,11 @@ table.data-table tbody tr:hover { background: var(--tint-hover); }
 }
 .undo-toast.hidden { display: none; }
 .undo-toast #undoToastMessage { flex: 1 1 auto; }
+.undo-toast-icon { flex: none; font-size: 15px; line-height: 1; }
+.undo-toast-icon:empty { display: none; }
+.undo-toast.toast-success { border-color: var(--primary); }
+.undo-toast.toast-error { border-color: var(--danger); }
+.undo-toast.toast-warning { border-color: var(--warning); }
 .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; width: min(420px, 92vw); padding: 22px; }
 .modal-box .mx-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px; }
 .modal-box .mx-amount { text-align: center; font-family: var(--font-mono); font-size: 26px; font-weight: 800; margin-bottom: 4px; }
@@ -829,6 +886,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
           <button id="btnPrint" class="topbar-more-item" type="button" role="menuitem">🖨️ Stampa/PDF</button>
           <button id="btnMonthlyReport" class="topbar-more-item" type="button" role="menuitem">📄 Report Mensile</button>
           <button id="btnAnnualReport" class="topbar-more-item" type="button" role="menuitem">📅 Report Annuale</button>
+          <button id="btnMonthlyReview" class="topbar-more-item" type="button" role="menuitem">👨‍👩‍👧 Revisione Guidata</button>
           <button id="btnAddCsv" class="topbar-more-item" type="button" role="menuitem">➕ Aggiungi CSV</button>
           <button id="btnNewCsv" class="topbar-more-item" type="button" role="menuitem">🔄 Nuovo CSV</button>
         </div>
@@ -868,6 +926,14 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <option value="income">Entrate</option>
         <option value="outcome">Uscite</option>
       </select>
+    </div>
+    <div class="filter-field hidden" id="filterMemberField">
+      <label for="filterMember">Membro</label>
+      <select id="filterMember"><option value="all">Tutti</option></select>
+    </div>
+    <div class="filter-field hidden" id="filterTagField">
+      <label for="filterTag">Etichetta</label>
+      <select id="filterTag"><option value="all">Tutte</option></select>
     </div>
     <div class="filter-field">
       <label>&nbsp;</label>
@@ -1195,27 +1261,8 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 
   <!-- ===================== TRANSACTIONS ===================== -->
   <section id="tab-transactions" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-transactions">
+    <p class="tab-filter-note">ℹ️ Periodo, categoria, tipo, membro ed etichetta si impostano nella barra filtri in alto, valida per tutta l'app. Qui sotto trovi solo la ricerca libera su queste transazioni.</p>
     <div class="filter-bar" style="padding:0 0 16px; border-bottom:none;">
-      <div class="filter-field">
-        <label for="txFilterCategory">Categoria</label>
-        <select id="txFilterCategory"><option value="all">Tutte</option></select>
-      </div>
-      <div class="filter-field">
-        <label for="txFilterType">Tipo</label>
-        <select id="txFilterType">
-          <option value="all">Tutte</option>
-          <option value="income">Entrate</option>
-          <option value="outcome">Uscite</option>
-        </select>
-      </div>
-      <div class="filter-field hidden" id="householdMemberFilterRow">
-        <label for="txFilterMember">Membro</label>
-        <select id="txFilterMember"><option value="all">Tutti</option></select>
-      </div>
-      <div class="filter-field hidden" id="tagFilterRow">
-        <label for="txFilterTag">Etichetta</label>
-        <select id="txFilterTag"><option value="all">Tutte</option></select>
-      </div>
       <div class="filter-field" style="flex:1; min-width:200px;">
         <label for="txSearch">Ricerca</label>
         <input type="text" id="txSearch" placeholder="Cerca per categoria, importo, tipo o data...">
@@ -1380,6 +1427,13 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         </div>
       </div>
     </div>
+
+    <div class="panel">
+      <h3>⚖️ Benchmark di Allocazione <span class="panel-tag" id="allocationTargetTag"></span></h3>
+      <p class="modal-lead">Come si distribuiscono le tue entrate del periodo tra necessità (uscite non discrezionali), desideri (uscite discrezionali) e risparmio, confrontate con i tuoi obiettivi di allocazione. Le percentuali target si impostano in Impostazioni → Benchmark di allocazione.</p>
+      <div id="allocationBenchmarkList"></div>
+      <p class="modal-lead" id="allocationBenchmarkSummary"></p>
+    </div>
     </div>
 
     <div class="savings-subsection" data-subsection="compare" hidden>
@@ -1463,6 +1517,26 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     </div>
 
     <div class="savings-subsection" data-subsection="goals" hidden>
+    <div class="panel">
+      <h3>📦 Budget di Progetto</h3>
+      <p class="modal-lead">Un progetto raccoglie spese di categorie ed etichette diverse dentro un periodo (es. "Vacanza estiva", "Ristrutturazione bagno") e le confronta con il preventivo. Diverso dagli obiettivi qui sotto, che tracciano il risparmio accumulato.</p>
+      <div id="projectsList"></div>
+      <div class="rule-add-row" style="margin-top:10px;">
+        <input type="text" id="projectNameInput" placeholder="Nome progetto, es. Vacanza estiva">
+        <input type="number" id="projectBudgetInput" min="0" step="50" placeholder="Preventivo (€)" style="max-width:150px;">
+        <input type="date" id="projectStartInput" aria-label="Data inizio progetto" style="max-width:150px;">
+        <input type="date" id="projectEndInput" aria-label="Data fine progetto" style="max-width:150px;">
+      </div>
+      <div class="rule-add-row">
+        <label for="projectCategoriesInput" style="flex:0 0 auto;">Categorie</label>
+        <select id="projectCategoriesInput" multiple size="4" style="min-width:220px;"></select>
+        <label for="projectTagsInput" style="flex:0 0 auto;">Etichette</label>
+        <input type="text" id="projectTagsInput" placeholder="separate da virgola (facoltativo)" style="max-width:220px;">
+        <button id="btnAddProject" class="btn btn-primary btn-sm" type="button">+ Aggiungi Progetto</button>
+      </div>
+      <p class="muted">Lascia le categorie vuote per includere tutte le uscite del periodo indicato.</p>
+    </div>
+
     <div class="panel">
       <h3>🎯 Obiettivi di Risparmio</h3>
       <p class="modal-lead">Imposta un obiettivo concreto (es. "Vacanze estive") e traccia il saldo netto accumulato da quando l'hai creato.</p>
@@ -1592,6 +1666,23 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     </div>
 
     <div class="panel">
+      <h3>📆 Calendario di Cassa <span class="panel-tag">prossimi 12 mesi</span></h3>
+      <p class="modal-lead">Proiezione deterministica mese per mese: entrate medie, addebiti ricorrenti già rilevati proiettati sulla loro cadenza, altre uscite medie e l'eventuale pagamento extra sui debiti. A differenza del Monte Carlo qui sotto non c'è casualità: è il calendario degli impegni che hai già preso.</p>
+      <p id="cashCalendarEmptyMsg" class="modal-lead hidden">Servono almeno due mesi di storico transazioni per proiettare il calendario di cassa.</p>
+      <div id="cashCalendarAlert" class="tab-filter-note hidden" role="status"></div>
+      <div class="metric-grid" id="cashCalendarStats" style="margin-bottom:14px;"></div>
+      <div class="chart-box short"><canvas id="chartCashCalendar"></canvas></div>
+      <div class="table-wrap">
+        <table class="data-table" id="cashCalendarTable">
+          <thead>
+            <tr><th>Mese</th><th>Entrate</th><th>Ricorrenti</th><th>Altre uscite</th><th>Extra debiti</th><th>Saldo mese</th><th>Saldo cumulato</th></tr>
+          </thead>
+          <tbody id="cashCalendarBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
       <h3>🎲 Simulazione Monte Carlo — Fondo Emergenza</h3>
       <p class="modal-lead">Proiezione probabilistica del saldo nei prossimi 12 mesi (basata sulla variabilità storica di entrate e uscite), invece di un'unica linea lineare.</p>
       <p id="monteCarloEmptyMsg" class="modal-lead hidden">Servono almeno due mesi di storico transazioni per calcolare la variabilità e generare la proiezione.</p>
@@ -1609,7 +1700,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
   </footer>
 </div>
 
-<div id="txModal" class="modal-overlay hidden">
+<div id="txModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mxAmount">
   <div class="modal-box">
     <div class="mx-icon" id="mxIcon">💳</div>
     <div class="mx-amount" id="mxAmount">€0</div>
@@ -1667,6 +1758,7 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
     <div class="settings-quickjump" id="settingsQuickjump">
       <a href="#settingsSectionBudget" class="settings-quickjump-link">Budget</a>
       <a href="#settingsSectionGoal" class="settings-quickjump-link">Obiettivo</a>
+      <a href="#settingsSectionAllocation" class="settings-quickjump-link">Allocazione</a>
       <a href="#settingsSectionMembers" class="settings-quickjump-link">Famiglia</a>
       <a href="#settingsSectionAlerts" class="settings-quickjump-link">Allarmi</a>
       <a href="#settingsSectionIgnored" class="settings-quickjump-link">Ricorrenti ignorati</a>
@@ -1699,6 +1791,24 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
         <input type="number" id="savingsGoalInput" min="0" max="100" step="1" style="max-width:120px;">
         <span class="muted">%</span>
         <button id="btnSaveSavingsGoal" class="btn btn-primary btn-sm" type="button">Salva Obiettivo</button>
+      </div>
+
+      <h4 id="settingsSectionAllocation">⚖️ Benchmark di allocazione</h4>
+      <p class="modal-lead">Quote target delle entrate da destinare a necessità, desideri e risparmio (il modello classico è 50/30/20). Il confronto con la situazione reale è in Risparmio → Analisi Spesa.</p>
+      <div class="rule-add-row">
+        <label for="allocationNeedsInput" style="flex:0 0 auto;">Necessità</label>
+        <input type="number" id="allocationNeedsInput" min="0" max="100" step="1" style="max-width:90px;">
+        <span class="muted">%</span>
+        <label for="allocationWantsInput" style="flex:0 0 auto;">Desideri</label>
+        <input type="number" id="allocationWantsInput" min="0" max="100" step="1" style="max-width:90px;">
+        <span class="muted">%</span>
+        <label for="allocationSavingsInput" style="flex:0 0 auto;">Risparmio</label>
+        <input type="number" id="allocationSavingsInput" min="0" max="100" step="1" style="max-width:90px;">
+        <span class="muted">%</span>
+      </div>
+      <div class="modal-close-row modal-close-row-split">
+        <button id="btnResetAllocation" class="btn-link" type="button">Ripristina 50/30/20</button>
+        <button id="btnSaveAllocation" class="btn btn-primary btn-sm" type="button">Salva Benchmark</button>
       </div>
 
       <h4 id="settingsSectionMembers">👨‍👩‍👧‍👦 Membri della famiglia</h4>
@@ -1855,9 +1965,40 @@ footer.appfooter { padding: 18px 22px 30px; color: var(--text-muted); font-size:
 </div>
 
 <div id="undoToast" class="undo-toast hidden" role="status" aria-live="polite">
+  <span id="undoToastIcon" class="undo-toast-icon" aria-hidden="true"></span>
   <span id="undoToastMessage"></span>
   <button id="btnUndoToast" class="btn btn-sm" type="button">Annulla</button>
   <button id="btnDismissUndoToast" class="btn-icon" type="button" aria-label="Chiudi notifica">✕</button>
+</div>
+
+<div id="reviewModal" class="review-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="reviewStepTitle">
+  <div class="review-stage">
+    <div class="review-head">
+      <span class="review-progress" id="reviewProgress"></span>
+      <button id="btnCloseReview" class="btn-icon" type="button" aria-label="Chiudi revisione guidata">✕</button>
+    </div>
+    <div class="review-body">
+      <h2 id="reviewStepTitle"></h2>
+      <p class="review-lead" id="reviewStepLead"></p>
+      <div id="reviewStepContent" aria-live="polite"></div>
+    </div>
+    <div class="review-foot">
+      <button id="btnReviewPrev" class="btn-ghost btn-sm" type="button">← Indietro</button>
+      <div class="review-dots" id="reviewDots"></div>
+      <button id="btnReviewNext" class="btn btn-primary btn-sm" type="button">Avanti →</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+  <div class="modal-box">
+    <h3 id="confirmModalTitle">Conferma</h3>
+    <p class="modal-lead" id="confirmModalMessage"></p>
+    <div class="modal-close-row-split">
+      <button id="btnCancelConfirm" class="btn-ghost btn-sm" type="button">Annulla</button>
+      <button id="btnAcceptConfirm" class="btn btn-primary btn-sm" type="button">Conferma</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -2778,7 +2919,11 @@ const LS_DEBTS_KEY = "ffdpro_debts_v1";
 const LS_NET_WORTH_KEY = "ffdpro_net_worth_v1";
 const LS_IGNORED_RECURRING_KEY = "ffdpro_ignored_recurring_v1";
 const LS_SUBSCRIPTION_REVIEWS_KEY = "ffdpro_subscription_reviews_v1";
+const LS_PROJECTS_KEY = "ffdpro_projects_v1";
+const LS_ALLOCATION_TARGETS_KEY = "ffdpro_allocation_targets_v1";
 const PERIOD_LABELS = { all: "Tutto lo storico", week: "Questa settimana", month: "Questo mese", quarter: "Questo trimestre", year: "Quest'anno", custom: "Intervallo personalizzato" };
+const TAB_NAMES = ["overview", "simulator", "analytics", "transactions", "savings", "networth"];
+const SAVINGS_SUBSECTIONS = ["recurring", "spending", "compare", "goals"];
 
 const PRESETS = [
   { icon: "🏋️", name: "Abbonamento Palestra", amount: 45, type: "expense", frequency: "monthly", duration: 12 },
@@ -2795,14 +2940,17 @@ const state = {
   transactions: [],
   budgets: {},
   merchantRules: [],
-  filters: { period: "month", category: "all", type: "all", customStart: null, customEnd: null },
+  // Un solo set di filtri per tutta l'app (periodo, categoria, tipo, membro, etichetta): ogni tab
+  // legge da qui. Il tab Transazioni aggiunge soltanto la ricerca libera (state.txFilters.search).
+  filters: { period: "month", category: "all", type: "all", member: "all", tag: "all", customStart: null, customEnd: null },
   simulations: [],
   charts: {},
   txSort: { field: "date", dir: "desc" },
-  txFilters: { category: "all", type: "all", search: "", member: "all", tag: "all" },
+  txFilters: { search: "" },
   txPage: 1,
   txPageSize: 25,
   activeTab: "overview",
+  activeSavingsSubsection: "recurring",
   overviewLayout: "classica",
   savingsGoal: 0.2,
   antThreshold: 5,
@@ -2811,6 +2959,8 @@ const state = {
   customCompare: { aStart: null, aEnd: null, bStart: null, bEnd: null },
   ignoredRecurringMerchants: [],
   subscriptionReviews: {},
+  projects: [],
+  allocationTargets: { needs: 50, wants: 30, savings: 20 },
   savingsGoals: [],
   householdMembers: [],
   customAlerts: { singleTxThreshold: null, negativeBalanceAlert: false },
@@ -2827,6 +2977,11 @@ const state = {
 let simIdSeq = 1;
 
 // ---------------------------------------------------------------- formatting
+// Regola sui decimali, per non alternarli a caso tra pannelli:
+//   - 0 decimali (default) per i valori di sintesi: KPI card, assi e tooltip dei grafici, importi
+//     impostati dall'utente (budget, simulazioni) e riepiloghi narrativi;
+//   - 2 decimali espliciti per gli importi misurati sulle transazioni: insight, liste analitiche,
+//     tabelle di dettaglio, totali di piano d'azione ed export.
 function fmtCurrency(v, decimals = 0) {
   const sign = v < 0 ? "-" : "";
   return sign + "€" + Math.abs(v).toLocaleString("it-IT", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
@@ -3141,6 +3296,28 @@ function loadSubscriptionReviews() {
     state.subscriptionReviews = parsed && typeof parsed === "object" ? parsed : {};
   } catch (e) { state.subscriptionReviews = {}; }
 }
+function saveProjects() {
+  try { localStorage.setItem(LS_PROJECTS_KEY, JSON.stringify(state.projects)); } catch (e) { /* ignore */ }
+}
+function loadProjects() {
+  try {
+    const raw = localStorage.getItem(LS_PROJECTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    state.projects = Array.isArray(parsed) ? parsed : [];
+  } catch (e) { state.projects = []; }
+}
+function saveAllocationTargets() {
+  try { localStorage.setItem(LS_ALLOCATION_TARGETS_KEY, JSON.stringify(state.allocationTargets)); } catch (e) { /* ignore */ }
+}
+function loadAllocationTargets() {
+  try {
+    const raw = localStorage.getItem(LS_ALLOCATION_TARGETS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    state.allocationTargets = parsed && typeof parsed === "object"
+      ? { ...DEFAULT_ALLOCATION_TARGETS, ...parsed }
+      : { ...DEFAULT_ALLOCATION_TARGETS };
+  } catch (e) { state.allocationTargets = { ...DEFAULT_ALLOCATION_TARGETS }; }
+}
 function setSubscriptionReview(key, status) {
   state.subscriptionReviews[key] = { status, reviewedAt: new Date().toISOString() };
   saveSubscriptionReviews();
@@ -3280,12 +3457,15 @@ function validateCustomRange() {
   document.getElementById("customRangeWarning").classList.toggle("hidden", !invalid);
   return !invalid;
 }
+function matchesGlobalDimensions(t) {
+  if (state.filters.category !== "all" && t.category !== state.filters.category) return false;
+  if (state.filters.type !== "all" && t.type !== state.filters.type) return false;
+  if (state.filters.member !== "all" && (t.member || null) !== state.filters.member) return false;
+  if (state.filters.tag !== "all" && !(t.tags || []).includes(state.filters.tag)) return false;
+  return true;
+}
 function getCategoryTypeFiltered() {
-  return state.transactions.filter((t) =>
-    isCountedTx(t) &&
-    (state.filters.category === "all" || t.category === state.filters.category) &&
-    (state.filters.type === "all" || t.type === state.filters.type)
-  );
+  return state.transactions.filter((t) => isCountedTx(t) && matchesGlobalDimensions(t));
 }
 function getPeriodFiltered() {
   const [start, end] = getPeriodRange();
@@ -3419,14 +3599,16 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
     const monthlySpend = b.speso / monthsN;
     if (b.percent > 1) {
       insights.push({ level: "danger", icon: "⚠️", title: `Budget superato: ${b.category}`,
-        text: `Speso ${fmtCurrency(b.speso)} su ${fmtCurrency(b.budget)} (${fmtPercent(b.percent)}).`,
-        action: withActions ? `Riduci le uscite in ${b.category} di circa ${fmtCurrency(b.speso - b.budget)} per rientrare nel budget.` : null,
-        actionButton: withActions ? { label: "Simula taglio", run: () => simulateCut(b.category, monthlySpend, Math.min(90, Math.ceil((b.speso - b.budget) / b.speso * 100))) } : null });
+        text: `Speso ${fmtCurrency(b.speso, 2)} su ${fmtCurrency(b.budget, 2)} (${fmtPercent(b.percent)}).`,
+        action: withActions ? `Riduci le uscite in ${b.category} di circa ${fmtCurrency(b.speso - b.budget, 2)} per rientrare nel budget.` : null,
+        actionButton: withActions ? { label: "Simula taglio", run: () => simulateCut(b.category, monthlySpend, Math.min(90, Math.ceil((b.speso - b.budget) / b.speso * 100))) } : null,
+        drillDown: withActions ? { category: b.category, type: "outcome" } : null });
     } else if (b.percent > 0.8) {
       insights.push({ level: "warning", icon: "⏳", title: `Vicino al limite: ${b.category}`,
-        text: `Usato il ${fmtPercent(b.percent)} del budget.`,
+        text: `Usato il ${fmtPercent(b.percent)} del budget (${fmtCurrency(b.speso, 2)} su ${fmtCurrency(b.budget, 2)}).`,
         action: withActions ? `Monitora le prossime spese in ${b.category} per non sforare.` : null,
-        actionButton: withActions ? { label: "Simula taglio 20%", run: () => simulateCut(b.category, monthlySpend, 20) } : null });
+        actionButton: withActions ? { label: "Simula taglio 20%", run: () => simulateCut(b.category, monthlySpend, 20) } : null,
+        drillDown: withActions ? { category: b.category, type: "outcome" } : null });
     }
   }
   if (income > 0 && savingsRate > state.savingsGoal) {
@@ -3440,7 +3622,7 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
   for (const [k, v] of byDay) if (v > peakVal) { peakVal = v; peakDay = k; }
   if (peakDay) {
     insights.push({ level: "info", icon: "📅", title: "Picco di spesa giornaliero",
-      text: `Il ${fmtDateFull(new Date(peakDay))} hai speso ${fmtCurrency(peakVal)} in un solo giorno.`, action: null });
+      text: `Il ${fmtDateFull(new Date(peakDay))} hai speso ${fmtCurrency(peakVal, 2)} in un solo giorno.`, action: null });
   }
   // Proiezione annuale sulla categoria di spesa più pesante del periodo (non più fissa su
   // "Colazione & Caffè": si adatta a qualunque categoria domini la spesa dell'utente).
@@ -3453,9 +3635,10 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
     if (topCatCount >= 3) {
       const monthlyAvg = topTotal / monthsN;
       insights.push({ level: "info", icon: catIcon(topCat), title: `Proiezione annuale ${topCat}`,
-        text: `Di questo passo spenderesti circa ${fmtCurrency(monthlyAvg * 12)} l'anno in questa categoria.`,
+        text: `Di questo passo spenderesti circa ${fmtCurrency(monthlyAvg * 12, 2)} l'anno in questa categoria.`,
         action: withActions ? "Dimezzare questa spesa libererebbe budget per altri obiettivi." : null,
-        actionButton: withActions ? { label: "Simula taglio 50%", run: () => simulateCut(topCat, monthlyAvg, 50) } : null });
+        actionButton: withActions ? { label: "Simula taglio 50%", run: () => simulateCut(topCat, monthlyAvg, 50) } : null,
+        drillDown: withActions ? { category: topCat, type: "outcome" } : null });
     }
   }
   // Spunti costruiti sulle stesse analisi del tab Risparmio (abbonamenti ricorrenti, aumenti
@@ -3539,7 +3722,7 @@ function computeInsights(periodTxs, budgetBreakdown, withActions) {
   }
   if (state.customAlerts.negativeBalanceAlert && income > 0 && income - outcome < 0) {
     insights.push({ level: "danger", icon: "🔻", title: "Saldo negativo nel periodo",
-      text: `Uscite (${fmtCurrency(outcome)}) superiori alle entrate (${fmtCurrency(income)}) di ${fmtCurrency(outcome - income)}.`, action: null });
+      text: `Uscite (${fmtCurrency(outcome, 2)}) superiori alle entrate (${fmtCurrency(income, 2)}) di ${fmtCurrency(outcome - income, 2)}.`, action: null });
   }
   if (!insights.length) insights.push({ level: "success", icon: "✅", title: "Tutto in ordine", text: "Nessuna anomalia rilevata nel periodo selezionato.", action: null });
   insights.sort((a, b) => INSIGHT_SEVERITY[a.level] - INSIGHT_SEVERITY[b.level]);
@@ -3623,6 +3806,47 @@ function computeOverviewData() {
   const recent = periodTxs.slice().sort((a, b) => b.date - a.date).slice(0, 8);
   return { periodTxs, income, outcome, net, savingsRate, forecast, health, cards, monthlySeries, budgetBreakdown, pieRows, weekly, insights, recent };
 }
+// ---------------------------------------------------------------- Drill-down verso le transazioni
+// Ogni numero aggregato deve poter essere aperto per vedere le transazioni che lo compongono.
+// `period` va passato solo dai pannelli che ragionano su tutto lo storico (ricorrenti, abbonamenti):
+// senza di esso il drill-down eredita il periodo corrente, cioè la stessa scala del numero cliccato.
+function drillDownToTransactions({ category = null, search = null, type = null, period = null } = {}) {
+  if (period) {
+    state.filters.period = period;
+    const el = document.getElementById("filterPeriod");
+    if (el) el.value = period;
+    document.getElementById("filterCustomRangeField").classList.toggle("hidden", period !== "custom");
+  }
+  if (category) {
+    state.filters.category = category;
+    const el = document.getElementById("filterCategory");
+    if (el && [...el.options].some((o) => o.value === category)) el.value = category;
+  }
+  if (type) {
+    state.filters.type = type;
+    const el = document.getElementById("filterType");
+    if (el) el.value = type;
+  }
+  state.txFilters.search = search || "";
+  const searchEl = document.getElementById("txSearch");
+  if (searchEl) searchEl.value = state.txFilters.search;
+  state.txPage = 1;
+  updateFilterSummary();
+  saveUiPrefs();
+  switchTab("transactions");
+}
+// Rende una riga già renderizzata attivabile con mouse e tastiera, senza cambiarne il markup.
+function makeRowDrillable(rowEl, ariaLabel, drillArgs) {
+  rowEl.classList.add("drillable");
+  rowEl.setAttribute("role", "button");
+  rowEl.setAttribute("tabindex", "0");
+  rowEl.setAttribute("title", ariaLabel);
+  rowEl.setAttribute("aria-label", ariaLabel);
+  rowEl.addEventListener("click", () => drillDownToTransactions(drillArgs));
+  rowEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); drillDownToTransactions(drillArgs); }
+  });
+}
 function trendHtml(trend) {
   const cls = trend.favorable === "good" ? "pos" : trend.favorable === "bad" ? "neg" : "";
   const arrow = trend.dir === "up" ? "▲" : trend.dir === "down" ? "▼" : "●";
@@ -3669,11 +3893,17 @@ function renderCategoryPieChart(canvasId, emptyMsgId, pieRows) {
   if (!canvas) return;
   if (emptyMsgId) document.getElementById(emptyMsgId).classList.toggle("hidden", pieRows.length > 0);
   const pieContainerWidth = canvas.parentElement.clientWidth;
+  canvas.style.cursor = pieRows.length ? "pointer" : "";
   renderChart(canvasId, {
     type: "doughnut",
     data: { labels: pieRows.map((r) => `${catIcon(r.category)} ${r.category}`), datasets: [{ data: pieRows.map((r) => r.speso), backgroundColor: CHART_PALETTE, borderColor: cssVar("--pie-border"), borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: "60%",
+      onClick: (evt, elements) => {
+        if (!elements || !elements.length) return;
+        const row = pieRows[elements[0].index];
+        if (row) drillDownToTransactions({ category: row.category, type: "outcome" });
+      },
       plugins: { legend: { position: pieContainerWidth < 460 ? "bottom" : "right" }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtCurrency(c.parsed)}` } } },
     },
   });
@@ -3718,6 +3948,7 @@ function renderBudgetList(containerId, budgetBreakdown) {
       continue;
     }
     row.appendChild(el("div", "budget-amounts" + (b.percent > 1 ? " over" : ""), `${fmtCurrency(b.speso)} / ${fmtCurrency(b.budget)}`));
+    makeRowDrillable(row, `Vedi le transazioni di ${b.category}`, { category: b.category });
     const track = el("div", "track");
     const pct = clamp(b.percent || 0, 0, 1.4);
     const fill = el("div", "track-fill");
@@ -3841,6 +4072,13 @@ function renderInsightList(box, insights) {
     txt.appendChild(document.createTextNode(ins.text));
     if (ins.action) txt.appendChild(el("span", "action", "💡 " + ins.action));
     item.appendChild(txt);
+    if (ins.drillDown) {
+      const drillBtn = el("button", "btn btn-ghost btn-sm insight-action-btn", "🔍 Transazioni");
+      drillBtn.type = "button";
+      drillBtn.title = "Vedi le transazioni dietro questo dato";
+      drillBtn.addEventListener("click", () => drillDownToTransactions(ins.drillDown));
+      item.appendChild(drillBtn);
+    }
     if (ins.actionButton) {
       const btn = el("button", "btn btn-sm insight-action-btn", ins.actionButton.label);
       btn.type = "button";
@@ -4030,7 +4268,7 @@ function cancelSimEdit() {
 function saveSimulationFromForm() {
   const name = document.getElementById("simName").value.trim() || "Simulazione";
   const amount = parseFloat(document.getElementById("simAmount").value);
-  if (isNaN(amount) || amount <= 0) { alert("Inserisci un importo valido."); return; }
+  if (isNaN(amount) || amount <= 0) { showToast("Inserisci un importo valido.", "error"); return; }
   const type = document.getElementById("simType").value;
   const frequency = document.getElementById("simFrequency").value;
   const duration = clamp(parseInt(document.getElementById("simDuration").value, 10) || 12, 1, 12);
@@ -4323,7 +4561,11 @@ function renderSubscriptionsTable(allSubs) {
     tr.appendChild(tdCheck);
 
     const tdService = document.createElement("td");
-    tdService.appendChild(el("div", "rv-desc", `${catIcon(s.category)} ${s.catalogMatch ? s.catalogMatch.service : s.label}`));
+    const serviceName = el("button", "link-cell", `${catIcon(s.category)} ${s.catalogMatch ? s.catalogMatch.service : s.label}`);
+    serviceName.type = "button";
+    serviceName.title = `Vedi tutte le transazioni di ${s.label}`;
+    serviceName.addEventListener("click", () => drillDownToTransactions({ search: s.label, period: "all" }));
+    tdService.appendChild(serviceName);
     const badges = el("div", "sub-badges");
     if (s.isRecent) badges.appendChild(el("span", "badge info", "🆕 Recente"));
     if (s.priceAboveReference) badges.appendChild(el("span", "badge warn", `💰 Sopra listino +${fmtPercent(s.priceAboveReference.delta)}`));
@@ -4647,6 +4889,12 @@ function renderSavings() {
     row.appendChild(desc);
     row.appendChild(el("div", "amt-mono", fmtCurrency(r.avgAmount, 2) + "/mese"));
     const btnWrap = el("div", "review-row-actions");
+    // I ricorrenti sono calcolati su tutto lo storico: il drill-down apre lo stesso ambito.
+    const seeBtn = el("button", "btn btn-ghost btn-sm", "🔍 Transazioni");
+    seeBtn.type = "button";
+    seeBtn.title = `Vedi tutte le transazioni di ${r.label}`;
+    seeBtn.addEventListener("click", () => drillDownToTransactions({ search: r.label, period: "all" }));
+    btnWrap.appendChild(seeBtn);
     const btn = el("button", "btn btn-sm", "Simula taglio");
     btn.type = "button";
     btn.addEventListener("click", () => simulateCut(r.label, r.avgAmount, 100));
@@ -4731,6 +4979,7 @@ function renderSavings() {
     const row = el("div", "budget-row");
     row.appendChild(el("div", "budget-cat", `${catIcon(m.category)} ${m.label}`));
     row.appendChild(el("div", "budget-amounts", `${fmtCurrency(m.total, 2)} (${m.count})`));
+    makeRowDrillable(row, `Vedi le transazioni di ${m.label}`, { search: m.label });
     const track = el("div", "track");
     const fill = el("div", "track-fill");
     fill.style.width = (maxTotal > 0 ? (m.total / maxTotal) * 100 : 0) + "%";
@@ -4781,6 +5030,7 @@ function renderSavings() {
     const row = el("div", "budget-row");
     row.appendChild(el("div", "budget-cat", `${catIcon(c.category)} ${c.category}`));
     row.appendChild(el("div", "budget-amounts", `${fmtCurrency(c.total, 2)} (${c.count})`));
+    makeRowDrillable(row, `Vedi le transazioni di ${c.category}`, { category: c.category, type: "outcome" });
     const track = el("div", "track");
     const fill = el("div", "track-fill");
     fill.style.width = (discretionaryDetail.total > 0 ? (c.total / discretionaryDetail.total) * 100 : 0) + "%";
@@ -4892,6 +5142,8 @@ function renderSavings() {
   }
 
   renderSavingsGoals();
+  renderProjects();
+  renderAllocationBenchmark(periodTxs);
   renderActionPlan(periodTxs, budgetBreakdown);
   renderCategorySparklines(periodTxs);
 }
@@ -5217,12 +5469,12 @@ function renderIgnoredRecurringList() {
   }
 }
 function populateMemberSelects() {
-  for (const id of ["mxMemberSelect", "txFilterMember"]) {
+  for (const id of ["mxMemberSelect", "filterMember"]) {
     const sel = document.getElementById(id);
     if (!sel) continue;
     const current = sel.value;
     sel.innerHTML = "";
-    if (id === "txFilterMember") {
+    if (id === "filterMember") {
       const optAll = document.createElement("option"); optAll.value = "all"; optAll.textContent = "Tutti"; sel.appendChild(optAll);
     } else {
       const optNone = document.createElement("option"); optNone.value = ""; optNone.textContent = "Nessuno"; sel.appendChild(optNone);
@@ -5232,8 +5484,14 @@ function populateMemberSelects() {
     }
     if ([...sel.options].some((o) => o.value === current)) sel.value = current;
   }
-  const row = document.getElementById("householdMemberFilterRow");
-  if (row) row.classList.toggle("hidden", state.householdMembers.length === 0);
+  const field = document.getElementById("filterMemberField");
+  if (field) field.classList.toggle("hidden", state.householdMembers.length === 0);
+  // Un membro rimosso non deve continuare a filtrare l'intera app in modo invisibile.
+  if (state.filters.member !== "all" && !state.householdMembers.includes(state.filters.member)) {
+    state.filters.member = "all";
+    const sel = document.getElementById("filterMember");
+    if (sel) sel.value = "all";
+  }
 }
 
 // ---------------------------------------------------------------- Advanced: previsione avanzata
@@ -5280,6 +5538,179 @@ function renderForecastChart() {
     },
     options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: currencyTick() } }, plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtCurrency(c.parsed.y)}` } } } },
   });
+}
+
+// ---------------------------------------------------------------- Budget di progetto (trasversali)
+// Un progetto è un contenitore di spesa che taglia le categorie: raccoglie tutte le uscite di un
+// intervallo di date che rientrano nelle categorie/etichette scelte, e le confronta col preventivo.
+function addProject(project) {
+  state.projects.push({ id: Date.now() + Math.random(), ...project });
+  saveProjects();
+}
+function removeProject(id) {
+  state.projects = state.projects.filter((p) => p.id !== id);
+  saveProjects();
+}
+function projectTransactions(project) {
+  const start = project.startDate ? new Date(project.startDate + "T00:00:00") : null;
+  const end = project.endDate ? new Date(project.endDate + "T23:59:59") : null;
+  const cats = project.categories || [];
+  const tags = project.tags || [];
+  return state.transactions.filter((t) => {
+    if (t.type !== "outcome" || !isCountedTx(t)) return false;
+    if (start && t.date < start) return false;
+    if (end && t.date > end) return false;
+    if (cats.length && !cats.includes(t.category)) return false;
+    if (tags.length && !(t.tags || []).some((tag) => tags.includes(tag))) return false;
+    return true;
+  });
+}
+function computeProjectProgress(project) {
+  const txs = projectTransactions(project);
+  const spent = txs.reduce((s, t) => s + t.value, 0);
+  const budget = project.budget || 0;
+  const end = project.endDate ? new Date(project.endDate + "T23:59:59") : null;
+  const daysLeft = end ? Math.ceil((end - latestDate()) / 86400000) : null;
+  return { txs, spent, budget, percent: budget > 0 ? spent / budget : null, remaining: budget - spent, daysLeft };
+}
+function renderProjects() {
+  const list = document.getElementById("projectsList");
+  if (!list) return;
+  list.innerHTML = "";
+  if (!state.projects.length) {
+    list.appendChild(el("div", "sim-empty", "Nessun progetto attivo. Creane uno qui sotto per seguire una spesa che attraversa più categorie."));
+    return;
+  }
+  for (const project of state.projects) {
+    const p = computeProjectProgress(project);
+    const row = el("div", "budget-row");
+    const head = el("div", "budget-cat", `📦 ${project.name}`);
+    if (p.daysLeft !== null) {
+      const badge = el("span", "rollover-badge" + (p.daysLeft < 0 ? "" : " pos"),
+        p.daysLeft < 0 ? "concluso" : `${p.daysLeft} giorni rimasti`);
+      head.appendChild(badge);
+    }
+    row.appendChild(head);
+    const over = p.percent !== null && p.percent > 1;
+    row.appendChild(el("div", "budget-amounts" + (over ? " over" : ""),
+      p.budget > 0 ? `${fmtCurrency(p.spent, 2)} / ${fmtCurrency(p.budget, 2)}` : fmtCurrency(p.spent, 2)));
+    const track = el("div", "track");
+    const fill = el("div", "track-fill");
+    fill.style.width = (clamp(p.percent || 0, 0, 1.4) / 1.4) * 100 + "%";
+    fill.style.background = over
+      ? `linear-gradient(90deg,${cssVar("--warning")},${cssVar("--danger")})`
+      : `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`;
+    track.appendChild(fill);
+    if (p.percent !== null) track.appendChild(el("div", "track-pct", fmtPercent(p.percent)));
+    row.appendChild(track);
+    const actions = el("div", "review-row-actions");
+    const seeBtn = el("button", "btn btn-ghost btn-sm", "🔍 Transazioni");
+    seeBtn.type = "button";
+    seeBtn.title = `Vedi le ${p.txs.length} transazioni di ${project.name}`;
+    seeBtn.addEventListener("click", () => drillDownToTransactions({
+      period: "custom", category: (project.categories || []).length === 1 ? project.categories[0] : null, type: "outcome",
+    }));
+    actions.appendChild(seeBtn);
+    const rm = el("button", "btn btn-sm", "✕");
+    rm.type = "button";
+    rm.setAttribute("aria-label", `Rimuovi progetto ${project.name}`);
+    rm.addEventListener("click", () => {
+      confirmAction({
+        message: `Rimuovere il progetto "${project.name}"? Le transazioni non vengono toccate.`,
+        confirmLabel: "Rimuovi", variant: "danger",
+        onConfirm: () => { removeProject(project.id); renderProjects(); showToast("Progetto rimosso.", "success"); },
+      });
+    });
+    actions.appendChild(rm);
+    row.appendChild(actions);
+    const detail = el("div", "muted", `${p.txs.length} transazioni · ${(project.categories || []).length ? (project.categories || []).join(", ") : "tutte le categorie"}`
+      + ((project.tags || []).length ? ` · etichette: ${(project.tags || []).join(", ")}` : "")
+      + (p.budget > 0 ? ` · ${p.remaining >= 0 ? "restano " + fmtCurrency(p.remaining, 2) : "sforato di " + fmtCurrency(-p.remaining, 2)}` : ""));
+    row.appendChild(detail);
+    list.appendChild(row);
+  }
+}
+function populateProjectCategorySelect() {
+  const sel = document.getElementById("projectCategoriesInput");
+  if (!sel) return;
+  const selected = new Set([...sel.selectedOptions].map((o) => o.value));
+  sel.innerHTML = "";
+  for (const c of getAllCategories()) {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = `${catIcon(c)} ${c}`;
+    if (selected.has(c)) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+// ---------------------------------------------------------------- Benchmark di allocazione (50/30/20)
+// Riusa la stessa classificazione discrezionale del pannello "Spesa Necessaria vs Superflua":
+// necessità = uscite non discrezionali, desideri = uscite discrezionali, risparmio = quel che resta.
+const DEFAULT_ALLOCATION_TARGETS = { needs: 50, wants: 30, savings: 20 };
+const ALLOCATION_ROWS = [
+  { key: "needs", label: "🏠 Necessità", hint: "uscite non discrezionali" },
+  { key: "wants", label: "🎈 Desideri", hint: "uscite discrezionali" },
+  { key: "savings", label: "💰 Risparmio", hint: "entrate non spese" },
+];
+function computeAllocationBreakdown(periodTxs) {
+  const income = sumBy(periodTxs, "income");
+  let needs = 0, wants = 0;
+  for (const t of periodTxs) {
+    if (t.type !== "outcome") continue;
+    if (isDiscretionary(t)) wants += t.value; else needs += t.value;
+  }
+  const savings = Math.max(0, income - needs - wants);
+  const base = income > 0 ? income : needs + wants;
+  return {
+    income, base,
+    rows: ALLOCATION_ROWS.map((r) => {
+      const amount = r.key === "needs" ? needs : r.key === "wants" ? wants : savings;
+      return { ...r, amount, actualPct: base > 0 ? (amount / base) * 100 : 0, targetPct: state.allocationTargets[r.key] };
+    }),
+  };
+}
+function renderAllocationBenchmark(periodTxs) {
+  const list = document.getElementById("allocationBenchmarkList");
+  if (!list) return;
+  const tag = document.getElementById("allocationTargetTag");
+  const t = state.allocationTargets;
+  if (tag) tag.textContent = `target ${t.needs}/${t.wants}/${t.savings}`;
+  const data = computeAllocationBreakdown(periodTxs);
+  list.innerHTML = "";
+  const summary = document.getElementById("allocationBenchmarkSummary");
+  if (data.base <= 0) {
+    list.appendChild(el("div", "sim-empty", "Nessuna entrata o uscita nel periodo selezionato."));
+    if (summary) summary.textContent = "";
+    return;
+  }
+  for (const row of data.rows) {
+    const box = el("div", "budget-row");
+    const head = el("div", "budget-cat", `${row.label}`);
+    head.appendChild(el("span", "rollover-badge" + (row.actualPct >= row.targetPct ? " pos" : " neg"),
+      `${row.actualPct.toFixed(0)}% vs ${row.targetPct}%`));
+    box.appendChild(head);
+    box.appendChild(el("div", "budget-amounts", fmtCurrency(row.amount, 2)));
+    const track = el("div", "track");
+    const fill = el("div", "track-fill");
+    fill.style.width = clamp(row.actualPct / 100, 0, 1) * 100 + "%";
+    // Sforare sul risparmio è un bene, sulle altre due voci no: il colore segue il significato.
+    const good = row.key === "savings" ? row.actualPct >= row.targetPct : row.actualPct <= row.targetPct;
+    fill.style.background = good
+      ? `linear-gradient(90deg,${cssVar("--primary-dark")},${cssVar("--primary")})`
+      : `linear-gradient(90deg,${cssVar("--warning")},${cssVar("--danger")})`;
+    track.appendChild(fill);
+    box.appendChild(track);
+    box.appendChild(el("div", "muted", row.hint));
+    list.appendChild(box);
+  }
+  if (summary) {
+    const worst = data.rows
+      .map((r) => ({ ...r, gap: r.key === "savings" ? r.targetPct - r.actualPct : r.actualPct - r.targetPct }))
+      .sort((a, b) => b.gap - a.gap)[0];
+    summary.textContent = worst && worst.gap > 1
+      ? `Lo scostamento maggiore è su ${worst.label.replace(/^\S+\s/, "")}: ${Math.abs(worst.gap).toFixed(0)} punti percentuali ${worst.key === "savings" ? "sotto" : "sopra"} il target.`
+      : "Allocazione in linea con i target impostati.";
+  }
 }
 
 // ---------------------------------------------------------------- Advanced: piano d'azione combinato
@@ -5408,6 +5839,7 @@ function renderCategorySparklines(periodTxs) {
   for (const cat of topCats) {
     const row = el("div", "sparkline-row");
     row.appendChild(el("div", "sparkline-label", `${catIcon(cat)} ${cat}`));
+    makeRowDrillable(row, `Vedi le transazioni di ${cat}`, { category: cat, type: "outcome" });
     const canvasWrap = el("div", "sparkline-canvas-wrap");
     const canvas = document.createElement("canvas");
     canvas.id = "spark_" + cat.replace(/\W+/g, "_");
@@ -5458,6 +5890,8 @@ function exportFullBackup() {
     theme: (() => { try { return localStorage.getItem(LS_THEME_KEY) || "system"; } catch (e) { return "system"; } })(),
     ignoredRecurringMerchants: state.ignoredRecurringMerchants,
     subscriptionReviews: state.subscriptionReviews,
+    projects: state.projects,
+    allocationTargets: state.allocationTargets,
   };
   downloadJSON(backup, `backup_family_finance_${Date.now()}.json`);
 }
@@ -5469,7 +5903,21 @@ function importFullBackup(file) {
     try {
       const data = JSON.parse(reader.result);
       if (!data || !Array.isArray(data.transactions)) throw new Error("Il file non è un backup valido.");
-      if (!confirm("Importare questo backup sovrascriverà tutti i dati attuali (transazioni, budget, dizionario, obiettivi, impostazioni). Continuare?")) return;
+      confirmAction({
+        message: "Importare questo backup sovrascriverà tutti i dati attuali (transazioni, budget, dizionario, obiettivi, impostazioni). Continuare?",
+        confirmLabel: "Importa", variant: "danger",
+        onConfirm: () => applyImportedBackup(data, errBox),
+      });
+    } catch (err) {
+      errBox.classList.remove("hidden");
+      errBox.textContent = "Errore nell'importazione del backup: " + err.message;
+    }
+  };
+  reader.onerror = () => { errBox.classList.remove("hidden"); errBox.textContent = "Impossibile leggere il file."; };
+  reader.readAsText(file, "UTF-8");
+}
+function applyImportedBackup(data, errBox) {
+  try {
       const rows = data.transactions.map(([iso, cat, type, val, desc, auto, kw, disc, member, tags, note]) => ({
         date: new Date(iso), category: resolveKnownCategory(cat) || NEEDS_CATEGORY, type, value: val, description: desc || null,
         autoCategorized: !!auto, matchedKeyword: kw || null,
@@ -5494,21 +5942,22 @@ function importFullBackup(file) {
       state.netWorthHistory = Array.isArray(data.netWorthHistory) ? data.netWorthHistory : [];
       state.ignoredRecurringMerchants = Array.isArray(data.ignoredRecurringMerchants) ? data.ignoredRecurringMerchants : [];
       state.subscriptionReviews = data.subscriptionReviews && typeof data.subscriptionReviews === "object" ? data.subscriptionReviews : {};
+      state.projects = Array.isArray(data.projects) ? data.projects : [];
+      state.allocationTargets = data.allocationTargets && typeof data.allocationTargets === "object"
+        ? { ...DEFAULT_ALLOCATION_TARGETS, ...data.allocationTargets } : { ...DEFAULT_ALLOCATION_TARGETS };
       saveBudgets(); saveMerchantRules(); saveSavingsGoal(state.savingsGoal); saveSavingsGoals(); saveHouseholdMembers(); saveCustomAlerts();
       saveBudgetRolloverEnabled(); saveDebts(); saveNetWorth(); saveIgnoredRecurringMerchants(); saveSubscriptionReviews();
+      saveProjects(); saveAllocationTargets();
       try { localStorage.setItem(LS_OVERVIEW_LAYOUT_KEY, state.overviewLayout); } catch (e) { /* ignore */ }
       if (data.theme === "light" || data.theme === "dark" || data.theme === "system") applyTheme(data.theme);
       loadTransactions(rows, { mode: "replace" });
       populateMemberSelects();
       closeSettings();
-      alert("Backup importato con successo.");
-    } catch (err) {
-      errBox.classList.remove("hidden");
-      errBox.textContent = "Errore nell'importazione del backup: " + err.message;
-    }
-  };
-  reader.onerror = () => { errBox.classList.remove("hidden"); errBox.textContent = "Impossibile leggere il file."; };
-  reader.readAsText(file, "UTF-8");
+      showToast("Backup importato con successo.", "success");
+  } catch (err) {
+    errBox.classList.remove("hidden");
+    errBox.textContent = "Errore nell'importazione del backup: " + err.message;
+  }
 }
 
 // ---------------------------------------------------------------- Advanced: report mensile
@@ -5773,6 +6222,7 @@ function commandPaletteActions() {
     { label: "Aggiungi CSV", icon: "➕", run: () => document.getElementById("addCsvFileInput").click() },
     { label: "Report Mensile", icon: "📄", run: () => openMonthlyReport() },
     { label: "Report Annuale", icon: "📅", run: () => openAnnualReport() },
+    { label: "Revisione Guidata (riunione di famiglia)", icon: "👨\u200d👩\u200d👧", run: () => openMonthlyReview() },
     { label: "Esporta Transazioni CSV", icon: "⬇️", run: () => exportTransactionsCSV() },
     { label: "Esporta Backup", icon: "💾", run: () => exportFullBackup() },
     { label: "Esporta calendario scadenze ricorrenti (.ics)", icon: "📅", run: () => exportRecurringCalendarICS() },
@@ -6161,6 +6611,257 @@ function renderDebtPlanner() {
   renderDebtPlannerChart(withExtra, baseline);
 }
 
+// ---------------------------------------------------------------- Revisione guidata (riunione di famiglia)
+// Una sequenza a schermo intero che mette in fila i numeri del periodo, gli sforamenti, dove sono
+// finiti i soldi, lo stato di obiettivi e progetti e le azioni da decidere insieme. È pensata per
+// essere guardata in due, non stampata: per la versione da stampare c'è il Report Mensile.
+let reviewStepIndex = 0;
+function buildReviewSteps() {
+  const data = computeOverviewData();
+  const periodTxs = data.periodTxs;
+  const overBudget = data.budgetBreakdown.filter((b) => !b.unset && b.percent > 1);
+  const topCategories = data.pieRows.slice(0, 5);
+  const merchants = Array.from(groupByMerchant(periodTxs).values())
+    .map((g) => ({ label: g.label, total: g.items.reduce((s, t) => s + t.value, 0) }))
+    .sort((a, b) => b.total - a.total).slice(0, 5);
+  const planCandidates = computeActionPlanCandidates(periodTxs, data.budgetBreakdown)
+    .sort((a, b) => b.monthlyAmount - a.monthlyAmount).slice(0, 5);
+  const activeProjects = state.projects.map((p) => ({ project: p, progress: computeProjectProgress(p) }));
+
+  const tiles = (items) => {
+    const grid = el("div", "review-grid");
+    for (const it of items) {
+      const tile = el("div", "review-tile");
+      tile.appendChild(el("div", "rt-label", it.label));
+      tile.appendChild(el("div", "rt-value " + (it.cls || ""), it.value));
+      grid.appendChild(tile);
+    }
+    return grid;
+  };
+  const lines = (items, emptyText) => {
+    const box = el("div");
+    if (!items.length) { box.appendChild(el("div", "sim-empty", emptyText)); return box; }
+    for (const it of items) {
+      const line = el("div", "review-line");
+      line.appendChild(el("span", null, it.label));
+      line.appendChild(el("span", "rl-amt " + (it.cls || ""), it.amount));
+      box.appendChild(line);
+    }
+    return box;
+  };
+
+  return [
+    {
+      title: `Il periodo in numeri`,
+      lead: `${periodRangeLabel()} · ${periodTxs.length} transazioni. Partiamo da come si è chiuso il periodo.`,
+      build: () => tiles([
+        { label: "Entrate", value: fmtCurrency(data.income, 2), cls: "pos" },
+        { label: "Uscite", value: fmtCurrency(data.outcome, 2), cls: "neg" },
+        { label: "Saldo netto", value: fmtCurrency(data.net, 2), cls: data.net >= 0 ? "pos" : "neg" },
+        { label: "Tasso di risparmio", value: fmtPercent(data.savingsRate), cls: data.savingsRate >= state.savingsGoal ? "pos" : "warn" },
+        { label: "Salute finanziaria", value: `${data.health.grade} (${data.health.total}/100)`, cls: data.health.total >= 75 ? "pos" : data.health.total >= 40 ? "warn" : "neg" },
+      ]),
+    },
+    {
+      title: "Budget sforati",
+      lead: overBudget.length
+        ? "Queste categorie hanno superato il budget: vale la pena capire insieme se è stata un'eccezione o un'abitudine."
+        : "Nessun budget superato nel periodo.",
+      build: () => lines(overBudget.map((b) => ({
+        label: `${catIcon(b.category)} ${b.category}`,
+        amount: `${fmtCurrency(b.speso, 2)} / ${fmtCurrency(b.budget, 2)} (${fmtPercent(b.percent)})`,
+        cls: "neg",
+      })), "Tutti i budget impostati sono sotto controllo. 🎉"),
+    },
+    {
+      title: "Dove sono finiti i soldi",
+      lead: "Le categorie e gli esercenti che hanno pesato di più nel periodo.",
+      build: () => {
+        const box = el("div");
+        box.appendChild(el("h3", null, "Categorie"));
+        box.appendChild(lines(topCategories.map((c) => ({
+          label: `${catIcon(c.category)} ${c.category}`, amount: fmtCurrency(c.speso, 2),
+        })), "Nessuna spesa nel periodo."));
+        box.appendChild(el("h3", null, "Esercenti"));
+        box.appendChild(lines(merchants.map((m) => ({ label: m.label, amount: fmtCurrency(m.total, 2) })),
+          "Nessun esercente con descrizione nel periodo."));
+        return box;
+      },
+    },
+    {
+      title: "Obiettivi e progetti",
+      lead: "A che punto siamo su quello che ci eravamo detti.",
+      build: () => {
+        const box = el("div");
+        box.appendChild(el("h3", null, "Obiettivi di risparmio"));
+        box.appendChild(lines(state.savingsGoals.map((g) => {
+          const { progress, pct } = computeGoalProgress(g);
+          return { label: g.name, amount: `${fmtCurrency(progress, 2)} / ${fmtCurrency(g.targetAmount, 2)} (${fmtPercent(pct)})`,
+            cls: pct >= 1 ? "pos" : "" };
+        }), "Nessun obiettivo di risparmio impostato."));
+        box.appendChild(el("h3", null, "Progetti"));
+        box.appendChild(lines(activeProjects.map(({ project, progress }) => ({
+          label: `📦 ${project.name}`,
+          amount: `${fmtCurrency(progress.spent, 2)} / ${fmtCurrency(progress.budget, 2)}`,
+          cls: progress.percent !== null && progress.percent > 1 ? "neg" : "pos",
+        })), "Nessun progetto attivo."));
+        return box;
+      },
+    },
+    {
+      title: "Cosa decidiamo",
+      lead: "Le opportunità di risparmio più grandi individuate dall'app. Scegliete insieme quali provare: il piano completo è in Risparmio → Obiettivi & Piano d'Azione.",
+      build: () => lines(planCandidates.map((c) => ({
+        label: c.label, amount: `${fmtCurrency(c.monthlyAmount, 2)}/mese`, cls: "pos",
+      })), "Nessuna opportunità di risparmio rilevata al momento."),
+    },
+  ];
+}
+function renderReviewStep() {
+  const steps = buildReviewSteps();
+  reviewStepIndex = clamp(reviewStepIndex, 0, steps.length - 1);
+  const step = steps[reviewStepIndex];
+  document.getElementById("reviewStepTitle").textContent = step.title;
+  document.getElementById("reviewStepLead").textContent = step.lead;
+  document.getElementById("reviewProgress").textContent = `Revisione guidata · passo ${reviewStepIndex + 1} di ${steps.length}`;
+  const content = document.getElementById("reviewStepContent");
+  content.innerHTML = "";
+  content.appendChild(step.build());
+  const dots = document.getElementById("reviewDots");
+  dots.innerHTML = "";
+  steps.forEach((_, i) => dots.appendChild(el("span", "review-dot" + (i === reviewStepIndex ? " active" : ""))));
+  document.getElementById("btnReviewPrev").disabled = reviewStepIndex === 0;
+  document.getElementById("btnReviewNext").textContent = reviewStepIndex === steps.length - 1 ? "Chiudi ✓" : "Avanti →";
+  document.getElementById("reviewModal").dataset.lastStep = String(reviewStepIndex === steps.length - 1);
+}
+function openMonthlyReview() {
+  if (!state.transactions.length) { showToast("Carica prima delle transazioni.", "error"); return; }
+  reviewStepIndex = 0;
+  renderReviewStep();
+  document.getElementById("reviewModal").classList.remove("hidden");
+  requestAnimationFrame(() => document.getElementById("btnReviewNext").focus());
+}
+function closeMonthlyReview() {
+  document.getElementById("reviewModal").classList.add("hidden");
+}
+function reviewNextStep() {
+  if (document.getElementById("reviewModal").dataset.lastStep === "true") { closeMonthlyReview(); return; }
+  reviewStepIndex++;
+  renderReviewStep();
+}
+function reviewPrevStep() {
+  if (reviewStepIndex === 0) return;
+  reviewStepIndex--;
+  renderReviewStep();
+}
+
+// ---------------------------------------------------------------- Calendario di cassa a 12 mesi
+// Proiezione deterministica basata su impegni già osservabili, senza componente casuale (quella
+// resta al Monte Carlo). Le rate minime dei debiti non vengono aggiunte: se il debito è già in
+// ammortamento, quelle uscite sono dentro lo storico. Si somma solo il pagamento extra deciso nel
+// Pianificatore Estinzione, che per definizione non è ancora nei movimenti passati.
+function computeCashCalendar(monthsAhead = 12) {
+  const txs = state.transactions.filter(isCountedTx);
+  const series = computeMonthlySeries(txs);
+  if (series.length < 2) return null;
+  const startBalance = series[series.length - 1].cumulative;
+  const recent = series.slice(-6);
+  const avgIncome = recent.reduce((s, m) => s + m.income, 0) / recent.length;
+  const avgOutcome = recent.reduce((s, m) => s + m.outcome, 0) / recent.length;
+  const recurringActive = computeRecurringMerchants(txs).filter((r) => r.active);
+  const recurringMonthly = computeRecurringForecast(recurringActive)
+    .filter((r) => !r.isMissing)
+    .reduce((s, r) => s + r.avgAmount * (30 / Math.max(1, r.avgIntervalDays)), 0);
+  // Le uscite ricorrenti sono già dentro la media storica: "altre uscite" è il residuo, mai negativo.
+  const otherMonthly = Math.max(0, avgOutcome - recurringMonthly);
+  const debtExtra = state.debts.length ? (state.debtExtraPayment || 0) : 0;
+  const anchor = latestDate();
+  const months = [];
+  let cumulative = startBalance;
+  for (let i = 1; i <= monthsAhead; i++) {
+    const date = new Date(anchor.getFullYear(), anchor.getMonth() + i, 1);
+    const net = avgIncome - recurringMonthly - otherMonthly - debtExtra;
+    cumulative += net;
+    months.push({ key: monthKey(date), label: monthLabel(monthKey(date)), income: avgIncome,
+      recurring: recurringMonthly, other: otherMonthly, debtExtra, net, cumulative, atRisk: cumulative < 0 });
+  }
+  const firstRisk = months.find((m) => m.atRisk) || null;
+  return { startBalance, avgIncome, recurringMonthly, otherMonthly, debtExtra, months, firstRisk,
+    endBalance: months.length ? months[months.length - 1].cumulative : startBalance };
+}
+function renderCashCalendar() {
+  const body = document.getElementById("cashCalendarBody");
+  if (!body) return;
+  const emptyMsg = document.getElementById("cashCalendarEmptyMsg");
+  const alertBox = document.getElementById("cashCalendarAlert");
+  const statsBox = document.getElementById("cashCalendarStats");
+  const table = document.getElementById("cashCalendarTable");
+  const data = computeCashCalendar(12);
+  if (!data) {
+    body.innerHTML = "";
+    if (emptyMsg) emptyMsg.classList.remove("hidden");
+    if (table) table.classList.add("hidden");
+    if (alertBox) alertBox.classList.add("hidden");
+    if (statsBox) statsBox.innerHTML = "";
+    return;
+  }
+  if (emptyMsg) emptyMsg.classList.add("hidden");
+  if (table) table.classList.remove("hidden");
+  if (statsBox) {
+    statsBox.innerHTML = "";
+    const cards = [
+      { label: "Saldo di partenza", value: fmtCurrency(data.startBalance, 2), cls: data.startBalance >= 0 ? "pos" : "neg", sub: "cumulato a oggi" },
+      { label: "Impegni fissi mensili", value: fmtCurrency(data.recurringMonthly + data.debtExtra, 2), cls: "neg", sub: "ricorrenti" + (data.debtExtra > 0 ? " + extra debiti" : "") },
+      { label: "Saldo stimato tra 12 mesi", value: fmtCurrency(data.endBalance, 2), cls: data.endBalance >= 0 ? "pos" : "neg", sub: "se nulla cambia" },
+    ];
+    for (const c of cards) {
+      const card = el("div", "metric-card");
+      card.appendChild(el("div", "metric-label", c.label));
+      card.appendChild(el("div", "metric-value " + c.cls, c.value));
+      card.appendChild(el("div", "metric-sub", c.sub));
+      statsBox.appendChild(card);
+    }
+  }
+  if (alertBox) {
+    if (data.firstRisk) {
+      alertBox.classList.remove("hidden");
+      alertBox.textContent = `⚠️ Con questi impegni il saldo diventa negativo a ${data.firstRisk.label} (${fmtCurrency(data.firstRisk.cumulative, 2)}). Intervieni prima su ricorrenti o pagamento extra debiti.`;
+    } else {
+      alertBox.classList.add("hidden");
+    }
+  }
+  body.innerHTML = "";
+  for (const m of data.months) {
+    const tr = document.createElement("tr");
+    if (m.atRisk) tr.classList.add("cash-risk-row");
+    tr.innerHTML = `<td>${m.label}</td>`
+      + `<td class="tabular">${fmtCurrency(m.income, 2)}</td>`
+      + `<td class="tabular">${fmtCurrency(m.recurring, 2)}</td>`
+      + `<td class="tabular">${fmtCurrency(m.other, 2)}</td>`
+      + `<td class="tabular">${m.debtExtra > 0 ? fmtCurrency(m.debtExtra, 2) : "—"}</td>`
+      + `<td class="tabular" style="color:${m.net >= 0 ? "var(--primary)" : "var(--danger)"}">${m.net >= 0 ? "+" : ""}${fmtCurrency(m.net, 2)}</td>`
+      + `<td class="tabular" style="color:${m.cumulative >= 0 ? "var(--text)" : "var(--danger)"}">${fmtCurrency(m.cumulative, 2)}</td>`;
+    body.appendChild(tr);
+  }
+  renderChart("chartCashCalendar", {
+    type: "line",
+    data: {
+      labels: data.months.map((m) => m.label),
+      datasets: [{
+        label: "Saldo cumulato proiettato", data: data.months.map((m) => m.cumulative),
+        borderColor: data.firstRisk ? cssVar("--danger") : cssVar("--primary"),
+        backgroundColor: hexToRgba(data.firstRisk ? cssVar("--danger") : cssVar("--primary"), 0.12),
+        fill: true, tension: 0.25, pointRadius: 2,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { y: { ticks: currencyTick() } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmtCurrency(c.parsed.y, 2) } } },
+    },
+  });
+}
+
 // ---------------------------------------------------------------- Simulazione Monte Carlo Fondo Emergenza
 function computeMonteCarloProjection(months, runs) {
   const series = computeMonthlySeries(state.transactions.filter(isCountedTx));
@@ -6234,6 +6935,7 @@ function renderNetWorthTab() {
   updateNetWorthFormFields();
   renderNetWorth();
   renderDebtPlanner();
+  renderCashCalendar();
   renderMonteCarloChart();
 }
 
@@ -6311,10 +7013,7 @@ function getTxFiltered() {
   let txs = state.transactions.filter((t) => {
     if (periodStart && t.date < periodStart) return false;
     if (periodEnd && t.date > periodEnd) return false;
-    if (state.txFilters.category !== "all" && t.category !== state.txFilters.category) return false;
-    if (state.txFilters.type !== "all" && t.type !== state.txFilters.type) return false;
-    if (state.txFilters.member && state.txFilters.member !== "all" && (t.member || null) !== state.txFilters.member) return false;
-    if (state.txFilters.tag && state.txFilters.tag !== "all" && !(t.tags || []).includes(state.txFilters.tag)) return false;
+    if (!matchesGlobalDimensions(t)) return false;
     if (state.txFilters.search) {
       const q = state.txFilters.search.toLowerCase();
       const typeLabel = t.type === "income" ? "entrata" : "uscita";
@@ -6340,7 +7039,7 @@ function getTxFiltered() {
 function csvEscape(v) { const s = String(v); return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
 function exportTransactionsCSV() {
   const rows = getTxFiltered();
-  if (!rows.length) { alert("Nessuna transazione da esportare con i filtri correnti."); return; }
+  if (!rows.length) { showToast("Nessuna transazione da esportare con i filtri correnti.", "error"); return; }
   const lines = ["date,category,value,type,description,tags,note"];
   for (const t of rows) {
     const iso = `${t.date.getFullYear()}-${pad2(t.date.getMonth() + 1)}-${pad2(t.date.getDate())}`;
@@ -6355,7 +7054,7 @@ function getAllTags() {
   return Array.from(set).sort((a, b) => a.localeCompare(b, "it"));
 }
 function populateTagFilter() {
-  const sel = document.getElementById("txFilterTag");
+  const sel = document.getElementById("filterTag");
   if (!sel) return;
   const current = sel.value;
   const tags = getAllTags();
@@ -6363,7 +7062,12 @@ function populateTagFilter() {
   const optAll = document.createElement("option"); optAll.value = "all"; optAll.textContent = "Tutte"; sel.appendChild(optAll);
   for (const tag of tags) { const opt = document.createElement("option"); opt.value = tag; opt.textContent = tag; sel.appendChild(opt); }
   if ([...sel.options].some((o) => o.value === current)) sel.value = current;
-  const row = document.getElementById("tagFilterRow");
+  // Un'etichetta non più presente su nessuna transazione non deve restare come filtro attivo.
+  if (state.filters.tag !== "all" && !tags.includes(state.filters.tag)) {
+    state.filters.tag = "all";
+    sel.value = "all";
+  }
+  const row = document.getElementById("filterTagField");
   if (row) row.classList.toggle("hidden", tags.length === 0);
 }
 function addTagToTransaction(t, rawTag) {
@@ -6579,7 +7283,7 @@ function saveTxCategoryFromModal() {
       const parts = [];
       if (propagatedCount) parts.push(`aggiornate altre ${propagatedCount} transazioni con lo stesso esercente`);
       if (newRuleKeyword) parts.push(`aggiunta la regola "${newRuleKeyword}" → ${newCat} al dizionario`);
-      alert("Categoria salvata: " + parts.join(" e ") + ".");
+      showToast("Categoria salvata: " + parts.join(" e ") + ".", "success");
     }
   }
   if (newNote !== (modalTx.note || "")) {
@@ -6596,14 +7300,51 @@ function saveTxCategoryFromModal() {
 // ---------------------------------------------------------------- Undo azioni distruttive
 // Toast temporaneo (si autochiude dopo 8s) per recuperare l'ultima azione irreversibile:
 // eliminazione transazione, ripristino budget/dizionario predefiniti, unione categorie.
+// ---------------------------------------------------------------- feedback: un solo linguaggio
+// Tre livelli, nessun dialogo nativo del browser (che ignorerebbe tema e stile dell'app):
+//   showToast()   → messaggi transitori (validazioni, conferme di salvataggio, esiti di export);
+//   showUndoToast() → stesso toast, con azione "Annulla" per le operazioni reversibili;
+//   confirmAction() → modale bloccante, solo per le scelte distruttive.
+// Gli errori persistenti legati a un form o a un import restano nei box inline dedicati.
+const TOAST_ICONS = { info: "ℹ️", success: "✅", error: "⚠️", warning: "⚠️" };
 let undoToastTimer = null;
 let pendingUndo = null;
-function showUndoToast(message, undoFn) {
+function showToast(message, variant = "info", { undoFn = null, duration = 5000 } = {}) {
   clearTimeout(undoToastTimer);
   pendingUndo = undoFn;
+  const toast = document.getElementById("undoToast");
+  if (!toast) return;
   document.getElementById("undoToastMessage").textContent = message;
-  document.getElementById("undoToast").classList.remove("hidden");
-  undoToastTimer = setTimeout(hideUndoToast, 8000);
+  document.getElementById("undoToastIcon").textContent = TOAST_ICONS[variant] || "";
+  document.getElementById("btnUndoToast").classList.toggle("hidden", !undoFn);
+  toast.classList.remove("hidden", "toast-success", "toast-error", "toast-warning");
+  if (variant !== "info") toast.classList.add("toast-" + variant);
+  undoToastTimer = setTimeout(hideUndoToast, duration);
+}
+function showUndoToast(message, undoFn) {
+  showToast(message, "info", { undoFn, duration: 8000 });
+}
+let pendingConfirm = null;
+function confirmAction({ message, confirmLabel = "Conferma", variant = "primary", onConfirm }) {
+  const modal = document.getElementById("confirmModal");
+  if (!modal) { onConfirm(); return; }
+  pendingConfirm = onConfirm;
+  document.getElementById("confirmModalMessage").textContent = message;
+  const accept = document.getElementById("btnAcceptConfirm");
+  accept.textContent = confirmLabel;
+  accept.className = "btn btn-sm " + (variant === "danger" ? "btn-danger-outline" : "btn-primary");
+  modal.classList.remove("hidden");
+  requestAnimationFrame(() => accept.focus());
+}
+function closeConfirmModal() {
+  pendingConfirm = null;
+  const modal = document.getElementById("confirmModal");
+  if (modal) modal.classList.add("hidden");
+}
+function acceptConfirmModal() {
+  const fn = pendingConfirm;
+  closeConfirmModal();
+  if (fn) fn();
 }
 function hideUndoToast() {
   clearTimeout(undoToastTimer);
@@ -6618,8 +7359,14 @@ function runPendingUndo() {
 }
 function deleteTxFromModal() {
   if (!modalTx) return;
-  if (!confirm('Eliminare questa transazione? Potrai annullare subito dopo con il pulsante "Annulla" in basso.')) return;
   const deleted = modalTx;
+  confirmAction({
+    message: 'Eliminare questa transazione? Potrai annullare subito dopo con il pulsante "Annulla" in basso.',
+    confirmLabel: "Elimina", variant: "danger",
+    onConfirm: () => deleteTxConfirmed(deleted),
+  });
+}
+function deleteTxConfirmed(deleted) {
   state.transactions = state.transactions.filter((t) => t.id !== deleted.id);
   persistTransactions();
   populateCategoryFilters();
@@ -6683,10 +7430,11 @@ function renameCategory() {
   const from = document.getElementById("categoryRenameFrom").value;
   const to = document.getElementById("categoryRenameTo").value;
   if (!from || !to) return;
-  if (to === from) { alert("Seleziona una categoria di destinazione diversa da quella di partenza."); return; }
+  if (to === from) { showToast("Seleziona una categoria di destinazione diversa da quella di partenza.", "error"); return; }
   const msg = `Spostare tutti i dati di "${from}" su "${to}"? Tutte le transazioni, il budget e le regole del dizionario verranno spostati su "${to}" e "${from}" verrà rimossa. Potrai annullare subito dopo dal messaggio in basso.`;
-  if (!confirm(msg)) return;
-
+  confirmAction({ message: msg, confirmLabel: "Sposta", variant: "danger", onConfirm: () => renameCategoryConfirmed(from, to) });
+}
+function renameCategoryConfirmed(from, to) {
   const affectedTxIds = [];
   for (const t of state.transactions) { if (t.category === from) { t.category = to; affectedTxIds.push(t.id); } }
 
@@ -6744,6 +7492,9 @@ function openSettings() {
   document.getElementById("singleTxThresholdInput").value = state.customAlerts.singleTxThreshold || "";
   document.getElementById("negativeBalanceAlertInput").checked = !!state.customAlerts.negativeBalanceAlert;
   document.getElementById("budgetRolloverInput").checked = !!state.budgetRolloverEnabled;
+  document.getElementById("allocationNeedsInput").value = state.allocationTargets.needs;
+  document.getElementById("allocationWantsInput").value = state.allocationTargets.wants;
+  document.getElementById("allocationSavingsInput").value = state.allocationTargets.savings;
   document.getElementById("settingsModal").classList.remove("hidden");
   requestAnimationFrame(() => document.getElementById("closeSettings").focus());
 }
@@ -6791,7 +7542,13 @@ function suggestBudgetsFromHistory() {
     : "Nessuna categoria con storico di spesa recente da suggerire.";
 }
 function resetBudgetsToDefault() {
-  if (!confirm("Ripristinare i budget predefiniti per tutte le categorie? Potrai annullare subito dopo dal messaggio in basso.")) return;
+  confirmAction({
+    message: "Ripristinare i budget predefiniti per tutte le categorie? Potrai annullare subito dopo dal messaggio in basso.",
+    confirmLabel: "Ripristina", variant: "danger",
+    onConfirm: resetBudgetsToDefaultConfirmed,
+  });
+}
+function resetBudgetsToDefaultConfirmed() {
   const previousBudgets = { ...state.budgets };
   state.budgets = { ...DEFAULT_BUDGETS };
   ensureBudgetKeysForTransactions();
@@ -6880,7 +7637,7 @@ function addRuleFromForm() {
   const kwInput = document.getElementById("newRuleKeyword");
   const keyword = kwInput.value.trim();
   const category = document.getElementById("newRuleCategory").value;
-  if (!keyword) { alert("Inserisci una parola chiave."); return; }
+  if (!keyword) { showToast("Inserisci una parola chiave.", "error"); return; }
   if (editingRuleRef) {
     editingRuleRef.keyword = keyword;
     editingRuleRef.category = category;
@@ -6893,7 +7650,7 @@ function addRuleFromForm() {
   renderRuleEditor();
 }
 function exportDictionaryCSV() {
-  if (!state.merchantRules.length) { alert("Il dizionario è vuoto."); return; }
+  if (!state.merchantRules.length) { showToast("Il dizionario è vuoto.", "error"); return; }
   const lines = ["keyword,category"];
   for (const r of state.merchantRules) lines.push([csvEscape(r.keyword), csvEscape(r.category)].join(","));
   downloadCSV(lines.join("\n"), `dizionario_categorie_${Date.now()}.csv`);
@@ -6940,7 +7697,7 @@ function exportRecurringCalendarICS() {
   const allOutcomeTxs = getCategoryTypeFiltered();
   const recurring = computeRecurringMerchants(allOutcomeTxs).filter((r) => r.active);
   const events = computeUpcomingRecurringForCalendar(recurring, 60);
-  if (!events.length) { alert("Nessun pagamento ricorrente atteso nei prossimi 60 giorni da esportare."); return; }
+  if (!events.length) { showToast("Nessun pagamento ricorrente atteso nei prossimi 60 giorni da esportare.", "error"); return; }
   const now = new Date();
   const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Family Finance Dashboard PRO//IT", "CALSCALE:GREGORIAN"];
   for (const r of events) {
@@ -6970,9 +7727,9 @@ function computeMonthlyByCategoryPivot() {
   return { monthKeys, categories, grid, incomeByMonth };
 }
 function exportMonthlySummarySpreadsheet() {
-  if (!state.transactions.length) { alert("Nessuna transazione da esportare."); return; }
+  if (!state.transactions.length) { showToast("Nessuna transazione da esportare.", "error"); return; }
   const { monthKeys, categories, grid, incomeByMonth } = computeMonthlyByCategoryPivot();
-  if (!monthKeys.length) { alert("Nessuna transazione da esportare."); return; }
+  if (!monthKeys.length) { showToast("Nessuna transazione da esportare.", "error"); return; }
   const header = ["Categoria", ...monthKeys.map(monthLabel), "Totale"];
   const lines = [header.join("\t")];
   const incomeTotal = monthKeys.reduce((s, k) => s + (incomeByMonth[k] || 0), 0);
@@ -6995,7 +7752,13 @@ function exportMonthlySummarySpreadsheet() {
   downloadTextFile(lines.join("\n"), `riepilogo_mensile_${Date.now()}.tsv`, "text/tab-separated-values;charset=utf-8;");
 }
 function resetDictionaryToDefault() {
-  if (!confirm("Ripristinare il dizionario predefinito? Potrai annullare subito dopo dal messaggio in basso.")) return;
+  confirmAction({
+    message: "Ripristinare il dizionario predefinito? Potrai annullare subito dopo dal messaggio in basso.",
+    confirmLabel: "Ripristina", variant: "danger",
+    onConfirm: resetDictionaryToDefaultConfirmed,
+  });
+}
+function resetDictionaryToDefaultConfirmed() {
   const previousRules = state.merchantRules.map((r) => ({ ...r }));
   cancelRuleEdit();
   state.merchantRules = DEFAULT_MERCHANT_RULES.map((r) => ({ ...r }));
@@ -7082,7 +7845,35 @@ function switchTab(name) {
   document.querySelectorAll(".tab-panel").forEach((p) => p.classList.toggle("active", p.id === "tab-" + name));
   const filterBar = document.getElementById("filterBar");
   if (filterBar) filterBar.classList.toggle("hidden", name === "networth");
+  saveUiPrefs();
   requestAnimationFrame(() => renderTab(name));
+}
+// Navigazione da tastiera conforme al pattern ARIA tablist: frecce per spostarsi tra i tab,
+// Home/End per saltare al primo o all'ultimo. Vale sia per la sidebar sia per la sub-nav.
+function initTablistKeyboardNav(container, itemSelector, activate) {
+  if (!container) return;
+  container.addEventListener("keydown", (e) => {
+    const keys = ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "Home", "End"];
+    if (!keys.includes(e.key)) return;
+    const items = Array.from(container.querySelectorAll(itemSelector));
+    if (!items.length) return;
+    const current = items.indexOf(document.activeElement);
+    if (current === -1) return;
+    e.preventDefault();
+    let next;
+    if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = items.length - 1;
+    else if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (current + 1) % items.length;
+    else next = (current - 1 + items.length) % items.length;
+    items[next].focus();
+    activate(items[next]);
+  });
+}
+function expandSavingsSubsectionsForPrint() {
+  document.querySelectorAll(".savings-subsection").forEach((s) => { s.hidden = false; });
+}
+function restoreSavingsSubsectionsAfterPrint() {
+  switchSavingsSubsection(state.activeSavingsSubsection);
 }
 function switchSavingsSubsection(name) {
   state.activeSavingsSubsection = name;
@@ -7092,10 +7883,11 @@ function switchSavingsSubsection(name) {
     b.setAttribute("aria-selected", active ? "true" : "false");
   });
   document.querySelectorAll(".savings-subsection").forEach((s) => { s.hidden = s.dataset.subsection !== name; });
+  saveUiPrefs();
 }
 function populateCategoryFilters() {
   const cats = getAllCategories();
-  for (const selId of ["filterCategory", "txFilterCategory"]) {
+  for (const selId of ["filterCategory"]) {
     const sel = document.getElementById(selId);
     const current = sel.value;
     sel.innerHTML = '<option value="all">Tutte</option>';
@@ -7140,20 +7932,32 @@ function loadTransactions(rows, opts = {}) {
   document.getElementById("app").classList.remove("hidden");
   const maxDate = latestDate();
   document.getElementById("footerInfo").textContent = `Fonte dati: ${state.transactions.length} transazioni · ultimo aggiornamento ${fmtDateFull(maxDate)}`;
+  populateMemberSelects();
+  populateTagFilter();
+  populateProjectCategorySelect();
+  applyUiPrefsToControls();
   updateFilterSummary();
   switchTab(state.activeTab);
   return { addedCount, skippedCount };
 }
-function confirmDataReplace() {
-  if (!state.simulations.length) return true;
-  return confirm(`Hai ${state.simulations.length} simulazioni attive nel Simulatore che verranno azzerate caricando nuovi dati. Continuare?`);
+// Le simulazioni attive vengono azzerate da un caricamento dati: chiede conferma e prosegue
+// solo dopo la risposta dell'utente (il modale non è bloccante come il confirm nativo).
+function withDataReplaceConfirm(proceed) {
+  if (!state.simulations.length) { proceed(); return; }
+  confirmAction({
+    message: `Hai ${state.simulations.length} simulazioni attive nel Simulatore che verranno azzerate caricando nuovi dati. Continuare?`,
+    confirmLabel: "Continua", variant: "danger", onConfirm: proceed,
+  });
 }
 function updateFilterSummary() {
   const n = getPeriodFiltered().length;
   const catSel = document.getElementById("filterCategory");
   const catLabel = state.filters.category === "all" ? "tutte le categorie" : catSel.options[catSel.selectedIndex]?.textContent || state.filters.category;
   const typeLabel = state.filters.type === "all" ? "tutti i tipi" : state.filters.type === "income" ? "solo entrate" : "solo uscite";
-  document.getElementById("filterSummary").textContent = `${periodRangeLabel()} · ${catLabel} · ${typeLabel} → ${n} transazioni`;
+  const parts = [periodRangeLabel(), catLabel, typeLabel];
+  if (state.filters.member !== "all") parts.push(`membro: ${state.filters.member}`);
+  if (state.filters.tag !== "all") parts.push(`etichetta: ${state.filters.tag}`);
+  document.getElementById("filterSummary").textContent = `${parts.join(" · ")} → ${n} transazioni`;
 }
 function showWelcomeError(msg) {
   const box = document.getElementById("welcomeError");
@@ -7162,23 +7966,25 @@ function showWelcomeError(msg) {
 }
 function hideWelcomeError() { document.getElementById("welcomeError").classList.add("hidden"); }
 function warnIfMultipleFiles(fileList) {
-  if (fileList.length > 1) alert(`Hai selezionato ${fileList.length} file: verrà elaborato solo il primo (${fileList[0].name}).`);
+  if (fileList.length > 1) showToast(`Hai selezionato ${fileList.length} file: verrà elaborato solo il primo (${fileList[0].name}).`, "error");
 }
 function handleFile(file, mode) {
   const isAppend = mode === "append";
   if (!isAppend) hideWelcomeError();
-  const reportError = isAppend ? (msg) => alert(msg) : showWelcomeError;
+  const reportError = isAppend ? (msg) => showToast(msg, "error") : showWelcomeError;
   const reader = new FileReader();
   reader.onload = () => {
     try {
       const rows = parseCSV(reader.result);
-      if (!isAppend && !confirmDataReplace()) return;
-      const result = loadTransactions(rows, { mode: isAppend ? "append" : "replace" });
-      if (isAppend) {
-        const parts = [`${result.addedCount} nuove transazioni aggiunte`];
-        if (result.skippedCount) parts.push(`${result.skippedCount} duplicati ignorati`);
-        alert("Importazione completata: " + parts.join(", ") + ".");
-      }
+      const applyRows = () => {
+        const result = loadTransactions(rows, { mode: isAppend ? "append" : "replace" });
+        if (isAppend) {
+          const parts = [`${result.addedCount} nuove transazioni aggiunte`];
+          if (result.skippedCount) parts.push(`${result.skippedCount} duplicati ignorati`);
+          showToast("Importazione completata: " + parts.join(", ") + ".", "success");
+        }
+      };
+      if (isAppend) applyRows(); else withDataReplaceConfirm(applyRows);
     } catch (err) {
       reportError("Errore nell'importazione: " + err.message);
     }
@@ -7187,12 +7993,20 @@ function handleFile(file, mode) {
   reader.readAsText(file, "UTF-8");
 }
 function loadSampleData() {
-  if (!confirmDataReplace()) return;
-  const rows = SAMPLE_TRANSACTIONS_PRO.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
-  loadTransactions(rows);
+  withDataReplaceConfirm(() => {
+    const rows = SAMPLE_TRANSACTIONS_PRO.map(([iso, cat, type, val]) => ({ date: new Date(iso), category: cat, type, value: val }));
+    loadTransactions(rows);
+  });
 }
 function resetToWelcome() {
-  if (state.transactions.length && !confirm("Sei sicuro di voler cancellare i dati caricati? Questa azione non può essere annullata.")) return;
+  if (!state.transactions.length) { resetToWelcomeConfirmed(); return; }
+  confirmAction({
+    message: "Sei sicuro di voler cancellare i dati caricati? Questa azione non può essere annullata.",
+    confirmLabel: "Cancella tutto", variant: "danger",
+    onConfirm: resetToWelcomeConfirmed,
+  });
+}
+function resetToWelcomeConfirmed() {
   localStorage.removeItem(LS_KEY);
   state.transactions = [];
   state.simulations = [];
@@ -7239,6 +8053,64 @@ function initThemeControls() {
   }
 }
 
+// ---------------------------------------------------------------- preferenze di sessione
+// L'app ricordava il tema e il layout ma dimenticava dove eri e cosa stavi guardando. Qui vive
+// tutto il "contesto" (tab, filtri, sotto-sezione, parametri di analisi) in un'unica chiave.
+const LS_UI_PREFS_KEY = "ffdpro_ui_prefs_v1";
+function saveUiPrefs() {
+  try {
+    localStorage.setItem(LS_UI_PREFS_KEY, JSON.stringify({
+      activeTab: state.activeTab,
+      activeSavingsSubsection: state.activeSavingsSubsection,
+      filters: state.filters,
+      antThreshold: state.antThreshold,
+      savingsCalc: state.savingsCalc,
+      opportunityCost: state.opportunityCost,
+      txSort: state.txSort,
+      txPageSize: state.txPageSize,
+    }));
+  } catch (e) { /* ignore */ }
+}
+function loadUiPrefs() {
+  let prefs = null;
+  try {
+    const raw = localStorage.getItem(LS_UI_PREFS_KEY);
+    prefs = raw ? JSON.parse(raw) : null;
+  } catch (e) { prefs = null; }
+  if (!prefs || typeof prefs !== "object") return;
+  if (TAB_NAMES.includes(prefs.activeTab)) state.activeTab = prefs.activeTab;
+  if (SAVINGS_SUBSECTIONS.includes(prefs.activeSavingsSubsection)) state.activeSavingsSubsection = prefs.activeSavingsSubsection;
+  if (prefs.filters && typeof prefs.filters === "object") {
+    const f = prefs.filters;
+    if (PERIOD_LABELS[f.period]) state.filters.period = f.period;
+    if (typeof f.category === "string") state.filters.category = f.category;
+    if (["all", "income", "outcome"].includes(f.type)) state.filters.type = f.type;
+    if (typeof f.member === "string") state.filters.member = f.member;
+    if (typeof f.tag === "string") state.filters.tag = f.tag;
+    if (typeof f.customStart === "string" || f.customStart === null) state.filters.customStart = f.customStart;
+    if (typeof f.customEnd === "string" || f.customEnd === null) state.filters.customEnd = f.customEnd;
+  }
+  if (typeof prefs.antThreshold === "number" && prefs.antThreshold >= 0) state.antThreshold = prefs.antThreshold;
+  if (prefs.savingsCalc && typeof prefs.savingsCalc === "object") state.savingsCalc = { ...state.savingsCalc, ...prefs.savingsCalc };
+  if (prefs.opportunityCost && typeof prefs.opportunityCost === "object") state.opportunityCost = { ...state.opportunityCost, ...prefs.opportunityCost };
+  if (prefs.txSort && typeof prefs.txSort === "object" && prefs.txSort.field) state.txSort = { ...state.txSort, ...prefs.txSort };
+  if (typeof prefs.txPageSize === "number" && prefs.txPageSize > 0) state.txPageSize = prefs.txPageSize;
+}
+// Riporta sui controlli il contesto ripristinato, così DOM e stato non divergono al primo render.
+function applyUiPrefsToControls() {
+  const setVal = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
+  setVal("filterPeriod", state.filters.period);
+  setVal("filterCategory", state.filters.category);
+  setVal("filterType", state.filters.type);
+  setVal("filterMember", state.filters.member);
+  setVal("filterTag", state.filters.tag);
+  setVal("filterCustomStart", state.filters.customStart || "");
+  setVal("filterCustomEnd", state.filters.customEnd || "");
+  setVal("txPageSize", String(state.txPageSize));
+  const customField = document.getElementById("filterCustomRangeField");
+  if (customField) customField.classList.toggle("hidden", state.filters.period !== "custom");
+  switchSavingsSubsection(state.activeSavingsSubsection);
+}
 const LS_OVERVIEW_LAYOUT_KEY = "ffdpro_overview_layout_v1";
 const OVERVIEW_VARIANTS = ["classica", "priorita", "accordion", "narrativa"];
 function applyOverviewLayout(mode) {
@@ -7275,6 +8147,9 @@ function init() {
   loadNetWorth();
   loadIgnoredRecurringMerchants();
   loadSubscriptionReviews();
+  loadProjects();
+  loadAllocationTargets();
+  loadUiPrefs();
   populateMemberSelects();
 
   const dropzone = document.getElementById("dropzone");
@@ -7325,19 +8200,28 @@ function init() {
 
   document.getElementById("filterPeriod").addEventListener("change", (e) => {
     state.filters.period = e.target.value;
+    saveUiPrefs();
     document.getElementById("filterCustomRangeField").classList.toggle("hidden", e.target.value !== "custom");
     updateFilterSummary();
     renderTab(state.activeTab);
   });
-  document.getElementById("filterCustomStart").addEventListener("change", (e) => { state.filters.customStart = e.target.value || null; validateCustomRange(); updateFilterSummary(); renderTab(state.activeTab); });
-  document.getElementById("filterCustomEnd").addEventListener("change", (e) => { state.filters.customEnd = e.target.value || null; validateCustomRange(); updateFilterSummary(); renderTab(state.activeTab); });
-  document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
-  document.getElementById("filterType").addEventListener("change", (e) => { state.filters.type = e.target.value; updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCustomStart").addEventListener("change", (e) => { state.filters.customStart = e.target.value || null; saveUiPrefs(); validateCustomRange(); updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCustomEnd").addEventListener("change", (e) => { state.filters.customEnd = e.target.value || null; saveUiPrefs(); validateCustomRange(); updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterCategory").addEventListener("change", (e) => { state.filters.category = e.target.value; state.txPage = 1; saveUiPrefs(); updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterType").addEventListener("change", (e) => { state.filters.type = e.target.value; state.txPage = 1; saveUiPrefs(); updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterMember").addEventListener("change", (e) => { state.filters.member = e.target.value; state.txPage = 1; saveUiPrefs(); updateFilterSummary(); renderTab(state.activeTab); });
+  document.getElementById("filterTag").addEventListener("change", (e) => { state.filters.tag = e.target.value; state.txPage = 1; saveUiPrefs(); updateFilterSummary(); renderTab(state.activeTab); });
   document.getElementById("btnResetFilters").addEventListener("click", () => {
-    state.filters = { period: "month", category: "all", type: "all", customStart: null, customEnd: null };
+    state.filters = { period: "month", category: "all", type: "all", member: "all", tag: "all", customStart: null, customEnd: null };
+    state.txFilters.search = "";
+    state.txPage = 1;
+    saveUiPrefs();
     document.getElementById("filterPeriod").value = "month";
     document.getElementById("filterCategory").value = "all";
     document.getElementById("filterType").value = "all";
+    document.getElementById("filterMember").value = "all";
+    document.getElementById("filterTag").value = "all";
+    document.getElementById("txSearch").value = "";
     document.getElementById("filterCustomStart").value = "";
     document.getElementById("filterCustomEnd").value = "";
     document.getElementById("filterCustomRangeField").classList.add("hidden");
@@ -7346,10 +8230,8 @@ function init() {
     renderTab(state.activeTab);
   });
 
-  document.getElementById("txFilterCategory").addEventListener("change", (e) => { state.txFilters.category = e.target.value; state.txPage = 1; renderTransactions(); });
-  document.getElementById("txFilterType").addEventListener("change", (e) => { state.txFilters.type = e.target.value; state.txPage = 1; renderTransactions(); });
   document.getElementById("txSearch").addEventListener("input", (e) => { state.txFilters.search = e.target.value; state.txPage = 1; renderTransactions(); });
-  document.getElementById("txPageSize").addEventListener("change", (e) => { state.txPageSize = parseInt(e.target.value, 10); state.txPage = 1; renderTransactions(); });
+  document.getElementById("txPageSize").addEventListener("change", (e) => { state.txPageSize = parseInt(e.target.value, 10); state.txPage = 1; saveUiPrefs(); renderTransactions(); });
   document.getElementById("btnExportCsv").addEventListener("click", exportTransactionsCSV);
   document.querySelectorAll("#txTable th.sortable").forEach((th) => {
     th.addEventListener("click", () => {
@@ -7357,6 +8239,7 @@ function init() {
       if (state.txSort.field === field) state.txSort.dir = state.txSort.dir === "asc" ? "desc" : "asc";
       else { state.txSort.field = field; state.txSort.dir = "desc"; }
       state.txPage = 1;
+      saveUiPrefs();
       renderTransactions();
     });
   });
@@ -7365,10 +8248,11 @@ function init() {
   document.getElementById("btnCancelSimEdit").addEventListener("click", cancelSimEdit);
   document.getElementById("btnClearSims").addEventListener("click", () => {
     if (!state.simulations.length) return;
-    if (!confirm(`Rimuovere tutte le ${state.simulations.length} simulazioni attive?`)) return;
-    state.simulations = [];
-    cancelSimEdit();
-    renderSimulator();
+    confirmAction({
+      message: `Rimuovere tutte le ${state.simulations.length} simulazioni attive?`,
+      confirmLabel: "Rimuovi", variant: "danger",
+      onConfirm: () => { state.simulations = []; cancelSimEdit(); renderSimulator(); },
+    });
   });
 
   document.getElementById("btnCloseModal").addEventListener("click", closeTxModal);
@@ -7405,6 +8289,30 @@ function init() {
   });
   document.getElementById("closeSettings").addEventListener("click", closeSettings);
   document.getElementById("settingsModal").addEventListener("click", (e) => { if (e.target.id === "settingsModal") closeSettings(); });
+  // Stesso contratto per tutti i modali: focus trap ovunque, non solo su quelli storici.
+  for (const modalId of ["monthlyReportModal", "annualReportModal", "quickAddModal", "commandPaletteModal"]) {
+    const modalEl = document.getElementById(modalId);
+    if (modalEl) modalEl.addEventListener("keydown", (e) => trapFocusInModal(modalEl, e));
+  }
+  // Pattern ARIA per i due tablist (barra laterale e sotto-navigazione Risparmio): frecce, Home, End.
+  initTablistKeyboardNav(document.querySelector(".sidebar[role=tablist]"), ".side-nav-item", (btn) => switchTab(btn.dataset.tab));
+  initTablistKeyboardNav(document.getElementById("savingsSubnav"), ".savings-subnav-btn", (btn) => switchSavingsSubsection(btn.dataset.subsection));
+  // Le sotto-sezioni nascoste non devono sparire dalla stampa: si espandono tutte e si ripristinano.
+  window.addEventListener("beforeprint", expandSavingsSubsectionsForPrint);
+  window.addEventListener("afterprint", restoreSavingsSubsectionsAfterPrint);
+  document.getElementById("btnMonthlyReview").addEventListener("click", openMonthlyReview);
+  document.getElementById("btnCloseReview").addEventListener("click", closeMonthlyReview);
+  document.getElementById("btnReviewNext").addEventListener("click", reviewNextStep);
+  document.getElementById("btnReviewPrev").addEventListener("click", reviewPrevStep);
+  document.getElementById("reviewModal").addEventListener("keydown", (e) => {
+    trapFocusInModal(document.getElementById("reviewModal"), e);
+    if (e.key === "ArrowRight") { e.preventDefault(); reviewNextStep(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); reviewPrevStep(); }
+  });
+  document.getElementById("btnAcceptConfirm").addEventListener("click", acceptConfirmModal);
+  document.getElementById("btnCancelConfirm").addEventListener("click", closeConfirmModal);
+  document.getElementById("confirmModal").addEventListener("click", (e) => { if (e.target.id === "confirmModal") closeConfirmModal(); });
+  document.getElementById("confirmModal").addEventListener("keydown", (e) => trapFocusInModal(document.getElementById("confirmModal"), e));
   document.querySelectorAll(".settings-quickjump-link").forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
@@ -7430,10 +8338,10 @@ function init() {
   document.getElementById("btnSimulateSelectedSubscriptions").addEventListener("click", simulateSelectedSubscriptionsCancellation);
   document.getElementById("btnSaveSavingsGoal").addEventListener("click", () => {
     const val = parseFloat(document.getElementById("savingsGoalInput").value);
-    if (isNaN(val) || val < 0 || val > 100) { alert("Inserisci una percentuale tra 0 e 100."); return; }
+    if (isNaN(val) || val < 0 || val > 100) { showToast("Inserisci una percentuale tra 0 e 100.", "error"); return; }
     saveSavingsGoal(val / 100);
     renderTab(state.activeTab);
-    alert("Obiettivo di risparmio aggiornato.");
+    showToast("Obiettivo di risparmio aggiornato.", "success");
   });
   document.getElementById("btnRenameCategory").addEventListener("click", renameCategory);
   document.getElementById("btnAddRule").addEventListener("click", addRuleFromForm);
@@ -7452,26 +8360,80 @@ function init() {
   document.getElementById("antThresholdInput").addEventListener("input", (e) => {
     const v = parseFloat(e.target.value);
     state.antThreshold = isNaN(v) || v < 0 ? 0 : v;
+    saveUiPrefs();
     renderSavings();
   });
   document.getElementById("savingsCalcCategory").addEventListener("change", (e) => {
     state.savingsCalc.category = e.target.value || null;
+    saveUiPrefs();
     renderSavingsCalcResult(getPeriodFiltered());
     renderOpportunityCostResult(getPeriodFiltered());
   });
   document.getElementById("savingsCalcPct").addEventListener("input", (e) => {
     state.savingsCalc.pct = clamp(parseInt(e.target.value, 10) || 0, 0, 100);
     document.getElementById("savingsCalcPctLabel").textContent = state.savingsCalc.pct + "%";
+    saveUiPrefs();
     renderSavingsCalcResult(getPeriodFiltered());
     renderOpportunityCostResult(getPeriodFiltered());
   });
   document.getElementById("opportunityCostReturnInput").addEventListener("input", (e) => {
     state.opportunityCost.returnPct = clamp(parseFloat(e.target.value) || 0, 0, 100);
+    saveUiPrefs();
     renderOpportunityCostResult(getPeriodFiltered());
   });
   document.getElementById("opportunityCostYearsInput").addEventListener("input", (e) => {
     state.opportunityCost.years = clamp(parseInt(e.target.value, 10) || 1, 1, 60);
+    saveUiPrefs();
     renderOpportunityCostResult(getPeriodFiltered());
+  });
+
+  // Budget di progetto
+  document.getElementById("btnAddProject").addEventListener("click", () => {
+    const name = document.getElementById("projectNameInput").value.trim();
+    const budget = parseFloat(document.getElementById("projectBudgetInput").value);
+    const startDate = document.getElementById("projectStartInput").value || null;
+    const endDate = document.getElementById("projectEndInput").value || null;
+    const categories = [...document.getElementById("projectCategoriesInput").selectedOptions].map((o) => o.value);
+    const tags = document.getElementById("projectTagsInput").value.split(",").map((s) => s.trim()).filter(Boolean);
+    if (!name) { showToast("Inserisci un nome per il progetto.", "error"); return; }
+    if (isNaN(budget) || budget <= 0) { showToast("Inserisci un preventivo valido.", "error"); return; }
+    if (!startDate || !endDate) { showToast("Indica la data di inizio e di fine del progetto.", "error"); return; }
+    if (endDate < startDate) { showToast('La data di fine deve essere successiva a quella di inizio.', "error"); return; }
+    addProject({ name, budget, startDate, endDate, categories, tags });
+    document.getElementById("projectNameInput").value = "";
+    document.getElementById("projectBudgetInput").value = "";
+    document.getElementById("projectTagsInput").value = "";
+    [...document.getElementById("projectCategoriesInput").options].forEach((o) => { o.selected = false; });
+    renderProjects();
+    showToast(`Progetto "${name}" creato.`, "success");
+  });
+
+  // Benchmark di allocazione
+  const readAllocationInputs = () => ({
+    needs: clamp(parseInt(document.getElementById("allocationNeedsInput").value, 10) || 0, 0, 100),
+    wants: clamp(parseInt(document.getElementById("allocationWantsInput").value, 10) || 0, 0, 100),
+    savings: clamp(parseInt(document.getElementById("allocationSavingsInput").value, 10) || 0, 0, 100),
+  });
+  const writeAllocationInputs = () => {
+    document.getElementById("allocationNeedsInput").value = state.allocationTargets.needs;
+    document.getElementById("allocationWantsInput").value = state.allocationTargets.wants;
+    document.getElementById("allocationSavingsInput").value = state.allocationTargets.savings;
+  };
+  document.getElementById("btnSaveAllocation").addEventListener("click", () => {
+    const targets = readAllocationInputs();
+    const total = targets.needs + targets.wants + targets.savings;
+    if (total !== 100) { showToast(`Le tre quote devono sommare a 100% (ora fanno ${total}%).`, "error"); return; }
+    state.allocationTargets = targets;
+    saveAllocationTargets();
+    renderTab(state.activeTab);
+    showToast("Benchmark di allocazione aggiornato.", "success");
+  });
+  document.getElementById("btnResetAllocation").addEventListener("click", () => {
+    state.allocationTargets = { ...DEFAULT_ALLOCATION_TARGETS };
+    saveAllocationTargets();
+    writeAllocationInputs();
+    renderTab(state.activeTab);
+    showToast("Benchmark ripristinato a 50/30/20.", "success");
   });
 
   // Obiettivi di risparmio
@@ -7479,8 +8441,8 @@ function init() {
     const name = document.getElementById("goalNameInput").value.trim();
     const amount = parseFloat(document.getElementById("goalAmountInput").value);
     const deadline = document.getElementById("goalDeadlineInput").value || null;
-    if (!name) { alert("Inserisci un nome per l'obiettivo."); return; }
-    if (isNaN(amount) || amount <= 0) { alert("Inserisci un importo target valido."); return; }
+    if (!name) { showToast("Inserisci un nome per l'obiettivo.", "error"); return; }
+    if (isNaN(amount) || amount <= 0) { showToast("Inserisci un importo target valido.", "error"); return; }
     addSavingsGoal(name, amount, deadline);
     document.getElementById("goalNameInput").value = "";
     document.getElementById("goalAmountInput").value = "";
@@ -7504,17 +8466,6 @@ function init() {
       renderTab(state.activeTab);
     }
   });
-  document.getElementById("txFilterMember").addEventListener("change", (e) => {
-    state.txFilters.member = e.target.value;
-    state.txPage = 1;
-    renderTransactions();
-  });
-  document.getElementById("txFilterTag").addEventListener("change", (e) => {
-    state.txFilters.tag = e.target.value;
-    state.txPage = 1;
-    renderTransactions();
-  });
-
   // Etichette libere (tag) nel modale transazione
   const addTagFromModal = () => {
     if (!modalTx) return;
@@ -7539,7 +8490,7 @@ function init() {
     state.customAlerts.negativeBalanceAlert = document.getElementById("negativeBalanceAlertInput").checked;
     saveCustomAlerts();
     renderTab(state.activeTab);
-    alert("Regole di allarme aggiornate.");
+    showToast("Regole di allarme aggiornate.", "success");
   });
 
   // Budget con riporto
@@ -7585,14 +8536,14 @@ function init() {
     const category = document.getElementById("nwCategoryInput").value;
     const name = document.getElementById("nwNameInput").value.trim();
     const isQuoted = category === "investimenti" && document.getElementById("nwQuotedInput").checked;
-    if (!name) { alert("Inserisci un nome per la voce."); return; }
+    if (!name) { showToast("Inserisci un nome per la voce.", "error"); return; }
     let entry = { category, name };
     if (isQuoted) {
       const quantity = parseFloat(document.getElementById("nwQuantityInput").value);
       const pricePerUnit = parseFloat(document.getElementById("nwPriceInput").value);
       const purchasePricePerUnit = parseFloat(document.getElementById("nwPurchasePriceInput").value);
-      if (isNaN(quantity) || quantity <= 0) { alert("Inserisci una quantità valida."); return; }
-      if (isNaN(pricePerUnit) || pricePerUnit < 0) { alert("Inserisci un prezzo attuale valido."); return; }
+      if (isNaN(quantity) || quantity <= 0) { showToast("Inserisci una quantità valida.", "error"); return; }
+      if (isNaN(pricePerUnit) || pricePerUnit < 0) { showToast("Inserisci un prezzo attuale valido.", "error"); return; }
       entry = {
         ...entry, isQuoted: true, ticker: document.getElementById("nwTickerInput").value.trim() || null,
         quantity, pricePerUnit, purchasePricePerUnit: isNaN(purchasePricePerUnit) ? null : purchasePricePerUnit,
@@ -7600,7 +8551,7 @@ function init() {
       };
     } else {
       const value = parseFloat(document.getElementById("nwValueInput").value);
-      if (isNaN(value) || value < 0) { alert("Inserisci un valore valido."); return; }
+      if (isNaN(value) || value < 0) { showToast("Inserisci un valore valido.", "error"); return; }
       entry = { ...entry, value };
       if (category === "immobili") {
         const purchaseValue = parseFloat(document.getElementById("nwPurchaseValueInput").value);
@@ -7628,10 +8579,10 @@ function init() {
     const balance = parseFloat(balanceInput.value);
     const apr = parseFloat(aprInput.value);
     const minPayment = parseFloat(minPaymentInput.value);
-    if (!name) { alert("Inserisci un nome per il debito."); return; }
-    if (isNaN(balance) || balance <= 0) { alert("Inserisci un saldo residuo valido."); return; }
-    if (isNaN(apr) || apr < 0) { alert("Inserisci un tasso APR valido."); return; }
-    if (isNaN(minPayment) || minPayment <= 0) { alert("Inserisci un pagamento minimo mensile valido."); return; }
+    if (!name) { showToast("Inserisci un nome per il debito.", "error"); return; }
+    if (isNaN(balance) || balance <= 0) { showToast("Inserisci un saldo residuo valido.", "error"); return; }
+    if (isNaN(apr) || apr < 0) { showToast("Inserisci un tasso APR valido.", "error"); return; }
+    if (isNaN(minPayment) || minPayment <= 0) { showToast("Inserisci un pagamento minimo mensile valido.", "error"); return; }
     addDebt(name, balance, apr, minPayment);
     nameInput.value = ""; balanceInput.value = ""; aprInput.value = ""; minPaymentInput.value = "";
     renderDebtPlanner();
@@ -7648,7 +8599,7 @@ function init() {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeAnnualReport(); closeQuickAddModal(); closeCommandPalette(); closeMoreActionsMenu(); hideUndoToast(); }
+    if (e.key === "Escape") { closeTxModal(); closeSettings(); closeMonthlyReport(); closeAnnualReport(); closeQuickAddModal(); closeCommandPalette(); closeConfirmModal(); closeMonthlyReview(); closeMoreActionsMenu(); hideUndoToast(); }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       if (state.commandPaletteOpen) closeCommandPalette(); else openCommandPalette();
